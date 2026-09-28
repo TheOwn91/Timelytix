@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.14.1",
+    "date": "28.09.2026",
+    "changes": [
+      "Startet die App nicht, erscheint statt einer weißen Seite ein Hinweis mit „Neu laden“ und „Zwischenspeicher leeren“ – deine Daten bleiben erhalten",
+      "Offline-Speicher: Die App löscht beim Update nicht mehr den Speicher der alten App unter …/TimeTrack/ (und umgekehrt)"
+    ]
+  },
+  {
     "version": "0.14.0",
     "date": "28.09.2026",
     "changes": [
