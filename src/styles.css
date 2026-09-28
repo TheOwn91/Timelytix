@@ -124,6 +124,8 @@ button {
 input,
 select {
   font: inherit;
+  /* Mindestens 16 px, sonst zoomt das iPhone beim Antippen hinein */
+  font-size: max(16px, 1em);
   color: var(--text);
   background: var(--card);
   border: 1px solid var(--border);
@@ -612,6 +614,20 @@ h3 {
   color: var(--muted);
   flex: 1;
 }
+/* Zeitfelder teilen sich die Breite, das ✕ bleibt in derselben Zeile */
+.row.times {
+  flex-wrap: nowrap;
+}
+.times label {
+  min-width: 0;
+}
+.times input {
+  width: 100%;
+  min-width: 0;
+}
+.times .icon-btn {
+  flex-shrink: 0;
+}
 .pause-row {
   align-items: flex-end;
   padding-left: 0.75rem;
@@ -1032,6 +1048,14 @@ html {
 }
 /* Sehr schmale Handys (z. B. 320 px): nichts darf die Seite verbreitern */
 @media (max-width: 350px) {
+  /* Zeitfelder auf sehr schmalen Handys: weniger Innenabstand, damit die Uhrzeit ganz sichtbar bleibt */
+  .times input {
+    padding-left: 0.4rem;
+    padding-right: 0.3rem;
+  }
+  .pause-row {
+    padding-left: 0.5rem;
+  }
   .tabbar button {
     font-size: 0.66rem;
   }

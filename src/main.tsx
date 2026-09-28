@@ -6,6 +6,9 @@ import { registerServiceWorker } from './lib/update';
 import { StoreProvider } from './lib/store';
 import './styles.css';
 
+// Kein Zoomen mit zwei Fingern – das iPhone ignoriert „user-scalable=no“ im Viewport
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+
 registerServiceWorker();
 requestPersistentStorage();
 

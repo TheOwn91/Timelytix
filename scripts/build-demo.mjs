@@ -13,7 +13,7 @@ const code = readFileSync(`dist-demo/assets/${js[0]}`, 'utf8').replace(/<\/scrip
 const icon = readFileSync('public/icon.svg', 'base64');
 
 const html = `<title>Timelytix</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
 <link rel="icon" href="data:image/svg+xml;base64,${icon}">
 <style>
