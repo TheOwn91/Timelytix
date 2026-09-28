@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.14.2",
+    "date": "28.09.2026",
+    "changes": [
+      "Weiße Seite behoben: Veraltete Kopien aus früheren Versionen werden automatisch entfernt, die App repariert sich beim nächsten Öffnen selbst",
+      "Die Startseite wird jetzt immer frisch geladen, ohne Netz aus dem eigenen Zwischenspeicher"
+    ]
+  },
+  {
     "version": "0.14.1",
     "date": "28.09.2026",
     "changes": [

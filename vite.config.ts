@@ -35,10 +35,28 @@ function serviceWorker(): Plugin {
         // Eigener Name je App: Unter derselben Domain liegt noch die alte App (…/TimeTrack/, Speicher „timetrack-…“)
         source: `const CACHE = 'timelytix-${version}';
 const FILES = ${JSON.stringify(files)};
+// Pfad der App (z. B. /Timelytix/); unter derselben Domain liegt noch die alte App …/TimeTrack/
+const SCOPE = new URL('./', self.location).pathname;
 
-// Ein neuer Service Worker wartet, bis die App ihn aktiviert (automatisch oder per „Jetzt aktualisieren“)
+// Ältere Versionen haben ihre Dateien in Speichern „timetrack-…“ abgelegt (geteilt mit der alten App).
+// Veraltete Kopien daraus führten zu einer weißen Seite. Nur Einträge dieser App (unter SCOPE) betreffen uns.
+async function legacyEntries() {
+  const found = [];
+  for (const name of await caches.keys()) {
+    if (name.startsWith('timelytix-')) continue;
+    const cache = await caches.open(name);
+    for (const req of await cache.keys()) if (new URL(req.url).pathname.startsWith(SCOPE)) found.push([name, req]);
+  }
+  return found;
+}
+
+// Ein neuer Service Worker wartet, bis die App ihn aktiviert (automatisch oder per „Jetzt aktualisieren“).
+// Ausnahme: Liegen noch veraltete Kopien herum, sofort übernehmen – die weiße Seite kann das Update nicht anstoßen.
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));
+  event.waitUntil((async () => {
+    await (await caches.open(CACHE)).addAll(FILES);
+    if ((await legacyEntries()).length) await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('message', (event) => {
@@ -46,11 +64,19 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('timelytix-') && k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim()),
-  );
+  event.waitUntil((async () => {
+    for (const k of await caches.keys()) if (k.startsWith('timelytix-') && k !== CACHE) await caches.delete(k);
+    // Veraltete Kopien dieser App aus fremden Speichern entfernen; Einträge der alten App bleiben
+    const legacy = await legacyEntries();
+    for (const [name, req] of legacy) {
+      const cache = await caches.open(name);
+      await cache.delete(req);
+      if (!(await cache.keys()).length) await caches.delete(name);
+    }
+    await self.clients.claim();
+    // Hing eine Seite an einer veralteten Kopie, jetzt frisch laden
+    if (legacy.length) for (const c of await self.clients.matchAll({ type: 'window' })) c.navigate(c.url).catch(() => {});
+  })());
 });
 
 self.addEventListener('fetch', (event) => {
@@ -58,9 +84,18 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (url.pathname.endsWith('/version.json')) return; // immer aus dem Netz
-  // Cache zuerst: startet sofort, auch ohne Netz. Updates kommen über einen neuen sw.js.
-  const key = req.mode === 'navigate' ? './' : req;
-  event.respondWith(caches.match(key, { ignoreSearch: true }).then((hit) => hit || fetch(req)));
+  const own = () => caches.open(CACHE);
+  if (req.mode === 'navigate') {
+    // Startseite zuerst aus dem Netz (immer passend zu den Dateien auf dem Server), ohne Netz aus dem eigenen Speicher
+    const offline = () => own().then((c) => c.match('./')).then((hit) => hit || Response.error());
+    const timeout = new Promise((resolve) => setTimeout(resolve, 4000));
+    event.respondWith(
+      Promise.race([fetch(req).then((r) => (r.ok ? r : offline())), timeout.then(offline)]).catch(offline),
+    );
+    return;
+  }
+  // Dateien (mit Versionskennung im Namen): nur aus dem eigenen Speicher, sonst aus dem Netz
+  event.respondWith(own().then((c) => c.match(req, { ignoreSearch: true })).then((hit) => hit || fetch(req)));
 });
 
 // Tipp auf die „Zeit läuft“-Benachrichtigung öffnet die App (oder holt sie nach vorn)
