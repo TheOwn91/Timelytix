@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.14.3",
+    "date": "28.09.2026",
+    "changes": [
+      "Die App startet wieder ganz lokal aus dem Zwischenspeicher – schnell und auch ohne Netz",
+      "Nach neuen Versionen sucht die App nur noch höchstens alle 12 Stunden; „Auf Updates prüfen“ geht jederzeit"
+    ]
+  },
+  {
     "version": "0.14.2",
     "date": "28.09.2026",
     "changes": [
