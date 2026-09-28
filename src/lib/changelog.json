@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.14.0",
+    "date": "28.09.2026",
+    "changes": [
+      "Neues App-Symbol: blauer Fortschrittsring mit Uhrzeigern",
+      "Zoomen in der App ist abgeschaltet – auch das automatische Hineinzoomen beim Antippen von Eingabefeldern auf dem iPhone"
+    ]
+  },
+  {
     "version": "0.13.1",
     "date": "28.09.2026",
     "changes": [
