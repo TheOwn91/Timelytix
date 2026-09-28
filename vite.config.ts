@@ -32,7 +32,8 @@ function serviceWorker(): Plugin {
       this.emitFile({
         type: 'asset',
         fileName: 'sw.js',
-        source: `const CACHE = 'timetrack-${version}';
+        // Eigener Name je App: Unter derselben Domain liegt noch die alte App (…/TimeTrack/, Speicher „timetrack-…“)
+        source: `const CACHE = 'timelytix-${version}';
 const FILES = ${JSON.stringify(files)};
 
 // Ein neuer Service Worker wartet, bis die App ihn aktiviert (automatisch oder per „Jetzt aktualisieren“)
@@ -47,7 +48,7 @@ self.addEventListener('message', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('timetrack-') && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('timelytix-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

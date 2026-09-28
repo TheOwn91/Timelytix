@@ -15,7 +15,34 @@
     <title>Timelytix</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="boot" style="padding: 2rem 1rem; text-align: center; font-family: system-ui, sans-serif">
+        <p>Timelytix wird geladen …</p>
+        <div id="boot-help" hidden>
+          <p>Die App startet nicht. Bitte prüfe die Internetverbindung und lade die Seite neu.</p>
+          <button id="boot-reset" type="button">Zwischenspeicher leeren und neu laden</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Startet die App nicht (z. B. Datei fehlt im Zwischenspeicher), nach 8 s Hilfe statt einer leeren Seite anzeigen
+      setTimeout(function () {
+        var help = document.getElementById('boot-help');
+        if (help) help.hidden = false;
+      }, 8000);
+      document.addEventListener('click', function (e) {
+        if (!e.target || e.target.id !== 'boot-reset') return;
+        var done = function () { location.reload(); };
+        Promise.all([
+          navigator.serviceWorker ? navigator.serviceWorker.getRegistrations().then(function (rs) {
+            return Promise.all(rs.filter(function (r) { return r.scope === new URL('./', location.href).href; }).map(function (r) { return r.unregister(); }));
+          }) : null,
+          window.caches ? caches.keys().then(function (ks) {
+            return Promise.all(ks.filter(function (k) { return k.indexOf('timelytix-') === 0; }).map(function (k) { return caches.delete(k); }));
+          }) : null,
+        ]).then(done, done);
+      });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
