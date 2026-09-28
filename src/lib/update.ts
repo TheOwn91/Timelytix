@@ -125,6 +125,21 @@ function waitForInstalled(worker: ServiceWorker, timeoutMs = 30_000): Promise<vo
 
 let autoPending = false;
 
+const LAST_CHECK_KEY = 'timetrack.lastUpdateCheck';
+/** Automatische Update-Suche höchstens alle 12 Stunden – die App läuft sonst ganz lokal. */
+const CHECK_INTERVAL = 12 * 60 * 60 * 1000;
+
+function updateCheckDue(): boolean {
+  try {
+    const last = Number(localStorage.getItem(LAST_CHECK_KEY) ?? 0);
+    if (Date.now() - last < CHECK_INTERVAL) return false;
+    localStorage.setItem(LAST_CHECK_KEY, String(Date.now()));
+  } catch {
+    /* ohne Speicher: trotzdem prüfen */
+  }
+  return true;
+}
+
 /**
  * Ein geladenes, wartendes Update gefunden: je nach Einstellung installieren oder anbieten.
  * Automatisch wird nur direkt beim Öffnen installiert – nie mitten in der Benutzung, dann
@@ -233,11 +248,12 @@ export function registerServiceWorker() {
     watch(reg.installing);
     reg.addEventListener('updatefound', () => watch(reg.installing));
 
-    // Beim Zurückholen der App (z. B. aus dem Hintergrund) nach Updates schauen
+    // Beim Zurückholen der App (z. B. aus dem Hintergrund): ein geladenes Update installieren,
+    // sonst nur selten online nach neuen Versionen schauen (höchstens alle 12 Stunden)
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState !== 'visible') return;
       if (autoPending && autoUpdateEnabled() && reg.waiting) void applyUpdate(false);
-      else reg.update().catch(() => undefined);
+      else if (updateCheckDue()) reg.update().catch(() => undefined);
     });
   });
 }

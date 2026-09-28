@@ -86,12 +86,9 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.endsWith('/version.json')) return; // immer aus dem Netz
   const own = () => caches.open(CACHE);
   if (req.mode === 'navigate') {
-    // Startseite zuerst aus dem Netz (immer passend zu den Dateien auf dem Server), ohne Netz aus dem eigenen Speicher
-    const offline = () => own().then((c) => c.match('./')).then((hit) => hit || Response.error());
-    const timeout = new Promise((resolve) => setTimeout(resolve, 4000));
-    event.respondWith(
-      Promise.race([fetch(req).then((r) => (r.ok ? r : offline())), timeout.then(offline)]).catch(offline),
-    );
+    // Lokal zuerst: Startseite aus dem eigenen Speicher (gehört immer zu den mitgespeicherten Dateien),
+    // nur wenn sie dort fehlt, aus dem Netz. Neue Versionen kommen über einen neuen sw.js.
+    event.respondWith(own().then((c) => c.match('./')).then((hit) => hit || fetch(req)));
     return;
   }
   // Dateien (mit Versionskennung im Namen): nur aus dem eigenen Speicher, sonst aus dem Netz

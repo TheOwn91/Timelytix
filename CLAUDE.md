@@ -30,6 +30,14 @@ Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Spr
 Umfangreichere Testdaten (z. B. ein ganzes Jahr) nur lokal zum Testen verwenden – nicht ins
 Repository und nicht in den Changelog.
 
+## Service Worker / Offline
+
+- Die App läuft lokal: Startseite und Dateien kommen aus dem eigenen Speicher `timelytix-<hash>`
+  (in `vite.config.ts` erzeugter `sw.js`), das Netz nur, wenn etwas fehlt. Nach Updates sucht die App
+  automatisch höchstens alle 12 Stunden (`lib/update.ts`), per Knopf jederzeit.
+- Nie `caches.match()` über alle Speicher verwenden, immer nur den eigenen Speicher öffnen: Unter derselben
+  Domain liegt die alte App (…/TimeTrack/, Speicher `timetrack-…`); fremde Kopien führten zu einer weißen Seite.
+
 ## Versionen / „Was ist neu?“
 
 **Neue Versionsnummer erst direkt vor dem Erstellen eines PR** – nicht bei jeder einzelnen Änderung.
