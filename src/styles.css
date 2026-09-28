@@ -1330,3 +1330,14 @@ html {
   color: var(--muted);
   font-size: 0.8rem;
 }
+
+/* Statt weißer Seite, wenn die App nicht startet */
+.startup-error {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.startup-error h2,
+.startup-error p {
+  margin: 0;
+}
