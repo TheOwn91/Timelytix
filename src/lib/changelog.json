@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.19.0",
+    "date": "29.09.2026",
+    "changes": [
+      "Automatische Sicherung: Die App legt regelmäßig eine Sicherungsdatei im Download-Ordner ab – dort bleibt sie auch, wenn Browserdaten gelöscht werden",
+      "Unter Einstellungen → Datensicherung ein- und ausschaltbar, Abstand wählbar (täglich bis monatlich, Standard wöchentlich); die letzte Sicherung wird angezeigt",
+      "Anzeige, ob der Browser die Daten dauerhaft speichert, mit „Erneut anfragen“"
+    ]
+  },
+  {
     "version": "0.18.0",
     "date": "29.09.2026",
     "changes": [
