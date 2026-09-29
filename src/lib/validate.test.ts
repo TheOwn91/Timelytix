@@ -43,3 +43,10 @@ describe('Daten prüfen (Speicher und Datensicherung)', () => {
     expect(s.absences.map((a) => a.id)).toEqual(['a']);
   });
 });
+
+describe('Schlüssel ausblenden', () => {
+  it('übernimmt nur bekannte Schlüssel', () => {
+    const s = validateState({ projects: [{ id: 'p', hiddenAbsences: ['kurzarbeit', 'toString', 5] }], sessions: [] });
+    expect(s.projects[0].hiddenAbsences).toEqual(['kurzarbeit']);
+  });
+});

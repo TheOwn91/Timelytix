@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { ABSENCE_ORDER, ABSENCE_TYPES } from '../lib/absences';
+import { ABSENCE_ORDER, ABSENCE_TYPES, visibleAbsences } from '../lib/absences';
 import { buildIndex, daySummary } from '../lib/calc';
 import { ask } from '../lib/confirm';
 import { shiftsToNextDay, workDate } from '../lib/shift';
@@ -28,6 +28,7 @@ export function DayEditor({ project, date, onClose }: Props) {
   const day = daySummary(project, date, buildIndex(state, project.id), now);
   // Soll und Zulagen-Sätze, die an diesem Tag gelten
   const terms = projectAt(project, date);
+  const absenceChoices = visibleAbsences(project, ABSENCE_ORDER, day.absence?.type);
 
   const updateSession = (id: string, fn: (s: Session) => void) =>
     update((d) => {
@@ -228,34 +229,36 @@ export function DayEditor({ project, date, onClose }: Props) {
         </section>
       )}
 
-      <section className="editor-section">
-        <h3>Abwesenheit / Schlüssel</h3>
-        <div className="chips">
-          {ABSENCE_ORDER.map((t) => (
-            <button
-              key={t}
-              className={`chip ${day.absence?.type === t ? 'active' : ''}`}
-              style={{ '--chip': ABSENCE_TYPES[t].color } as React.CSSProperties}
-              onClick={() => setAbsence(day.absence?.type === t ? null : t)}
-            >
-              {ABSENCE_TYPES[t].label}
-            </button>
-          ))}
-        </div>
-        {day.absence && (
-          <input
-            className="note"
-            placeholder="Bemerkung (optional)"
-            value={day.absence.note ?? ''}
-            onChange={(e) =>
-              update((d) => {
-                const a = d.absences.find((x) => x.id === day.absence!.id);
-                if (a) a.note = e.target.value || undefined;
-              })
-            }
-          />
-        )}
-      </section>
+      {absenceChoices.length > 0 && (
+        <section className="editor-section">
+          <h3>Abwesenheit / Schlüssel</h3>
+          <div className="chips">
+            {absenceChoices.map((t) => (
+              <button
+                key={t}
+                className={`chip ${day.absence?.type === t ? 'active' : ''}`}
+                style={{ '--chip': ABSENCE_TYPES[t].color } as React.CSSProperties}
+                onClick={() => setAbsence(day.absence?.type === t ? null : t)}
+              >
+                {ABSENCE_TYPES[t].label}
+              </button>
+            ))}
+          </div>
+          {day.absence && (
+            <input
+              className="note"
+              placeholder="Bemerkung (optional)"
+              value={day.absence.note ?? ''}
+              onChange={(e) =>
+                update((d) => {
+                  const a = d.absences.find((x) => x.id === day.absence!.id);
+                  if (a) a.note = e.target.value || undefined;
+                })
+              }
+            />
+          )}
+        </section>
+      )}
       <p className="muted small">
         {shiftsToNextDay(project)
           ? `Nachtschichten stehen beim Folgetag: Ein Beginn ab 18 Uhr bezieht sich auf ${fmtDate(workDate(project, date, '18:00'))}, früher auf diesen Tag. `

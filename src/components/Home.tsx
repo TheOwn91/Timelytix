@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ABSENCE_TYPES } from '../lib/absences';
+import { ABSENCE_TYPES, visibleAbsences } from '../lib/absences';
 import { DEMO } from '../lib/demo';
 import { sessionDay } from '../lib/shift';
 import { isStandalone } from '../lib/device';
@@ -228,7 +228,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
                   <span className="muted small">Zeit nachtragen ›</span>
                 </button>
                 <div className="chips">
-                  {QUICK_ABSENCES.map((t) => (
+                  {visibleAbsences(project, QUICK_ABSENCES).map((t) => (
                     <button
                       key={t}
                       className="chip small"
