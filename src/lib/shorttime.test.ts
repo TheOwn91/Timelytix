@@ -23,13 +23,32 @@ function september(p: Project, end: string) {
 }
 
 describe('Überstundenzuschlag bei Kurzarbeit', () => {
-  it('Plus des Monats wird verrechnet, auch wenn das Konto aus dem Vormonat im Minus steht', () => {
-    // Übertrag −3 h, 1.9. +5 h → die 5 h gehen von der Kurzarbeit ab, im Monat bleibt kein Plus
+  it('Konto steht am Monatsende bei 0, auch nach einem Minus-Übertrag', () => {
+    // Übertrag −3 h, 1.9. +5 h → 2 h bleiben übrig und gehen von der Kurzarbeit ab
     const m = september({ ...project, overtimeAtStartHours: -3 }, '19:00');
-    expect(m.summary.shortTime).toEqual({ fromAccount: 300, uncovered: 180 });
-    expect(m.balance).toBe(0);
+    expect(m.summary.shortTime).toEqual({ fromAccount: 120, uncovered: 360, added: 0 });
     expect(m.surcharge).toBe(0);
-    expect(m.total).toBe(-180);
+    expect(m.total).toBe(0);
+  });
+
+  it('fehlende Stunden kommen zur Kurzarbeit dazu (Überstundenausgleich im selben Monat)', () => {
+    // Übertrag +10 h; 1.9. +5 h; 2.9. Kurzarbeit; 3./4.9. Überstundenausgleich (−16 h) → −1 h
+    const p = { ...project, overtimeAtStartHours: 10 };
+    const st: AppState = {
+      version: 1,
+      projects: [p],
+      sessions: [{ id: 'a', projectId: 'p', start: combine('2026-09-01', '06:00'), end: combine('2026-09-01', '19:00'), pauses: [] }],
+      absences: [
+        { id: 'k', projectId: 'p', date: '2026-09-02', type: 'kurzarbeit' },
+        { id: 'u1', projectId: 'p', date: '2026-09-03', type: 'ueberstunden' },
+        { id: 'u2', projectId: 'p', date: '2026-09-04', type: 'ueberstunden' },
+        ...Array.from({ length: 26 }, (_, i) => ({ id: `f${i}`, projectId: 'p', date: `2026-09-${String(i + 5).padStart(2, '0')}`, type: 'frei' as const })),
+      ],
+    };
+    const m = yearOverview(st, p, 2026, combine('2026-10-05', '12:00')).overtime.months[8];
+    expect(m.summary.shortTime).toEqual({ fromAccount: 0, uncovered: 480, added: 60 });
+    expect(m.total).toBe(0);
+    expect(m.surcharge).toBe(0);
   });
 
   it('kein Zuschlag auf Überstunden, die für Kurzarbeit verbraucht wurden', () => {
@@ -42,7 +61,7 @@ describe('Überstundenzuschlag bei Kurzarbeit', () => {
   it('in Monaten mit Kurzarbeit entfällt der Zuschlag', () => {
     // 1.9. 06:00–24:00 = +10 h, Kurzarbeit nimmt 8 h → 2 h bleiben auf dem Konto, ohne Zuschlag
     const m = september(project, '24:00');
-    expect(m.summary.shortTime).toEqual({ fromAccount: 480, uncovered: 0 });
+    expect(m.summary.shortTime).toEqual({ fromAccount: 480, uncovered: 0, added: 0 });
     expect(m.surcharge).toBe(0);
     expect(m.total).toBe(120);
   });

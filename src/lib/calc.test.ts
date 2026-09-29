@@ -242,11 +242,11 @@ describe('Monat und fehlende Tage', () => {
     expect(sum.worked).toBe(555);
     // Urlaub (2.9.) schreibt das Tagessoll gut
     expect(sum.credit).toBe(480);
-    // Kurzarbeit (3.9.) nimmt nur die 1:15 Plusstunden vom 1.9., der Rest des Solls entfällt
-    expect(sum.shortTime).toEqual({ fromAccount: 75, uncovered: 405 });
-    // Soll: 1., 2., 4.9. voll + 1:15 am 3.9.; Überstundenausgleich (4.9.) geht vom Konto ab (auch ins Minus)
-    expect(sum.target).toBe(3 * 480 + 75);
-    expect(sum.balance).toBe(555 + 480 - 1515);
+    // Monat mit Kurzarbeit (3.9.): +1:15 vom 1.9. − 8 h Überstundenausgleich (4.9.) = −6:45 →
+    // die fehlenden Stunden kommen zur Kurzarbeit, das Konto steht bei 0
+    expect(sum.shortTime).toEqual({ fromAccount: 0, uncovered: 480, added: 405 });
+    expect(sum.target).toBe(555 + 480);
+    expect(sum.balance).toBe(0);
     expect(sum.absenceCounts).toEqual({ urlaub: 1, kurzarbeit: 1, ueberstunden: 1 });
   });
 
@@ -257,13 +257,13 @@ describe('Monat und fehlende Tage', () => {
     it('nimmt das Soll vom Stundenkonto, solange Plusstunden da sind', () => {
       const p = { ...project, overtimeAtStartHours: 20 };
       const sum = monthSummary(state({ projects: [p], absences: ka('2026-09-01', '2026-09-02') }), p, 2026, 8, combine('2026-09-02', '20:00'));
-      expect(sum.shortTime).toEqual({ fromAccount: 960, uncovered: 0 });
+      expect(sum.shortTime).toEqual({ fromAccount: 960, uncovered: 0, added: 0 });
       expect(sum.balance).toBe(-960);
     });
 
     it('ohne Plusstunden entstehen keine Minusstunden', () => {
       const sum = monthSummary(state({ absences: ka('2026-09-01', '2026-09-02') }), project, 2026, 8, combine('2026-09-02', '20:00'));
-      expect(sum.shortTime).toEqual({ fromAccount: 0, uncovered: 960 });
+      expect(sum.shortTime).toEqual({ fromAccount: 0, uncovered: 960, added: 0 });
       expect(sum.target).toBe(0);
       expect(sum.balance).toBe(0);
     });
@@ -271,7 +271,7 @@ describe('Monat und fehlende Tage', () => {
     it('teilweise gedeckt: nur bis das Konto leer ist', () => {
       const p = { ...project, overtimeAtStartHours: 10 };
       const sum = monthSummary(state({ projects: [p], absences: ka('2026-09-01', '2026-09-02') }), p, 2026, 8, combine('2026-09-02', '20:00'));
-      expect(sum.shortTime).toEqual({ fromAccount: 600, uncovered: 360 });
+      expect(sum.shortTime).toEqual({ fromAccount: 600, uncovered: 360, added: 0 });
       expect(sum.balance).toBe(-600);
     });
 
@@ -285,7 +285,7 @@ describe('Monat und fehlende Tage', () => {
       });
       const sum = monthSummary(st, p, 2026, 8, combine('2026-09-02', '20:00'));
       // 3 h der Kurzarbeit mit den Überstunden verrechnet, 5 h echte Kurzarbeit
-      expect(sum.shortTime).toEqual({ fromAccount: 180, uncovered: 300 });
+      expect(sum.shortTime).toEqual({ fromAccount: 180, uncovered: 300, added: 0 });
       expect(sum.days[0].target).toBe(180);
       // Stundenkonto bleibt bei 0
       expect(sum.balance).toBe(0);
@@ -303,7 +303,7 @@ describe('Monat und fehlende Tage', () => {
         absences: ka('2026-09-01'),
       });
       const sum = monthSummary(st, p, 2026, 8, combine('2026-09-02', '21:00'));
-      expect(sum.shortTime).toEqual({ fromAccount: 240, uncovered: 0 });
+      expect(sum.shortTime).toEqual({ fromAccount: 240, uncovered: 0, added: 0 });
       expect(sum.balance).toBe(120);
     });
 
@@ -313,8 +313,9 @@ describe('Monat und fehlende Tage', () => {
         sessions: [{ id: 'a', projectId: 'p', start: combine('2026-09-01', '08:00'), end: combine('2026-09-01', '18:00'), pauses: [] }],
         absences: [
           ...ka('2026-10-01'),
-          // restliche Septembertage frei, damit kein Minus entsteht
+          // restliche Tage bis zum 20.10. frei, damit kein Minus entsteht
           ...Array.from({ length: 29 }, (_, i) => ({ id: `f${i}`, projectId: 'p', date: `2026-09-${String(i + 2).padStart(2, '0')}`, type: 'frei' as const })),
+          ...Array.from({ length: 19 }, (_, i) => ({ id: `g${i}`, projectId: 'p', date: `2026-10-${String(i + 2).padStart(2, '0')}`, type: 'frei' as const })),
         ],
       });
       const oct = monthSummary(st, project, 2026, 9, later);
@@ -331,7 +332,7 @@ describe('Monat und fehlende Tage', () => {
       });
       const sum = monthSummary(st, p, 2026, 8, combine('2026-09-01', '20:00'));
       // 4 h gearbeitet, 4 h fehlen: 1 h vom Konto, 3 h ohne Soll
-      expect(sum.shortTime).toEqual({ fromAccount: 60, uncovered: 180 });
+      expect(sum.shortTime).toEqual({ fromAccount: 60, uncovered: 180, added: 0 });
       expect(sum.balance).toBe(-60);
     });
   });
