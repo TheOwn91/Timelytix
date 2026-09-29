@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.15.3",
+    "date": "29.09.2026",
+    "changes": [
+      "Die App rechnet deutlich schneller – vor allem bei laufender Zeit und vielen erfassten Monaten (spart Akku)",
+      "Updates sind rund 380 KB kleiner",
+      "Datensicherungen werden beim Einlesen genauer geprüft: Beschädigte Einträge werden übersprungen, statt die App abstürzen zu lassen"
+    ]
+  },
+  {
     "version": "0.15.2",
     "date": "29.09.2026",
     "changes": [
