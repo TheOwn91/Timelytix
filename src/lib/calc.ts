@@ -341,6 +341,11 @@ export interface MonthSummary {
   credit: number;
   target: number;
   balance: number;
+  /**
+   * Überstunden, auf die es Zuschlag gibt (Minuten). Mit Kurzarbeit nur, was nach dem Verrechnen am
+   * Monatsende noch auf dem Konto steht – steht es bei 0, gibt es keinen Zuschlag.
+   */
+  surchargeBase: number;
   /** Kurzarbeit: vom Stundenkonto genommen / ohne Soll, weil das Konto leer war (Minuten). */
   shortTime: { fromAccount: number; uncovered: number };
   workedDays: number;
@@ -410,6 +415,9 @@ export function monthSummary(
     credit,
     target,
     balance: worked + credit - target,
+    surchargeBase: days.some((d) => d.shortTimeFromAccount + d.shortTimeUncovered > 0)
+      ? Math.min(worked + credit - target, Math.max(0, account))
+      : worked + credit - target,
     shortTime: {
       fromAccount: days.reduce((a, d) => a + d.shortTimeFromAccount, 0),
       uncovered: days.reduce((a, d) => a + d.shortTimeUncovered, 0),
