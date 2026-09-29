@@ -7,7 +7,6 @@ import { newProject, useStore } from '../lib/store';
 import { fmtWorkdays } from '../lib/terms';
 import { fmtDate, fmtDuration, fmtMoney } from '../lib/time';
 import type { Project } from '../lib/types';
-import { autoUpdateEnabled, setAutoUpdateEnabled, updateSupported } from '../lib/update';
 import { InstallHelp } from './InstallCard';
 import { Modal } from './Modal';
 import { NumberField } from './NumberField';
@@ -33,11 +32,10 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
   const showInstall = !DEMO && !isStandalone();
   const [notify, setNotify] = useState(notifySupport);
   const showNotify = notify === 'ask' || notify === 'install';
-  const showAppStep = firstRun && (showInstall || showNotify || updateSupported());
+  const showAppStep = firstRun && (showInstall || showNotify);
   const steps: Step[] = ['employer', 'time', 'pay', 'start', ...(showAppStep ? (['app'] as Step[]) : []), 'summary'];
   const [i, setI] = useState(0);
   const step = steps[i];
-  const [auto, setAuto] = useState(autoUpdateEnabled);
 
   const finish = () => {
     const project = { ...p, name: p.name.trim() || 'Mein Arbeitgeber' };
@@ -259,23 +257,6 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
             </section>
           )}
           {notify === 'ok' && <p className="small">✔ Benachrichtigungen sind erlaubt.</p>}
-          {updateSupported() && (
-            <section className="wizard-section">
-              <p className="wizard-subhead">Updates</p>
-              <label className="checkbox toggle-row">
-                <input
-                  id="wizard-auto-update"
-                  type="checkbox"
-                  checked={auto}
-                  onChange={(e) => {
-                    setAutoUpdateEnabled(e.target.checked);
-                    setAuto(e.target.checked);
-                  }}
-                />
-                Updates automatisch installieren
-              </label>
-            </section>
-          )}
         </div>
       )}
 

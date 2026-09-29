@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
-import { APP_VERSION, IN_DEVELOPMENT, setUpdateNotesEnabled, updateNotesEnabled } from '../lib/changelog';
-import {
-  autoUpdateEnabled,
-  checkForUpdates,
-  getUpdateStatus,
-  onUpdateStatus,
-  openUpdatePreview,
-  setAutoUpdateEnabled,
-  updateSupported,
-  type UpdateStatus,
-} from '../lib/update';
+import { APP_VERSION, IN_DEVELOPMENT } from '../lib/changelog';
+import { checkForUpdates, getUpdateStatus, onUpdateStatus, openUpdatePreview, updateSupported, type UpdateStatus } from '../lib/update';
 
 function statusText(s: UpdateStatus): string | null {
   switch (s.state) {
@@ -30,10 +21,8 @@ function statusText(s: UpdateStatus): string | null {
   }
 }
 
-/** App-Version, Updates (automatisch / manuell) und „Was ist neu?“. */
+/** App-Version, Updates (immer von Hand) und „Was ist neu?“. */
 export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) {
-  const [notes, setNotes] = useState(updateNotesEnabled);
-  const [auto, setAuto] = useState(autoUpdateEnabled);
   const [status, setStatus] = useState(getUpdateStatus);
   useEffect(() => onUpdateStatus(setStatus), []);
   const supported = updateSupported();
@@ -48,23 +37,9 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
         {IN_DEVELOPMENT && ' · in Entwicklung'}
       </p>
 
-      <label className="checkbox toggle-row">
-        <input
-          id="auto-update"
-          type="checkbox"
-          checked={auto}
-          disabled={!supported}
-          onChange={(e) => {
-            setAutoUpdateEnabled(e.target.checked);
-            setAuto(e.target.checked);
-          }}
-        />
-        Updates automatisch installieren
-      </label>
       <p className="muted small">
-        {auto
-          ? 'Neue Versionen werden im Hintergrund geladen und beim nächsten Öffnen installiert.'
-          : 'Neue Versionen werden erst installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu ist.'}
+        Neue Versionen werden nur installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu
+        ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt.
       </p>
 
       <div className="update-actions">
@@ -83,18 +58,6 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
         </p>
       )}
 
-      <label className="checkbox toggle-row">
-        <input
-          id="update-notes"
-          type="checkbox"
-          checked={notes}
-          onChange={(e) => {
-            setUpdateNotesEnabled(e.target.checked);
-            setNotes(e.target.checked);
-          }}
-        />
-        Nach Updates anzeigen, was neu ist
-      </label>
       <button className="btn secondary full" onClick={onShowWhatsNew}>
         Was ist neu?
       </button>
