@@ -73,7 +73,7 @@ function computeYear(state: AppState, project: Project, year: number, now: numbe
     const balance = inactive ? 0 : summary.balance;
     const complete = lastDayOfMonth(year, m) < today;
     // Satz, der zum Monatsende gilt
-    const surcharge = inactive ? 0 : overtimeSurcharge(summary.endTerms, balance);
+    const surcharge = inactive ? 0 : overtimeSurcharge(summary.endTerms, summary.surchargeBase);
     total += balance + (complete ? surcharge : 0);
     balanceSum += balance;
     if (complete) surchargeSum += surcharge;

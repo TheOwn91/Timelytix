@@ -21,7 +21,7 @@ export function MonthExtras({ month, year, vacationRemaining, complete, account 
   const vacation = month.absenceCounts.urlaub ?? 0;
   // Satz, der zum Monatsende gilt
   const pct = month.endTerms.overtimeSurchargePercent ?? 0;
-  const surcharge = overtimeSurcharge(month.endTerms, month.balance);
+  const surcharge = overtimeSurcharge(month.endTerms, month.surchargeBase);
   const { fromAccount, uncovered } = month.shortTime;
   const shortTotal = fromAccount + uncovered;
   return (
