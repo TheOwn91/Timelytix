@@ -46,3 +46,18 @@ describe('Schlüssel Feiertag automatisch', () => {
     expect(sum.credit).toBe(480);
   });
 });
+
+describe('Heiligabend und Silvester', () => {
+  it('Urlaub am 24.12. und 31.12. zählt nur einen halben Tag', async () => {
+    const { yearOverview } = await import('./year');
+    const p = { ...project, vacationDaysPerYear: 30 };
+    const st = state(p, {
+      absences: ['2026-12-23', '2026-12-24', '2026-12-31'].map((date, i) => ({ id: `u${i}`, projectId: 'p', date, type: 'urlaub' as const })),
+    });
+    const y = yearOverview(st, p, 2026, now);
+    expect(y.vacation.taken).toBe(2);
+    expect(monthSummary(st, p, 2026, 11, now).absenceCounts.urlaub).toBe(2);
+    // Gutschrift bleibt der ganze Tag
+    expect(daySummary(p, '2026-12-24', buildIndex(st, 'p'), now).credit).toBe(480);
+  });
+});

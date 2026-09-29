@@ -1,4 +1,4 @@
-import { ABSENCE_TYPES } from './absences';
+import { ABSENCE_TYPES, vacationDayValue } from './absences';
 import { holidayName } from './holidays';
 import { sessionDay } from './shift';
 import { projectAt } from './terms';
@@ -429,7 +429,9 @@ export function monthSummary(
   const target = days.reduce((a, d) => a + d.target, 0) - added;
   const absenceCounts: Partial<Record<AbsenceType, number>> = {};
   for (const d of days)
-    if (d.absence) absenceCounts[d.absence.type] = (absenceCounts[d.absence.type] ?? 0) + 1;
+    // Urlaub in Tagen (24.12. und 31.12. je ½ Tag), sonst Anzahl der Tage
+    if (d.absence)
+      absenceCounts[d.absence.type] = (absenceCounts[d.absence.type] ?? 0) + (d.absence.type === 'urlaub' ? vacationDayValue(d.date) : 1);
   const endTerms = projectAt(project, days[days.length - 1].date);
   const surcharges = endTerms.surcharges
     .filter((r) => r.enabled)
