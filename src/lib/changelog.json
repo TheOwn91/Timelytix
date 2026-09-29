@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.15.0",
+    "date": "29.09.2026",
+    "changes": [
+      "Kurzarbeit: Überstunden werden von der Kurzarbeit abgezogen – auch solche, die erst später im selben Monat entstehen",
+      "Das Stundenkonto geht dabei höchstens bis 0, nie ins Minus",
+      "Monatsansicht und PDF zeigen Kurzarbeit, die verrechneten Überstunden, die verbleibende Kurzarbeit und das Stundenkonto danach"
+    ]
+  },
+  {
     "version": "0.14.4",
     "date": "29.09.2026",
     "changes": [

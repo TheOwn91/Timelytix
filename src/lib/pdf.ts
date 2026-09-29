@@ -115,14 +115,16 @@ export function buildMonthReport(state: AppState, project: Project, year: number
     ['Saldo (Über-/Minusstunden)', `${fmtDuration(sum.balance, true)} h`, `${fmtHoursDecimal(sum.balance)} h`],
   ];
   const { fromAccount, uncovered } = sum.shortTime;
-  if (fromAccount + uncovered > 0) {
-    const taken = fromAccount ? -fromAccount : 0; // kein „-0“
-    summaryRows.push(['Kurzarbeit vom Stundenkonto', `${fmtDuration(taken)} h`, `${fmtHoursDecimal(taken)} h`]);
-    if (uncovered > 0)
-      summaryRows.push(['Kurzarbeit ohne Soll (Konto leer)', `${fmtDuration(uncovered)} h`, `${fmtHoursDecimal(uncovered)} h`]);
-  }
   const overview = yearOverview(state, project, year, now);
   const account = overview.overtime.months[month0];
+  if (fromAccount + uncovered > 0) {
+    const total = fromAccount + uncovered;
+    summaryRows.push(['Kurzarbeit', `${fmtDuration(total)} h`, `${fmtHoursDecimal(total)} h`]);
+    if (fromAccount > 0)
+      summaryRows.push(['− mit Überstunden verrechnet', `${fmtDuration(-fromAccount)} h`, `${fmtHoursDecimal(-fromAccount)} h`]);
+    summaryRows.push(['= verbleibende Kurzarbeit', `${fmtDuration(uncovered)} h`, `${fmtHoursDecimal(uncovered)} h`]);
+    summaryRows.push(['Stundenkonto danach', `${fmtDuration(account?.total ?? 0, true)} h`, `${fmtHoursDecimal(account?.total ?? 0)} h`]);
+  }
   const pct = sum.endTerms.overtimeSurchargePercent ?? 0;
   if (pct > 0) {
     summaryRows.push([

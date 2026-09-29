@@ -222,8 +222,8 @@ export function buildIndex(state: AppState, projectId: string): Index {
 }
 
 /**
- * `account`: Stand des Stundenkontos vor diesem Tag (Minuten). Wird nur für Kurzarbeit gebraucht –
- * sie nimmt höchstens so viel vom Konto, wie es an Plusstunden hat.
+ * `account`: Plusstunden, mit denen die Kurzarbeit dieses Tages verrechnet wird (Minuten, siehe
+ * monthSummary) – sie nimmt höchstens so viel vom Konto, wie es an Plusstunden hat.
  */
 export function daySummary(base: Project, date: DateKey, index: Index, now: number, account = 0): DaySummary {
   // Stundenlohn, Soll, Arbeitstage und Zuschläge so, wie sie an diesem Tag galten
@@ -371,10 +371,24 @@ export function monthSummary(
   );
   // Kontostand Tag für Tag mitführen, damit Kurzarbeit nie ins Minus führt
   let account = accountAtStart ?? (hasShortTime ? accountBeforeMonth(state, project, year, month0, now) : 0);
-  const days = daysOfMonth(year, month0).map((d) => {
+  const dates = daysOfMonth(year, month0);
+  const days: DaySummary[] = [];
+  // Kurzarbeitstage, deren Stunden noch nicht mit Überstunden verrechnet sind
+  const open: number[] = [];
+  dates.forEach((d, i) => {
     const day = daySummary(project, d, index, now, account);
+    days.push(day);
     account += day.worked + day.credit - day.target;
-    return day;
+    if (day.shortTimeUncovered > 0) open.push(i);
+    // Später im Monat entstandene Überstunden werden mit der Kurzarbeit davor verrechnet
+    while (account > 0 && open.length) {
+      const j = open[0];
+      const prev = days[j];
+      const take = Math.min(account, prev.shortTimeUncovered);
+      days[j] = daySummary(project, dates[j], index, now, prev.shortTimeFromAccount + take);
+      account -= take;
+      if (days[j].shortTimeUncovered <= 0) open.shift();
+    }
   });
   const worked = days.reduce((a, d) => a + d.worked, 0);
   const credit = days.reduce((a, d) => a + d.credit, 0);

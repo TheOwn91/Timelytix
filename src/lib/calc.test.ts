@@ -275,6 +275,38 @@ describe('Monat und fehlende Tage', () => {
       expect(sum.balance).toBe(-600);
     });
 
+    it('verrechnet auch Überstunden, die erst nach dem Kurzarbeitstag entstehen', () => {
+      const p = { ...project, autoBreak: false };
+      const st = state({
+        projects: [p],
+        // 1.9. Kurzarbeit, 2.9. 11 h gearbeitet → +3 h
+        sessions: [{ id: 'a', projectId: 'p', start: combine('2026-09-02', '07:00'), end: combine('2026-09-02', '18:00'), pauses: [] }],
+        absences: ka('2026-09-01'),
+      });
+      const sum = monthSummary(st, p, 2026, 8, combine('2026-09-02', '20:00'));
+      // 3 h der Kurzarbeit mit den Überstunden verrechnet, 5 h echte Kurzarbeit
+      expect(sum.shortTime).toEqual({ fromAccount: 180, uncovered: 300 });
+      expect(sum.days[0].target).toBe(180);
+      // Stundenkonto bleibt bei 0
+      expect(sum.balance).toBe(0);
+    });
+
+    it('mehr Überstunden als Kurzarbeit: nur die Kurzarbeit wird verrechnet', () => {
+      const p = { ...project, autoBreak: false };
+      const st = state({
+        projects: [p],
+        // 1.9. 4 h gearbeitet trotz Kurzarbeit (4 h fehlen), 2.9. 14 h → +6 h
+        sessions: [
+          { id: 'a', projectId: 'p', start: combine('2026-09-01', '08:00'), end: combine('2026-09-01', '12:00'), pauses: [] },
+          { id: 'b', projectId: 'p', start: combine('2026-09-02', '06:00'), end: combine('2026-09-02', '20:00'), pauses: [] },
+        ],
+        absences: ka('2026-09-01'),
+      });
+      const sum = monthSummary(st, p, 2026, 8, combine('2026-09-02', '21:00'));
+      expect(sum.shortTime).toEqual({ fromAccount: 240, uncovered: 0 });
+      expect(sum.balance).toBe(120);
+    });
+
     it('nutzt Überstunden aus dem Vormonat', () => {
       const st = state({
         // 1.9.: 10 h − 45 min Pause = 9:15 → +1:15

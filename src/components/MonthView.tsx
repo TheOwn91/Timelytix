@@ -32,6 +32,7 @@ export function MonthView() {
   if (!project) return <div className="page"><p className="card muted">Bitte zuerst einen Arbeitgeber anlegen.</p></div>;
 
   const sum = monthSummary(state, project, ym.y, ym.m, now);
+  const year = yearOverview(state, project, ym.y, now);
   const today = dateKey(now);
   const shift = (delta: number) =>
     setYm(({ y, m }) => {
@@ -75,7 +76,8 @@ export function MonthView() {
         <MonthExtras
           month={sum}
           year={ym.y}
-          vacationRemaining={yearOverview(state, project, ym.y, now).vacation.remaining}
+          vacationRemaining={year.vacation.remaining}
+          account={year.overtime.months[ym.m]?.total ?? (project.overtimeAtStartHours ?? 0) * 60}
           complete={dateKey(new Date(ym.y, ym.m + 1, 0)) < today}
         />
         <div className="chips summary-chips">
