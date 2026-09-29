@@ -41,6 +41,14 @@ Repository und nicht in den Changelog.
   eine Installation im Hintergrund ab (sonst aktiviert der Browser sie beim Schließen der App). Nur
   „Jetzt installieren“ gibt sie kurz frei. Beim Test: App ganz schließen, neu öffnen, alte Version muss bleiben.
 
+## Berechnung / Daten
+
+- Den Zustand (`AppState`) nie direkt verändern, nur über `update()`/`replace()` im Store (legt eine Kopie an).
+  `buildIndex` (calc.ts) und `yearOverview` (year.ts) speichern Ergebnisse je Zustand zwischen.
+- Gespeicherte Daten und Datensicherungen laufen durch `validateState` (validate.ts); neue Felder dort ergänzen.
+- Zulagen werden abschnittsweise berechnet (`surchargeMinutes`); `surcharge.test.ts` vergleicht mit der
+  Minute-für-Minute-Rechnung.
+
 ## Versionen / „Was ist neu?“
 
 **Neue Versionsnummer erst direkt vor dem Erstellen eines PR** – nicht bei jeder einzelnen Änderung.

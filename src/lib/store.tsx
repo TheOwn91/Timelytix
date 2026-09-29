@@ -3,6 +3,9 @@ import { materializeAutoBreaks } from './autobreak';
 import { DEMO, demoState } from './demo';
 import { dateKey, fmtHours, uid } from './time';
 import type { AppState, Project, SurchargeRule } from './types';
+import { validateState } from './validate';
+
+export { validateState };
 
 const STORAGE_KEY = DEMO ? 'timetrack.demo.v3' : 'timetrack.v1';
 
@@ -49,21 +52,6 @@ export function loadState(): AppState {
   }
   materializeAutoBreaks(state);
   return state;
-}
-
-export function validateState(data: unknown): AppState {
-  const d = data as Partial<AppState>;
-  if (!d || typeof d !== 'object' || !Array.isArray(d.projects) || !Array.isArray(d.sessions)) {
-    throw new Error('Ungültige Datei');
-  }
-  return {
-    version: 1,
-    projects: d.projects,
-    sessions: d.sessions,
-    absences: Array.isArray(d.absences) ? d.absences : [],
-    selectedProjectId: d.selectedProjectId,
-    settings: d.settings && typeof d.settings === 'object' ? d.settings : undefined,
-  };
 }
 
 type Updater = (draft: AppState) => void;
