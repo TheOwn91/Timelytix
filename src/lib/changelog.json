@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.15.1",
+    "date": "29.09.2026",
+    "changes": [
+      "Kurzarbeit: In Monaten mit Kurzarbeit gibt es keinen Überstundenzuschlag mehr",
+      "Das Plus eines Monats geht immer zuerst von der Kurzarbeit ab – auch wenn das Stundenkonto aus dem Vormonat im Minus steht"
+    ]
+  },
+  {
     "version": "0.15.0",
     "date": "29.09.2026",
     "changes": [
