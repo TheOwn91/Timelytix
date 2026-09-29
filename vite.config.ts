@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -131,10 +132,16 @@ self.addEventListener('notificationclick', (event) => {
 
 const define = { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) };
 
+// jsPDF lädt diese Bibliotheken nur für .html() bzw. SVG-Bilder – beides nutzt die App nicht (~380 KB)
+const resolve = {
+  alias: Object.fromEntries(['html2canvas', 'dompurify', 'canvg'].map((m) => [m, fileURLToPath(new URL('./src/lib/unused.ts', import.meta.url))])),
+};
+
 export default defineConfig(({ mode }) =>
   mode === 'demo'
     ? {
         define,
+        resolve,
         // Demo: alles in einer Datei, ohne Service Worker (für eingebettete Vorschau)
         base: './',
         plugins: [react()],
@@ -142,6 +149,7 @@ export default defineConfig(({ mode }) =>
       }
     : {
         define,
+        resolve,
         base: './',
         plugins: [react(), serviceWorker()],
       },

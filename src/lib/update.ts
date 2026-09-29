@@ -285,6 +285,7 @@ export function registerServiceWorker() {
     } catch {
       return;
     }
+    if (!reg) return; // z. B. Service Worker im Browser gesperrt
     const watch = (worker: ServiceWorker | null) => {
       if (!worker) return;
       worker.addEventListener('statechange', () => {

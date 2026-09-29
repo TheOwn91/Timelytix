@@ -132,10 +132,34 @@ export function yearOverview(state: AppState, project: Project, year: number, no
   let vacation = 0;
   let overtime = (project.overtimeAtStartHours ?? 0) * 60;
   let result: YearOverview | undefined;
+  const cache = yearCache(state, project);
+  // Vergangene Jahre hängen nur vom heutigen Tag ab, das laufende Jahr (und ein Jahr, in dem eine noch
+  // laufende Zeit begonnen hat) von `now`
+  const runningSince = state.sessions
+    .filter((s) => s.projectId === project.id && s.end === undefined)
+    .reduce((min, s) => Math.min(min, new Date(s.start).getFullYear()), Infinity);
+  const today = dateKey(now);
   for (let y = startYear; y <= year; y++) {
-    result = computeYear(state, project, y, now, vacation, overtime, y === startYear);
+    const past = y < runningSince && `${y}-12-31` < today;
+    const key = `${y}|${past ? today : now}|${vacation}|${overtime}`;
+    result = cache.get(key) ?? computeYear(state, project, y, now, vacation, overtime, y === startYear);
+    cache.set(key, result);
     vacation = result.vacation.remaining;
     overtime = result.overtime.total;
   }
   return result!;
+}
+
+// Der Zustand wird bei jeder Änderung neu angelegt (store.tsx) → Ergebnisse je Zustand wiederverwenden.
+// Die Startseite braucht das Jahr mehrmals pro Anzeige und rechnet bei laufender Zeit jede Sekunde neu.
+const cacheByState = new WeakMap<AppState, WeakMap<Project, Map<string, YearOverview>>>();
+
+function yearCache(state: AppState, project: Project): Map<string, YearOverview> {
+  let perState = cacheByState.get(state);
+  if (!perState) cacheByState.set(state, (perState = new WeakMap()));
+  let perProject = perState.get(project);
+  if (!perProject) perState.set(project, (perProject = new Map()));
+  // Nur wenige Einträge behalten (bei laufender Zeit kommt jede Sekunde einer dazu)
+  if (perProject.size > 50) perProject.clear();
+  return perProject;
 }

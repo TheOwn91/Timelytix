@@ -140,10 +140,21 @@ export function surchargeMinutes(
   const result: Record<string, number> = {};
   for (const r of active) result[r.id] = 0;
   if (!active.length) return result;
+  // Grenzen, an denen sich eine Zeit-Regel ändern kann (Minuten seit Mitternacht)
+  const marks = [...new Set(active.flatMap((r) => (r.kind === 'time' && r.from && r.to ? [parseHM(r.from), parseHM(r.to)] : [])))];
   for (const [start, end] of intervals) {
     let cur = start;
+    // Abschnittsweise statt Minute für Minute: Innerhalb einer Stunde der Ortszeit ändert sich nur
+    // etwas an den Minuten der Regeln; Wochentag und Feiertag wechseln nur zur vollen Stunde (Mitternacht).
     while (cur < end) {
-      const next = Math.min(end, Math.floor(cur / MINUTE) * MINUTE + MINUTE);
+      const d = new Date(cur);
+      const hourStart = cur - (d.getMinutes() * MINUTE + d.getSeconds() * 1000 + d.getMilliseconds());
+      const hour = d.getHours() * 60;
+      let next = Math.min(end, hourStart + 60 * MINUTE);
+      for (const m of marks) {
+        const at = hourStart + (m - hour) * MINUTE;
+        if (m >= hour && m < hour + 60 && at > cur && at < next) next = at;
+      }
       const dur = (next - cur) / MINUTE;
       const matching = active.filter((r) => ruleMatches(r, cur, state));
       if (mode === 'stack') {
@@ -204,7 +215,21 @@ export interface Index {
   absenceByDay: Map<string, Absence>;
 }
 
+// Der Zustand wird nie verändert, sondern bei jeder Änderung neu angelegt (store.tsx) – so kann der
+// Index je Zustand und Arbeitgeber wiederverwendet werden (Jahresübersicht rechnet viele Monate).
+const indexCache = new WeakMap<AppState, Map<string, Index>>();
+
 export function buildIndex(state: AppState, projectId: string): Index {
+  let perState = indexCache.get(state);
+  if (!perState) indexCache.set(state, (perState = new Map()));
+  const cached = perState.get(projectId);
+  if (cached) return cached;
+  const index = createIndex(state, projectId);
+  perState.set(projectId, index);
+  return index;
+}
+
+function createIndex(state: AppState, projectId: string): Index {
   const sessionsByDay = new Map<string, Session[]>();
   const project = state.projects.find((p) => p.id === projectId);
   for (const s of state.sessions) {
