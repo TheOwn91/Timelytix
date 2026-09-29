@@ -1,3 +1,4 @@
+import { vacationDayValue } from './absences';
 import { monthSummary, type MonthSummary } from './calc';
 import { dateKey } from './time';
 import type { AppState, Project } from './types';
@@ -85,8 +86,9 @@ function computeYear(state: AppState, project: Project, year: number, now: numbe
   let planned = 0;
   for (const a of state.absences) {
     if (a.projectId !== project.id || a.type !== 'urlaub' || !a.date.startsWith(`${year}-`)) continue;
-    if (a.date <= today) taken++;
-    else planned++;
+    // 24.12. und 31.12. zählen nur als halber Urlaubstag
+    if (a.date <= today) taken += vacationDayValue(a.date);
+    else planned += vacationDayValue(a.date);
   }
   const entitlement = firstYear ? (project.vacationAtStart ?? vacationPerYear(project)) : vacationPerYear(project);
   const carryIn = firstYear ? 0 : carryVacation;

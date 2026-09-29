@@ -143,7 +143,7 @@ export function buildMonthReport(state: AppState, project: Project, year: number
   ]);
   summaryRows.push([`Resturlaub ${year}`, `${overview.vacation.remaining.toLocaleString('de-DE')} Tag(e)`, '']);
   for (const [type, count] of Object.entries(sum.absenceCounts)) {
-    summaryRows.push([ABSENCE_TYPES[type as keyof typeof ABSENCE_TYPES].label, `${count} Tag(e)`, '']);
+    summaryRows.push([ABSENCE_TYPES[type as keyof typeof ABSENCE_TYPES].label, `${count.toLocaleString('de-DE')} Tag(e)`, '']);
   }
   if (hasRate) summaryRows.push(['Grundlohn', fmtMoney(sum.baseWage), '']);
 

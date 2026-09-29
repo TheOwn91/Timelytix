@@ -1,4 +1,4 @@
-import { ABSENCE_TYPES } from './absences';
+import { ABSENCE_TYPES, vacationDayValue } from './absences';
 import { holidayName } from './holidays';
 import { sessionDay } from './shift';
 import { projectAt } from './terms';
@@ -255,10 +255,16 @@ export function daySummary(base: Project, date: DateKey, index: Index, now: numb
   const project = projectAt(base, date);
   const today = dateKey(now);
   const sessions = index.sessionsByDay.get(date) ?? [];
-  const absence = index.absenceByDay.get(date);
   const holiday = holidayName(date, project.state);
   const weekday = new Date(`${date}T12:00:00`).getDay();
   const isWorkday = project.workdays.includes(weekday as never);
+  // Gesetzlicher Feiertag an einem Arbeitstag ohne Buchung: Schlüssel „Feiertag“ automatisch
+  // (bezahlt, zählt mit dem Tagessoll) – außer der Schlüssel ist in den Einstellungen ausgeblendet
+  const autoHoliday =
+    !!holiday && isWorkday && sessions.length === 0 && date >= project.startDate && !project.hiddenAbsences?.includes('feiertag');
+  const absence: Absence | undefined =
+    index.absenceByDay.get(date) ??
+    (autoHoliday ? { id: `auto-feiertag-${date}`, projectId: base.id, date, type: 'feiertag', auto: true } : undefined);
 
   let intervals: Interval[] = [];
   for (const s of sessions) intervals.push(...workIntervals(s, now));
@@ -295,7 +301,8 @@ export function daySummary(base: Project, date: DateKey, index: Index, now: numb
   const autoBreak = autoBreaks.reduce((n, b) => n + b.minutes, 0);
   const worked = sumMinutes(intervals);
 
-  let target = isWorkday && !holiday ? project.dailyTargetHours * 60 : 0;
+  // Feiertage haben kein Soll – außer mit Schlüssel „Feiertag“, der das Tagessoll gutschreibt
+  let target = isWorkday && (!holiday || absence?.type === 'feiertag') ? project.dailyTargetHours * 60 : 0;
   let credit = 0;
   if (absence) {
     const mode = ABSENCE_TYPES[absence.type].mode;
@@ -422,7 +429,9 @@ export function monthSummary(
   const target = days.reduce((a, d) => a + d.target, 0) - added;
   const absenceCounts: Partial<Record<AbsenceType, number>> = {};
   for (const d of days)
-    if (d.absence) absenceCounts[d.absence.type] = (absenceCounts[d.absence.type] ?? 0) + 1;
+    // Urlaub in Tagen (24.12. und 31.12. je ½ Tag), sonst Anzahl der Tage
+    if (d.absence)
+      absenceCounts[d.absence.type] = (absenceCounts[d.absence.type] ?? 0) + (d.absence.type === 'urlaub' ? vacationDayValue(d.date) : 1);
   const endTerms = projectAt(project, days[days.length - 1].date);
   const surcharges = endTerms.surcharges
     .filter((r) => r.enabled)

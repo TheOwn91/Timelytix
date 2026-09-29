@@ -88,7 +88,7 @@ export function MonthView() {
               className="chip static"
               style={{ '--chip': ABSENCE_TYPES[t as keyof typeof ABSENCE_TYPES].color } as React.CSSProperties}
             >
-              {n}× {ABSENCE_TYPES[t as keyof typeof ABSENCE_TYPES].label}
+              {n.toLocaleString('de-DE')}× {ABSENCE_TYPES[t as keyof typeof ABSENCE_TYPES].label}
             </span>
           ))}
         </div>

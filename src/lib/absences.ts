@@ -1,4 +1,4 @@
-import type { AbsenceType, Project } from './types';
+import type { AbsenceType, DateKey, Project } from './types';
 
 /**
  * credit       – Tag zählt mit Sollstunden als gearbeitet (Urlaub, Krank, Feiertag)
@@ -31,6 +31,11 @@ export const ABSENCE_ORDER: AbsenceType[] = [
   'frei',
   'sonstiges',
 ];
+
+/** Heiligabend und Silvester kosten nur einen halben Urlaubstag. */
+export function vacationDayValue(date: DateKey): number {
+  return date.endsWith('-12-24') || date.endsWith('-12-31') ? 0.5 : 1;
+}
 
 /**
  * Schlüssel zur Auswahl, ohne die in den Einstellungen ausgeblendeten. `keep` bleibt immer sichtbar

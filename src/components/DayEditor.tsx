@@ -238,13 +238,23 @@ export function DayEditor({ project, date, onClose }: Props) {
                 key={t}
                 className={`chip ${day.absence?.type === t ? 'active' : ''}`}
                 style={{ '--chip': ABSENCE_TYPES[t].color } as React.CSSProperties}
-                onClick={() => setAbsence(day.absence?.type === t ? null : t)}
+                onClick={() => {
+                  // Automatischer Feiertag ist nicht gespeichert – ein anderer Schlüssel ersetzt ihn
+                  if (day.absence?.auto && t === day.absence.type) return;
+                  setAbsence(day.absence?.type === t ? null : t);
+                }}
               >
                 {ABSENCE_TYPES[t].label}
               </button>
             ))}
           </div>
-          {day.absence && (
+          {day.absence?.auto && (
+            <p className="muted small">
+              Automatisch eingetragen (gesetzlicher Feiertag, zählt mit dem Tagessoll). Ein anderer Schlüssel ersetzt ihn;
+              ganz abschalten unter Einstellungen → Schlüssel.
+            </p>
+          )}
+          {day.absence && !day.absence.auto && (
             <input
               className="note"
               placeholder="Bemerkung (optional)"
