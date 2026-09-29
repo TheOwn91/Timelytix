@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.17.0",
+    "date": "29.09.2026",
+    "changes": [
+      "Gesetzliche Feiertage an Arbeitstagen ohne Buchung bekommen automatisch den Schlüssel „Feiertag“ – er zählt mit dem Tagessoll (bezahlt), der Saldo bleibt gleich",
+      "Wer am Feiertag arbeitet oder einen anderen Schlüssel wählt, behält das wie bisher; abschalten unter Einstellungen → Schlüssel",
+      "Urlaub am 24.12. und 31.12. zählt nur als halber Urlaubstag"
+    ]
+  },
+  {
     "version": "0.16.0",
     "date": "29.09.2026",
     "changes": [
