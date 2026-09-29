@@ -125,6 +125,12 @@ export function validateState(data: unknown): AppState {
     sessions: keep(data.sessions, session),
     absences: keep(data.absences, absence),
     selectedProjectId: typeof data.selectedProjectId === 'string' ? data.selectedProjectId : undefined,
-    settings: isObj(data.settings) ? { decimalHours: data.settings.decimalHours === true } : undefined,
+    settings: isObj(data.settings)
+      ? {
+          decimalHours: data.settings.decimalHours === true,
+          autoBackup: typeof data.settings.autoBackup === 'boolean' ? data.settings.autoBackup : undefined,
+          backupIntervalDays: optNum(data.settings.backupIntervalDays),
+        }
+      : undefined,
   };
 }

@@ -1,17 +1,15 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ABSENCE_ORDER, ABSENCE_TYPES } from '../lib/absences';
 import { DEFAULT_AUTO_BREAK_MINUTES } from '../lib/calc';
 import { ask } from '../lib/confirm';
-import { notify } from '../lib/demo';
-import { shareOrDownload } from '../lib/device';
 import { STATES } from '../lib/holidays';
-import { PROJECT_COLORS, useStore, validateState } from '../lib/store';
+import { PROJECT_COLORS, useStore } from '../lib/store';
 import { setShiftToNextDay, shiftWeekdays } from '../lib/shift';
 import { addRulePercent, fmtWorkdays } from '../lib/terms';
-import { dateKey, uid } from '../lib/time';
+import { uid } from '../lib/time';
 import type { Project, SurchargeKind, SurchargeRule } from '../lib/types';
 import { vacationPerYear } from '../lib/year';
-import { DeleteAllData } from './DeleteAllData';
+import { BackupCard } from './BackupCard';
 import { DisplayCard } from './DisplayCard';
 import { InstallCard } from './InstallCard';
 import { NotifyCard } from './NotifyCard';
@@ -289,26 +287,10 @@ function ProjectForm({ project }: { project: Project }) {
 }
 
 export function Projects({ onShowWhatsNew, onNewEmployer }: { onShowWhatsNew: () => void; onNewEmployer: (name: string) => void }) {
-  const { state, replace } = useStore();
+  const { state } = useStore();
   // Arbeitgeber sind anfangs eingeklappt – Antippen öffnet die Einstellungen
   const [openId, setOpenId] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const exportBackup = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    void shareOrDownload(blob, `timelytix-backup-${dateKey(new Date())}.json`);
-  };
-
-  const importBackup = async (file: File) => {
-    try {
-      const data = validateState(JSON.parse(await file.text()));
-      if (!(await ask('Alle aktuellen Daten durch die Sicherung ersetzen?', { confirmLabel: 'Ersetzen', danger: true }))) return;
-      replace(data);
-    } catch (e) {
-      notify(`Import fehlgeschlagen: ${(e as Error).message}`);
-    }
-  };
 
   return (
     <div className="page">
@@ -354,32 +336,7 @@ export function Projects({ onShowWhatsNew, onNewEmployer }: { onShowWhatsNew: ()
 
       <VersionCard onShowWhatsNew={onShowWhatsNew} />
 
-      <section className="card">
-        <h2>Datensicherung</h2>
-        <p className="muted small">
-          Alle Daten werden nur lokal auf diesem Gerät gespeichert – nichts wird hochgeladen. Erstelle regelmäßig eine Sicherung (z. B. in Dateien/Drive oder per Mail), damit bei Handywechsel oder Löschen der App nichts verloren geht.
-        </p>
-        <div className="row">
-          <button className="btn secondary grow" onClick={exportBackup}>
-            Sicherung exportieren
-          </button>
-          <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>
-            Sicherung importieren
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/json,.json"
-            hidden
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) void importBackup(f);
-              e.target.value = '';
-            }}
-          />
-        </div>
-        <DeleteAllData onExportBackup={exportBackup} />
-      </section>
+      <BackupCard />
     </div>
   );
 }

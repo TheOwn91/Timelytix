@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Home } from './components/Home';
 import { MonthView } from './components/MonthView';
 import { Projects } from './components/Projects';
@@ -8,6 +8,7 @@ import { YearView } from './components/YearView';
 import { CHANGELOG, markVersionSeen, pendingReleaseNotes, type Release } from './lib/changelog';
 import { ConfirmHost } from './components/ConfirmHost';
 import { UpdatePreview } from './components/UpdatePreview';
+import { runAutoBackup } from './lib/backup';
 import { DEMO, demoState } from './lib/demo';
 import { syncRunningStatus } from './lib/status';
 import { useStore } from './lib/store';
@@ -49,6 +50,20 @@ export function App() {
   }, [state.projects.length]);
   const [update, setUpdate] = useState(getUpdateStatus);
   useEffect(() => onUpdateStatus(setUpdate), []);
+
+  // Automatische Sicherung: beim Start und beim Zurückholen der App, wenn fällig
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  useEffect(() => {
+    const check = () => document.visibilityState === 'visible' && runAutoBackup(stateRef.current);
+    // Kurz warten, damit die App zuerst fertig startet
+    const t = setTimeout(check, 3000);
+    document.addEventListener('visibilitychange', check);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('visibilitychange', check);
+    };
+  }, []);
 
   // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {

@@ -11,7 +11,7 @@ import './styles.css';
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
 registerServiceWorker();
-requestPersistentStorage();
+void requestPersistentStorage();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

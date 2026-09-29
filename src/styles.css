@@ -990,6 +990,13 @@ html {
   color: var(--muted);
   font-size: 0.85rem;
 }
+/* Zeile mit Auswahlfeld statt Zahl (z. B. Abstand der Sicherung) */
+.field-list label.select-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.field-list label.select-row select {
+  min-width: 9.5rem;
+}
 .release-list {
   display: flex;
   flex-direction: column;
