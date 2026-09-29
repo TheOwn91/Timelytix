@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildIndex, daySummary, monthSummary } from './calc';
+import { buildIndex, dayRemarks, daySummary, monthSummary } from './calc';
 import { combine } from './time';
 import type { AppState, Project } from './types';
 
@@ -59,5 +59,21 @@ describe('Heiligabend und Silvester', () => {
     expect(monthSummary(st, p, 2026, 11, now).absenceCounts.urlaub).toBe(2);
     // Gutschrift bleibt der ganze Tag
     expect(daySummary(p, '2026-12-24', buildIndex(st, 'p'), now).credit).toBe(480);
+  });
+
+  it('Bemerkung „½ Tag Urlaub“ nur bei Urlaub am 24.12./31.12., dazu eigene Bemerkungen', () => {
+    const idx = buildIndex(
+      state(project, {
+        absences: [
+          { id: 'a', projectId: 'p', date: '2026-12-24', type: 'urlaub', note: 'Familie' },
+          { id: 'b', projectId: 'p', date: '2026-12-23', type: 'urlaub' },
+          { id: 'c', projectId: 'p', date: '2026-12-31', type: 'krank' },
+        ],
+      }),
+      'p',
+    );
+    expect(dayRemarks(daySummary(project, '2026-12-24', idx, now))).toEqual(['½ Tag Urlaub', 'Familie']);
+    expect(dayRemarks(daySummary(project, '2026-12-23', idx, now))).toEqual([]);
+    expect(dayRemarks(daySummary(project, '2026-12-31', idx, now))).toEqual([]);
   });
 });

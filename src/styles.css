@@ -543,6 +543,13 @@ h3 {
 .tag.missing {
   color: var(--danger);
 }
+/* Bemerkungen im Monatskalender (lange Texte brechen um) */
+.day-note {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: normal;
+  overflow-wrap: anywhere;
+}
 
 /* Modal */
 .modal-backdrop {

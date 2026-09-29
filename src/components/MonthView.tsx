@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ABSENCE_TYPES } from '../lib/absences';
-import { monthSummary } from '../lib/calc';
+import { dayRemarks, monthSummary } from '../lib/calc';
 import { notify } from '../lib/demo';
 import { useHours, useNow, useStore } from '../lib/store';
 import { MONTHS, WEEKDAYS_SHORT, dateKey, fmtDuration, fmtTime, parseDateKey } from '../lib/time';
@@ -140,6 +140,11 @@ export function MonthView() {
                   </span>
                 )}
                 {d.untracked && <span className="tag missing">nicht erfasst</span>}
+                {dayRemarks(d).map((r, i) => (
+                  <span key={i} className="day-note">
+                    {r}
+                  </span>
+                ))}
               </span>
               <span className="day-hours">
                 {d.sessions.length > 0 ? (
