@@ -73,6 +73,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
   const stats = raw && { net: raw.net - autoInActive, pause: raw.pause + autoInActive };
   const d = new Date(now);
   const month = monthSummary(state, project, d.getFullYear(), d.getMonth(), now);
+  const yearNow = yearOverview(state, project, d.getFullYear(), now);
   const missing = untrackedDays(state, project, now);
 
   const start = () => {
@@ -197,8 +198,9 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
         <MonthExtras
           month={month}
           year={d.getFullYear()}
-          vacationRemaining={yearOverview(state, project, d.getFullYear(), now).vacation.remaining}
+          vacationRemaining={yearNow.vacation.remaining}
           complete={false}
+          account={yearNow.overtime.months[d.getMonth()].total}
         />
         {month.credit > 0 && (
           <p className="muted small">Davon {hours(month.credit)} h Gutschrift (Urlaub, Krank …)</p>

@@ -11,15 +11,19 @@ interface Props {
   vacationRemaining: number;
   /** Monat ist abgeschlossen → Zuschlag gutgeschrieben. */
   complete: boolean;
+  /** Stundenkonto nach diesem Monat (Minuten, inkl. Übertrag). */
+  account: number;
 }
 
 /** Urlaubstage des Monats und Überstunden-Zuschlag unter den Monatsstunden. */
-export function MonthExtras({ month, year, vacationRemaining, complete }: Props) {
+export function MonthExtras({ month, year, vacationRemaining, complete, account }: Props) {
   const hours = useHours();
   const vacation = month.absenceCounts.urlaub ?? 0;
   // Satz, der zum Monatsende gilt
   const pct = month.endTerms.overtimeSurchargePercent ?? 0;
   const surcharge = overtimeSurcharge(month.endTerms, month.balance);
+  const { fromAccount, uncovered } = month.shortTime;
+  const shortTotal = fromAccount + uncovered;
   return (
     <div className="month-extra">
       <div>
@@ -30,17 +34,27 @@ export function MonthExtras({ month, year, vacationRemaining, complete }: Props)
         <span>Resturlaub {year}</span>
         <span>{fmtDays(vacationRemaining)} Tage</span>
       </div>
-      {month.shortTime.fromAccount + month.shortTime.uncovered > 0 && (
-        <div className="muted small">
-          <span>Kurzarbeit vom Stundenkonto</span>
-          <span>{hours(-month.shortTime.fromAccount)} h</span>
-        </div>
-      )}
-      {month.shortTime.uncovered > 0 && (
-        <div className="muted small">
-          <span>Kurzarbeit ohne Soll</span>
-          <span>{hours(month.shortTime.uncovered)} h</span>
-        </div>
+      {shortTotal > 0 && (
+        <>
+          <div>
+            <span>Kurzarbeit</span>
+            <strong>{hours(shortTotal)} h</strong>
+          </div>
+          {fromAccount > 0 && (
+            <div className="muted small">
+              <span>− mit Überstunden verrechnet</span>
+              <span>{hours(-fromAccount)} h</span>
+            </div>
+          )}
+          <div className="muted small">
+            <span>= verbleibende Kurzarbeit</span>
+            <span>{hours(uncovered)} h</span>
+          </div>
+          <div className="muted small">
+            <span>Stundenkonto danach</span>
+            <span>{hours(account, true)} h</span>
+          </div>
+        </>
       )}
       {pct > 0 && (
         <div className="muted small">
