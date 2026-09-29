@@ -37,6 +37,22 @@ function serviceWorker(): Plugin {
 const FILES = ${JSON.stringify(files)};
 // Pfad der App (z. B. /Timelytix/); unter derselben Domain liegt noch die alte App …/TimeTrack/
 const SCOPE = new URL('./', self.location).pathname;
+// Einstellung „Updates automatisch installieren“, von der App hier abgelegt (lib/update.ts)
+const SETTINGS = 'timelytix-settings';
+
+// Manuelle Updates: im Hintergrund nichts installieren – sonst würde der Browser die neue Version
+// aktivieren, sobald die App ganz geschlossen wird. „Jetzt installieren“ gibt kurz frei (allowUntil).
+async function installAllowed() {
+  if (!self.registration.active) return true; // erste Installation
+  try {
+    const res = await (await caches.open(SETTINGS)).match('update-settings');
+    if (!res) return true;
+    const s = await res.json();
+    return s.auto !== false || (s.allowUntil || 0) > Date.now();
+  } catch {
+    return true;
+  }
+}
 
 // Ältere Versionen haben ihre Dateien in Speichern „timetrack-…“ abgelegt (geteilt mit der alten App).
 // Veraltete Kopien daraus führten zu einer weißen Seite. Nur Einträge dieser App (unter SCOPE) betreffen uns.
@@ -54,8 +70,10 @@ async function legacyEntries() {
 // Ausnahme: Liegen noch veraltete Kopien herum, sofort übernehmen – die weiße Seite kann das Update nicht anstoßen.
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
+    const legacy = (await legacyEntries()).length > 0;
+    if (!legacy && !(await installAllowed())) throw new Error('Update wartet auf „Jetzt installieren“');
     await (await caches.open(CACHE)).addAll(FILES);
-    if ((await legacyEntries()).length) await self.skipWaiting();
+    if (legacy) await self.skipWaiting();
   })());
 });
 
@@ -65,7 +83,7 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k.startsWith('timelytix-') && k !== CACHE) await caches.delete(k);
+    for (const k of await caches.keys()) if (k.startsWith('timelytix-') && k !== CACHE && k !== SETTINGS) await caches.delete(k);
     // Veraltete Kopien dieser App aus fremden Speichern entfernen; Einträge der alten App bleiben
     const legacy = await legacyEntries();
     for (const [name, req] of legacy) {

@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.14.4",
+    "date": "29.09.2026",
+    "changes": [
+      "Sind automatische Updates ausgeschaltet, installiert die App eine neue Version nicht mehr von selbst – auch nicht beim Schließen und neu Öffnen",
+      "Der Hinweis „Update verfügbar“ bleibt stehen, bis du auf „Jetzt aktualisieren“ tippst"
+    ]
+  },
+  {
     "version": "0.14.3",
     "date": "28.09.2026",
     "changes": [
