@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.16.0",
+    "date": "29.09.2026",
+    "changes": [
+      "Einstellungen → Arbeitgeber → „Schlüssel“: Abwesenheiten wie Kurzarbeit oder Sonstiges lassen sich ausblenden",
+      "Ausgeblendete Schlüssel erscheinen nicht mehr im Tages-Editor und bei „Ohne Zeiterfassung“ – bereits eingetragene Tage bleiben erhalten"
+    ]
+  },
+  {
     "version": "0.15.3",
     "date": "29.09.2026",
     "changes": [
