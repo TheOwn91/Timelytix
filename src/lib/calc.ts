@@ -341,10 +341,7 @@ export interface MonthSummary {
   credit: number;
   target: number;
   balance: number;
-  /**
-   * Überstunden, auf die es Zuschlag gibt (Minuten). Mit Kurzarbeit nur, was nach dem Verrechnen am
-   * Monatsende noch auf dem Konto steht – steht es bei 0, gibt es keinen Zuschlag.
-   */
+  /** Überstunden, auf die es Zuschlag gibt (Minuten): das Plus des Monats, in Monaten mit Kurzarbeit 0. */
   surchargeBase: number;
   /** Kurzarbeit: vom Stundenkonto genommen / ohne Soll, weil das Konto leer war (Minuten). */
   shortTime: { fromAccount: number; uncovered: number };
@@ -378,20 +375,26 @@ export function monthSummary(
   let account = accountAtStart ?? (hasShortTime ? accountBeforeMonth(state, project, year, month0, now) : 0);
   const dates = daysOfMonth(year, month0);
   const days: DaySummary[] = [];
+  // Plus/Minus des Monats bis zum jeweiligen Tag: Mit Kurzarbeit darf im Monat kein Plus bleiben,
+  // auch wenn das Konto aus dem Vormonat im Minus steht
+  let monthBalance = 0;
+  const available = () => Math.max(account, monthBalance);
   // Kurzarbeitstage, deren Stunden noch nicht mit Überstunden verrechnet sind
   const open: number[] = [];
   dates.forEach((d, i) => {
-    const day = daySummary(project, d, index, now, account);
+    const day = daySummary(project, d, index, now, available());
     days.push(day);
     account += day.worked + day.credit - day.target;
+    monthBalance += day.worked + day.credit - day.target;
     if (day.shortTimeUncovered > 0) open.push(i);
     // Später im Monat entstandene Überstunden werden mit der Kurzarbeit davor verrechnet
-    while (account > 0 && open.length) {
+    while (available() > 0 && open.length) {
       const j = open[0];
       const prev = days[j];
-      const take = Math.min(account, prev.shortTimeUncovered);
+      const take = Math.min(available(), prev.shortTimeUncovered);
       days[j] = daySummary(project, dates[j], index, now, prev.shortTimeFromAccount + take);
       account -= take;
+      monthBalance -= take;
       if (days[j].shortTimeUncovered <= 0) open.shift();
     }
   });
@@ -415,9 +418,7 @@ export function monthSummary(
     credit,
     target,
     balance: worked + credit - target,
-    surchargeBase: days.some((d) => d.shortTimeFromAccount + d.shortTimeUncovered > 0)
-      ? Math.min(worked + credit - target, Math.max(0, account))
-      : worked + credit - target,
+    surchargeBase: days.some((d) => d.shortTimeFromAccount + d.shortTimeUncovered > 0) ? 0 : worked + credit - target,
     shortTime: {
       fromAccount: days.reduce((a, d) => a + d.shortTimeFromAccount, 0),
       uncovered: days.reduce((a, d) => a + d.shortTimeUncovered, 0),
