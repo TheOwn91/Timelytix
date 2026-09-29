@@ -210,6 +210,15 @@ export interface DaySummary {
   untracked: boolean;
 }
 
+/** Bemerkungen eines Tages: ½ Tag Urlaub (24.12./31.12.), Bemerkung zur Abwesenheit und zu den Buchungen. */
+export function dayRemarks(d: Pick<DaySummary, 'date' | 'absence' | 'sessions'>): string[] {
+  const remarks: string[] = [];
+  if (d.absence?.type === 'urlaub' && vacationDayValue(d.date) < 1) remarks.push('½ Tag Urlaub');
+  if (d.absence?.note) remarks.push(d.absence.note);
+  for (const s of d.sessions) if (s.note) remarks.push(s.note);
+  return remarks;
+}
+
 export interface Index {
   sessionsByDay: Map<string, Session[]>;
   absenceByDay: Map<string, Absence>;

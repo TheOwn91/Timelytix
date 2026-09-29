@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.18.0",
+    "date": "29.09.2026",
+    "changes": [
+      "Monatskalender: Bemerkungen zu Abwesenheiten und Buchungen stehen direkt beim Tag",
+      "Urlaub am 24.12. und 31.12. bekommt automatisch die Bemerkung „½ Tag Urlaub“ – auch im PDF"
+    ]
+  },
+  {
     "version": "0.17.0",
     "date": "29.09.2026",
     "changes": [

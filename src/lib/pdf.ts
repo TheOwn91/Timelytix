@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ABSENCE_TYPES } from './absences';
 import { shareOrDownload } from './device';
-import { monthSummary } from './calc';
+import { dayRemarks, monthSummary } from './calc';
 import { STATES } from './holidays';
 import { describeChanges, termsList } from './terms';
 import { yearOverview } from './year';
@@ -60,14 +60,16 @@ export function buildMonthReport(state: AppState, project: Project, year: number
       .join('\n');
     const remarks: string[] = [];
     if (d.holiday) remarks.push(d.holiday);
-    if (d.absence) remarks.push(ABSENCE_TYPES[d.absence.type].label + (d.absence.note ? `: ${d.absence.note}` : ''));
+    // „½ Tag Urlaub“ statt „Urlaub“ am 24.12./31.12.; Bemerkungen wie in der Monatsansicht
+    const notes = dayRemarks(d);
+    if (d.absence && notes[0] !== '½ Tag Urlaub') remarks.push(ABSENCE_TYPES[d.absence.type].label);
+    remarks.push(...notes);
     const autoPauses = [
       ...d.sessions.flatMap((s) => s.pauses.filter((p) => p.auto && p.end !== undefined).map((p) => [p.start, p.end!] as const)),
       ...d.autoBreaks.map((b) => [b.start, b.start + b.minutes * 60_000] as const),
     ];
     for (const [a, b] of autoPauses) remarks.push(`autom. Pause ${fmtTime(a)}–${fmtTime(b)}`);
     if (d.interruption > 0) remarks.push(`Unterbrechung ${fmtDuration(d.interruption)} h`);
-    for (const s of d.sessions) if (s.note) remarks.push(s.note);
     const surcharges = activeRules
       .filter((r) => (d.surcharges[r.id] ?? 0) > 0)
       .map((r) => `${r.name} ${fmtDuration(d.surcharges[r.id])}`)
