@@ -62,6 +62,8 @@ export interface Project {
    */
   terms?: Terms[];
   archived?: boolean;
+  /** In den Einstellungen ausgeblendete Schlüssel (Abwesenheiten) – bereits eingetragene Tage bleiben. */
+  hiddenAbsences?: AbsenceType[];
 }
 
 /** Vertragswerte, die ab einem Datum gelten. */

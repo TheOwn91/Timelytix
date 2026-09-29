@@ -1,4 +1,4 @@
-import type { AbsenceType } from './types';
+import type { AbsenceType, Project } from './types';
 
 /**
  * credit       – Tag zählt mit Sollstunden als gearbeitet (Urlaub, Krank, Feiertag)
@@ -31,3 +31,12 @@ export const ABSENCE_ORDER: AbsenceType[] = [
   'frei',
   'sonstiges',
 ];
+
+/**
+ * Schlüssel zur Auswahl, ohne die in den Einstellungen ausgeblendeten. `keep` bleibt immer sichtbar
+ * (der bereits eingetragene Schlüssel eines Tages, damit er sich ändern oder entfernen lässt).
+ */
+export function visibleAbsences(p: Pick<Project, 'hiddenAbsences'>, list: AbsenceType[] = ABSENCE_ORDER, keep?: AbsenceType): AbsenceType[] {
+  const hidden = new Set(p.hiddenAbsences ?? []);
+  return list.filter((t) => t === keep || !hidden.has(t));
+}

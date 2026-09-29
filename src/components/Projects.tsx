@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { ABSENCE_ORDER, ABSENCE_TYPES } from '../lib/absences';
 import { DEFAULT_AUTO_BREAK_MINUTES } from '../lib/calc';
 import { ask } from '../lib/confirm';
 import { notify } from '../lib/demo';
@@ -203,6 +204,36 @@ function ProjectForm({ project }: { project: Project }) {
         „Zu Beginn“ = Stand am Tag „Erfassung ab“ (Minusstunden mit „-“ eingeben). Der Zuschlag wird am Monatsende auf
         die Überstunden des Monats gutgeschrieben. Resturlaub und Überstunden gehen automatisch ins nächste Jahr.
       </p>
+
+      <h3>Schlüssel</h3>
+      <p className="muted small">
+        Welche Abwesenheiten zur Auswahl stehen (Tages-Editor und „Ohne Zeiterfassung“). Antippen blendet einen Schlüssel
+        aus oder ein – bereits eingetragene Tage bleiben erhalten.
+      </p>
+      <div className="chips absence-keys">
+        {ABSENCE_ORDER.map((t) => {
+          const shown = !project.hiddenAbsences?.includes(t);
+          return (
+            <button
+              key={t}
+              className={`chip ${shown ? 'active' : ''}`}
+              style={{ '--chip': ABSENCE_TYPES[t].color } as React.CSSProperties}
+              aria-pressed={shown}
+              onClick={() =>
+                set((p) => {
+                  const hidden = new Set(p.hiddenAbsences ?? []);
+                  if (shown) hidden.add(t);
+                  else hidden.delete(t);
+                  p.hiddenAbsences = hidden.size ? ABSENCE_ORDER.filter((x) => hidden.has(x)) : undefined;
+                })
+              }
+            >
+              {shown ? '✓ ' : ''}
+              {ABSENCE_TYPES[t].label}
+            </button>
+          );
+        })}
+      </div>
 
       <h3>Zulagen</h3>
       <p className="muted small">

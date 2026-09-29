@@ -1,6 +1,6 @@
 import { ABSENCE_TYPES } from './absences';
 import { dateKey } from './time';
-import type { Absence, AppState, Pause, Project, Session, SurchargeRule, Terms, Weekday } from './types';
+import type { Absence, AbsenceType, AppState, Pause, Project, Session, SurchargeRule, Terms, Weekday } from './types';
 
 /**
  * Prüft gespeicherte Daten und Datensicherungen. Einträge, mit denen die App nicht rechnen kann
@@ -79,6 +79,9 @@ function project(v: unknown): Project | undefined {
     overtimeAtStartHours: optNum(v.overtimeAtStartHours),
     overtimeSurchargePercent: optNum(v.overtimeSurchargePercent),
     terms: v.terms === undefined ? undefined : list(v.terms, terms),
+    hiddenAbsences: Array.isArray(v.hiddenAbsences)
+      ? v.hiddenAbsences.filter((t): t is AbsenceType => typeof t === 'string' && Object.prototype.hasOwnProperty.call(ABSENCE_TYPES, t))
+      : undefined,
   } as Project;
 }
 
