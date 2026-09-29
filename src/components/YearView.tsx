@@ -10,8 +10,8 @@ const fmtDays = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits
 export function YearView() {
   const { state, update } = useStore();
   const hours = useHours();
-  const running = state.sessions.some((s) => s.end === undefined);
-  const now = useNow(true, running ? 5000 : 60_000);
+  // Summen in Minuten: bei laufender Zeit reicht einmal pro Minute (spart Akku)
+  const now = useNow(true, 60_000);
   const [year, setYear] = useState(() => new Date().getFullYear());
 
   const projects = state.projects.filter((p) => !p.archived);

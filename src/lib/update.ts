@@ -185,12 +185,13 @@ function updateCheckDue(): boolean {
 
 /**
  * Ein geladenes, wartendes Update gefunden: je nach Einstellung installieren oder anbieten.
- * Automatisch wird nur direkt beim Öffnen installiert – nie mitten in der Benutzung, dann
- * erst, wenn die App das nächste Mal wieder in den Vordergrund kommt.
+ * Automatisch: Lag es schon beim Öffnen bereit, sofort wechseln (die Dateien sind schon da, das
+ * Neuladen geht schnell). Wurde es erst jetzt geladen, nicht mitten im Start oder in der Benutzung
+ * neu laden, sondern sobald die App in den Hintergrund geht – beim nächsten Öffnen ist es dann da.
  */
-function handleWaiting(release?: Release) {
+function handleWaiting(release?: Release, atStart = false) {
   if (autoUpdateEnabled()) {
-    if (performance.now() < 15_000) void applyUpdate(false);
+    if (atStart) void applyUpdate(false);
     else autoPending = true;
   } else setStatus({ state: 'available', release: release ?? (status.state === 'available' ? status.release : undefined) });
 }
@@ -292,15 +293,17 @@ export function registerServiceWorker() {
         if (worker.state === 'installed' && navigator.serviceWorker.controller) handleWaiting();
       });
     };
-    if (reg.waiting && navigator.serviceWorker.controller) handleWaiting();
+    if (reg.waiting && navigator.serviceWorker.controller) handleWaiting(undefined, true);
     watch(reg.installing);
     reg.addEventListener('updatefound', () => watch(reg.installing));
 
-    // Beim Zurückholen der App (z. B. aus dem Hintergrund): ein geladenes Update installieren,
-    // sonst nur selten online nach neuen Versionen schauen (höchstens alle 12 Stunden)
+    // App geht in den Hintergrund: ein geladenes Update jetzt installieren (unsichtbar).
+    // Beim Zurückholen nur selten online nach neuen Versionen schauen (höchstens alle 12 Stunden).
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState !== 'visible') return;
-      if (autoPending && autoUpdateEnabled() && reg.waiting) void applyUpdate(false);
+      const pending = autoPending && autoUpdateEnabled() && reg.waiting;
+      if (document.visibilityState === 'hidden') {
+        if (pending) void applyUpdate(false);
+      } else if (pending) void applyUpdate(false); // Wechsel im Hintergrund hat nicht geklappt
       else if (updateCheckDue()) void periodicCheck(reg);
     });
     // Beim Start ebenfalls höchstens alle 12 Stunden

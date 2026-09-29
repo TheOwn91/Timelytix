@@ -40,6 +40,10 @@ Repository und nicht in den Changelog.
 - Manuelle Updates: Die App legt die Einstellung im Speicher `timelytix-settings` ab; `sw.js` lehnt dann
   eine Installation im Hintergrund ab (sonst aktiviert der Browser sie beim Schließen der App). Nur
   „Jetzt installieren“ gibt sie kurz frei. Beim Test: App ganz schließen, neu öffnen, alte Version muss bleiben.
+- Automatische Updates: Nie beim Start neu laden, wenn das Update erst jetzt geladen wurde – installiert wird,
+  sobald die App in den Hintergrund geht (lag es beim Öffnen schon bereit, sofort; das geht schnell).
+- Laufender Timer: Summen (Monat, Jahr, fehlende Tage) nur einmal pro Minute rechnen (`useMemo` mit
+  minutengenauem `now`), nicht bei jedem Sekundentakt.
 
 ## Berechnung / Daten
 
