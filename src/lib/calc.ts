@@ -343,8 +343,11 @@ export interface MonthSummary {
   balance: number;
   /** Überstunden, auf die es Zuschlag gibt (Minuten): das Plus des Monats, in Monaten mit Kurzarbeit 0. */
   surchargeBase: number;
-  /** Kurzarbeit: vom Stundenkonto genommen / ohne Soll, weil das Konto leer war (Minuten). */
-  shortTime: { fromAccount: number; uncovered: number };
+  /**
+   * Kurzarbeit (Minuten): `fromAccount` mit Überstunden verrechnet, `uncovered` übrige Stunden der
+   * Kurzarbeitstage, `added` Minusstunden des Monats, die zur Kurzarbeit dazukommen.
+   */
+  shortTime: { fromAccount: number; uncovered: number; added: number };
   workedDays: number;
   absenceCounts: Partial<Record<AbsenceType, number>>;
   /** `rule.percent` = Satz zum Monatsende (bei Änderung im Monat wird tageweise gerechnet). */
@@ -371,36 +374,27 @@ export function monthSummary(
   const hasShortTime = state.absences.some(
     (a) => a.projectId === project.id && a.date.startsWith(ym) && ABSENCE_TYPES[a.type].mode === 'debitCapped',
   );
-  // Kontostand Tag für Tag mitführen, damit Kurzarbeit nie ins Minus führt
-  let account = accountAtStart ?? (hasShortTime ? accountBeforeMonth(state, project, year, month0, now) : 0);
   const dates = daysOfMonth(year, month0);
-  const days: DaySummary[] = [];
-  // Plus/Minus des Monats bis zum jeweiligen Tag: Mit Kurzarbeit darf im Monat kein Plus bleiben,
-  // auch wenn das Konto aus dem Vormonat im Minus steht
-  let monthBalance = 0;
-  const available = () => Math.max(account, monthBalance);
-  // Kurzarbeitstage, deren Stunden noch nicht mit Überstunden verrechnet sind
-  const open: number[] = [];
-  dates.forEach((d, i) => {
-    const day = daySummary(project, d, index, now, available());
-    days.push(day);
-    account += day.worked + day.credit - day.target;
-    monthBalance += day.worked + day.credit - day.target;
-    if (day.shortTimeUncovered > 0) open.push(i);
-    // Später im Monat entstandene Überstunden werden mit der Kurzarbeit davor verrechnet
-    while (available() > 0 && open.length) {
-      const j = open[0];
-      const prev = days[j];
-      const take = Math.min(available(), prev.shortTimeUncovered);
-      days[j] = daySummary(project, dates[j], index, now, prev.shortTimeFromAccount + take);
-      account -= take;
-      monthBalance -= take;
-      if (days[j].shortTimeUncovered <= 0) open.shift();
+  // Zunächst ohne Verrechnung: Kurzarbeitstage ganz ohne Soll
+  const days = dates.map((d) => daySummary(project, d, index, now, 0));
+  // Monat mit Kurzarbeit: Am Monatsende steht das Stundenkonto bei 0. Bleiben Stunden übrig, gehen sie
+  // von der Kurzarbeit ab; fehlen Stunden (z. B. nach Überstundenausgleich), kommen sie zur Kurzarbeit dazu.
+  let added = 0;
+  if (hasShortTime && days.some((d) => d.shortTimeUncovered > 0)) {
+    const start = accountAtStart ?? accountBeforeMonth(state, project, year, month0, now);
+    const account = start + days.reduce((a, d) => a + d.worked + d.credit - d.target, 0);
+    if (account < 0) added = -account;
+    let budget = Math.max(0, account);
+    for (let i = 0; i < days.length && budget > 0; i++) {
+      if (!days[i].shortTimeUncovered) continue;
+      days[i] = daySummary(project, dates[i], index, now, budget);
+      budget -= days[i].shortTimeFromAccount;
     }
-  });
+  }
   const worked = days.reduce((a, d) => a + d.worked, 0);
   const credit = days.reduce((a, d) => a + d.credit, 0);
-  const target = days.reduce((a, d) => a + d.target, 0);
+  // Fehlende Stunden zählen als Kurzarbeit, nicht als Soll
+  const target = days.reduce((a, d) => a + d.target, 0) - added;
   const absenceCounts: Partial<Record<AbsenceType, number>> = {};
   for (const d of days)
     if (d.absence) absenceCounts[d.absence.type] = (absenceCounts[d.absence.type] ?? 0) + 1;
@@ -422,6 +416,7 @@ export function monthSummary(
     shortTime: {
       fromAccount: days.reduce((a, d) => a + d.shortTimeFromAccount, 0),
       uncovered: days.reduce((a, d) => a + d.shortTimeUncovered, 0),
+      added,
     },
     workedDays: days.filter((d) => d.sessions.length > 0).length,
     absenceCounts,

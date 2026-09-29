@@ -22,7 +22,7 @@ export function MonthExtras({ month, year, vacationRemaining, complete, account 
   // Satz, der zum Monatsende gilt
   const pct = month.endTerms.overtimeSurchargePercent ?? 0;
   const surcharge = overtimeSurcharge(month.endTerms, month.surchargeBase);
-  const { fromAccount, uncovered } = month.shortTime;
+  const { fromAccount, uncovered, added } = month.shortTime;
   const shortTotal = fromAccount + uncovered;
   return (
     <div className="month-extra">
@@ -37,7 +37,7 @@ export function MonthExtras({ month, year, vacationRemaining, complete, account 
       {shortTotal > 0 && (
         <>
           <div>
-            <span>Kurzarbeit</span>
+            <span>Kurzarbeitstage</span>
             <strong>{hours(shortTotal)} h</strong>
           </div>
           {fromAccount > 0 && (
@@ -46,9 +46,15 @@ export function MonthExtras({ month, year, vacationRemaining, complete, account 
               <span>{hours(-fromAccount)} h</span>
             </div>
           )}
+          {added > 0 && (
+            <div className="muted small">
+              <span>+ fehlende Stunden des Monats</span>
+              <span>{hours(added, true)} h</span>
+            </div>
+          )}
           <div className="muted small">
-            <span>= verbleibende Kurzarbeit</span>
-            <span>{hours(uncovered)} h</span>
+            <span>= Kurzarbeit gesamt</span>
+            <span>{hours(uncovered + added)} h</span>
           </div>
           <div className="muted small">
             <span>Stundenkonto danach</span>

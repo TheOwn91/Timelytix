@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.15.2",
+    "date": "29.09.2026",
+    "changes": [
+      "Kurzarbeit: Am Monatsende steht das Stundenkonto bei 0",
+      "Bleiben im Monat Stunden übrig (inkl. Übertrag), gehen sie von der Kurzarbeit ab; fehlen Stunden – z. B. nach Überstundenausgleich –, kommen sie zur Kurzarbeit dazu",
+      "Monatsansicht und PDF zeigen Kurzarbeitstage, die fehlenden Stunden und die Kurzarbeit gesamt"
+    ]
+  },
+  {
     "version": "0.15.1",
     "date": "29.09.2026",
     "changes": [
