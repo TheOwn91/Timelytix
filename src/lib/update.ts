@@ -54,12 +54,24 @@ export function autoUpdateEnabled(): boolean {
   }
 }
 
+/** Einstellung für den Service Worker ablegen (er kann localStorage nicht lesen), siehe sw.js. */
+async function writeSwSettings(allowMinutes = 0) {
+  try {
+    const cache = await caches.open('timelytix-settings');
+    const settings = { auto: autoUpdateEnabled(), allowUntil: allowMinutes ? Date.now() + allowMinutes * 60_000 : 0 };
+    await cache.put('./update-settings', new Response(JSON.stringify(settings), { headers: { 'Content-Type': 'application/json' } }));
+  } catch {
+    /* ohne Cache Storage: Service Worker installiert wie bisher */
+  }
+}
+
 export function setAutoUpdateEnabled(on: boolean) {
   try {
     localStorage.setItem(AUTO_KEY, on ? 'on' : 'off');
   } catch {
     /* ignorieren */
   }
+  void writeSwSettings();
   // Wartet schon ein Update, gleich installieren
   if (on && status.state === 'available') void applyUpdate(false);
 }
@@ -125,6 +137,37 @@ function waitForInstalled(worker: ServiceWorker, timeoutMs = 30_000): Promise<vo
 
 let autoPending = false;
 
+/** Bei manuellen Updates gefundene neue Version – der Hinweis bleibt nach dem Schließen der App stehen. */
+const PENDING_KEY = 'timetrack.pendingUpdate';
+
+function rememberPending(latest?: LatestRelease) {
+  try {
+    if (latest && latest.version !== APP_VERSION) localStorage.setItem(PENDING_KEY, JSON.stringify(latest));
+    else localStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* ignorieren */
+  }
+}
+
+function restorePending() {
+  try {
+    const latest = JSON.parse(localStorage.getItem(PENDING_KEY) ?? 'null') as LatestRelease | null;
+    if (latest && latest.version !== APP_VERSION) setStatus({ state: 'available', release: latest });
+    else localStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* ignorieren */
+  }
+}
+
+/**
+ * Seltene automatische Suche: bei automatischen Updates lädt der Browser die neue Version im
+ * Hintergrund; bei manuellen fragt die App nur nach, ob es eine gibt („Update verfügbar“).
+ */
+function periodicCheck(reg: ServiceWorkerRegistration) {
+  if (autoUpdateEnabled()) return reg.update().catch(() => undefined);
+  return checkForUpdates();
+}
+
 const LAST_CHECK_KEY = 'timetrack.lastUpdateCheck';
 /** Automatische Update-Suche höchstens alle 12 Stunden – die App läuft sonst ganz lokal. */
 const CHECK_INTERVAL = 12 * 60 * 60 * 1000;
@@ -183,6 +226,7 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
   } else {
     setStatus({ state: 'current' });
   }
+  rememberPending(latest);
   return status;
 }
 
@@ -201,6 +245,8 @@ export async function applyUpdate(manual = true) {
       /* ignorieren */
     }
   }
+  // Installation freigeben (bei manuellen Updates lädt der Service Worker sonst nichts)
+  await writeSwSettings(5);
   // Kennt der Server schon eine neuere Version, der Browser hat sie aber noch nicht geladen: jetzt laden
   if (reg && !reg.waiting && !reg.installing) {
     try {
@@ -233,6 +279,7 @@ export function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     let reg: ServiceWorkerRegistration;
+    await writeSwSettings();
     try {
       reg = await navigator.serviceWorker.register('./sw.js');
     } catch {
@@ -253,7 +300,10 @@ export function registerServiceWorker() {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState !== 'visible') return;
       if (autoPending && autoUpdateEnabled() && reg.waiting) void applyUpdate(false);
-      else if (updateCheckDue()) reg.update().catch(() => undefined);
+      else if (updateCheckDue()) void periodicCheck(reg);
     });
+    // Beim Start ebenfalls höchstens alle 12 Stunden
+    if (!autoUpdateEnabled()) restorePending();
+    if (updateCheckDue()) void periodicCheck(reg);
   });
 }
