@@ -208,7 +208,8 @@ function ProjectForm({ project }: { project: Project }) {
       <h3>Schlüssel</h3>
       <p className="muted small">
         Welche Abwesenheiten zur Auswahl stehen (Tages-Editor und „Ohne Zeiterfassung“). Antippen blendet einen Schlüssel
-        aus oder ein – bereits eingetragene Tage bleiben erhalten.
+        aus oder ein – bereits eingetragene Tage bleiben erhalten. „Feiertag“ trägt die App an gesetzlichen Feiertagen
+        (Arbeitstag ohne Buchung) automatisch ein.
       </p>
       <div className="chips absence-keys">
         {ABSENCE_ORDER.map((t) => {

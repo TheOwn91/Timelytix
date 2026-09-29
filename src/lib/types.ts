@@ -111,6 +111,8 @@ export interface Absence {
   date: DateKey;
   type: AbsenceType;
   note?: string;
+  /** Von der App angezeigt, nicht gespeichert (Feiertag an einem Arbeitstag, siehe daySummary). */
+  auto?: boolean;
 }
 
 /** App-weite Anzeige-Einstellungen (werden mit der Datensicherung gespeichert). */
