@@ -2,14 +2,13 @@ import { APP_VERSION, releasesForUpdate, type LatestRelease, type Release } from
 import { DEMO } from './demo';
 
 /**
- * Updates der installierten App über den Service Worker:
- * - automatisch (Standard): ein neues Update wird aktiviert, sobald es geladen ist; danach zeigt
- *   die App „Was ist neu?“
- * - manuell: „Jetzt aktualisieren“ zeigt zuerst die Änderungen, installiert wird erst nach dem
- *   Bestätigen (danach kein zweites „Was ist neu?“)
+ * Updates der installierten App über den Service Worker – immer von Hand: Die App sucht selten nach
+ * neuen Versionen und zeigt „Update verfügbar“. „Jetzt aktualisieren“ zeigt zuerst die Änderungen,
+ * installiert wird erst nach dem Bestätigen (danach kein zweites „Was ist neu?“).
  */
 
-const AUTO_KEY = 'timetrack.autoUpdate';
+/** Früher: Schalter „Updates automatisch installieren“ (wird beim Start entfernt). */
+const OLD_AUTO_KEY = 'timetrack.autoUpdate';
 /** Von Versionen bis 0.11.1 gesetzt: nach dem Update „Was ist neu?“ auf jeden Fall zeigen. */
 const SHOW_NOTES_KEY = 'timetrack.showNotesAfterUpdate';
 /** Änderungen wurden schon vor dem Update gezeigt. */
@@ -46,34 +45,15 @@ export function updateSupported(): boolean {
   return !DEMO && import.meta.env.PROD && 'serviceWorker' in navigator;
 }
 
-export function autoUpdateEnabled(): boolean {
-  try {
-    return localStorage.getItem(AUTO_KEY) !== 'off';
-  } catch {
-    return true;
-  }
-}
-
 /** Einstellung für den Service Worker ablegen (er kann localStorage nicht lesen), siehe sw.js. */
 async function writeSwSettings(allowMinutes = 0) {
   try {
     const cache = await caches.open('timelytix-settings');
-    const settings = { auto: autoUpdateEnabled(), allowUntil: allowMinutes ? Date.now() + allowMinutes * 60_000 : 0 };
+    const settings = { auto: false, allowUntil: allowMinutes ? Date.now() + allowMinutes * 60_000 : 0 };
     await cache.put('./update-settings', new Response(JSON.stringify(settings), { headers: { 'Content-Type': 'application/json' } }));
   } catch {
     /* ohne Cache Storage: Service Worker installiert wie bisher */
   }
-}
-
-export function setAutoUpdateEnabled(on: boolean) {
-  try {
-    localStorage.setItem(AUTO_KEY, on ? 'on' : 'off');
-  } catch {
-    /* ignorieren */
-  }
-  void writeSwSettings();
-  // Wartet schon ein Update, gleich installieren
-  if (on && status.state === 'available') void applyUpdate(false);
 }
 
 function consumeFlag(key: string): boolean {
@@ -135,8 +115,6 @@ function waitForInstalled(worker: ServiceWorker, timeoutMs = 30_000): Promise<vo
   });
 }
 
-let autoPending = false;
-
 /** Bei manuellen Updates gefundene neue Version – der Hinweis bleibt nach dem Schließen der App stehen. */
 const PENDING_KEY = 'timetrack.pendingUpdate';
 
@@ -159,15 +137,6 @@ function restorePending() {
   }
 }
 
-/**
- * Seltene automatische Suche: bei automatischen Updates lädt der Browser die neue Version im
- * Hintergrund; bei manuellen fragt die App nur nach, ob es eine gibt („Update verfügbar“).
- */
-function periodicCheck(reg: ServiceWorkerRegistration) {
-  if (autoUpdateEnabled()) return reg.update().catch(() => undefined);
-  return checkForUpdates();
-}
-
 const LAST_CHECK_KEY = 'timetrack.lastUpdateCheck';
 /** Automatische Update-Suche höchstens alle 12 Stunden – die App läuft sonst ganz lokal. */
 const CHECK_INTERVAL = 12 * 60 * 60 * 1000;
@@ -183,16 +152,9 @@ function updateCheckDue(): boolean {
   return true;
 }
 
-/**
- * Ein geladenes, wartendes Update gefunden: je nach Einstellung installieren oder anbieten.
- * Automatisch wird nur direkt beim Öffnen installiert – nie mitten in der Benutzung, dann
- * erst, wenn die App das nächste Mal wieder in den Vordergrund kommt.
- */
+/** Ein geladenes, wartendes Update gefunden: nur anbieten, installiert wird erst nach Bestätigung. */
 function handleWaiting(release?: Release) {
-  if (autoUpdateEnabled()) {
-    if (performance.now() < 15_000) void applyUpdate(false);
-    else autoPending = true;
-  } else setStatus({ state: 'available', release: release ?? (status.state === 'available' ? status.release : undefined) });
+  setStatus({ state: 'available', release: release ?? (status.state === 'available' ? status.release : undefined) });
 }
 
 /** „Auf Updates prüfen“: fragt den Server und lädt ein neues Update im Hintergrund. */
@@ -231,21 +193,18 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
 }
 
 /**
- * Installiert das bereitstehende Update; die App lädt danach neu.
- * `manual`: nach der Vorschau bestätigt → nach dem Neustart kein „Was ist neu?“ mehr
- * (automatisch: „Was ist neu?“ erscheint wie eingestellt).
+ * Installiert das bereitstehende Update (nach „Jetzt installieren“); die App lädt danach neu.
+ * Die Änderungen wurden in der Vorschau schon gezeigt → nach dem Neustart kein „Was ist neu?“.
  */
-export async function applyUpdate(manual = true) {
+export async function applyUpdate() {
   const reg = await registration();
   setStatus({ state: 'installing' });
-  if (manual) {
-    try {
-      sessionStorage.setItem(NOTES_SHOWN_KEY, '1');
-    } catch {
-      /* ignorieren */
-    }
+  try {
+    sessionStorage.setItem(NOTES_SHOWN_KEY, '1');
+  } catch {
+    /* ignorieren */
   }
-  // Installation freigeben (bei manuellen Updates lädt der Service Worker sonst nichts)
+  // Installation freigeben (der Service Worker lädt sonst nichts)
   await writeSwSettings(5);
   // Kennt der Server schon eine neuere Version, der Browser hat sie aber noch nicht geladen: jetzt laden
   if (reg && !reg.waiting && !reg.installing) {
@@ -277,6 +236,12 @@ export function registerServiceWorker() {
     window.location.reload();
   });
 
+  try {
+    localStorage.removeItem(OLD_AUTO_KEY);
+  } catch {
+    /* ignorieren */
+  }
+
   window.addEventListener('load', async () => {
     let reg: ServiceWorkerRegistration;
     await writeSwSettings();
@@ -296,15 +261,11 @@ export function registerServiceWorker() {
     watch(reg.installing);
     reg.addEventListener('updatefound', () => watch(reg.installing));
 
-    // Beim Zurückholen der App (z. B. aus dem Hintergrund): ein geladenes Update installieren,
-    // sonst nur selten online nach neuen Versionen schauen (höchstens alle 12 Stunden)
+    // Beim Start und beim Zurückholen der App nur selten nachfragen (höchstens alle 12 Stunden)
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState !== 'visible') return;
-      if (autoPending && autoUpdateEnabled() && reg.waiting) void applyUpdate(false);
-      else if (updateCheckDue()) void periodicCheck(reg);
+      if (document.visibilityState === 'visible' && updateCheckDue()) void checkForUpdates();
     });
-    // Beim Start ebenfalls höchstens alle 12 Stunden
-    if (!autoUpdateEnabled()) restorePending();
-    if (updateCheckDue()) void periodicCheck(reg);
+    restorePending();
+    if (updateCheckDue()) void checkForUpdates();
   });
 }

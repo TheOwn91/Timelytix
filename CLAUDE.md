@@ -37,9 +37,11 @@ Repository und nicht in den Changelog.
   automatisch höchstens alle 12 Stunden (`lib/update.ts`), per Knopf jederzeit.
 - Nie `caches.match()` über alle Speicher verwenden, immer nur den eigenen Speicher öffnen: Unter derselben
   Domain liegt die alte App (…/TimeTrack/, Speicher `timetrack-…`); fremde Kopien führten zu einer weißen Seite.
-- Manuelle Updates: Die App legt die Einstellung im Speicher `timelytix-settings` ab; `sw.js` lehnt dann
-  eine Installation im Hintergrund ab (sonst aktiviert der Browser sie beim Schließen der App). Nur
-  „Jetzt installieren“ gibt sie kurz frei. Beim Test: App ganz schließen, neu öffnen, alte Version muss bleiben.
+- Updates nur von Hand (kein automatisches Installieren): `sw.js` lehnt jede Installation im Hintergrund ab
+  (sonst aktiviert der Browser sie beim Schließen der App). Nur „Jetzt installieren“ gibt sie kurz frei
+  (`allowUntil` im Speicher `timelytix-settings`). Beim Test: App ganz schließen, neu öffnen, alte Version muss bleiben.
+- Laufender Timer: Summen (Monat, Jahr, fehlende Tage) nur einmal pro Minute rechnen (`useMemo` mit
+  minutengenauem `now`), nicht bei jedem Sekundentakt.
 
 ## Berechnung / Daten
 

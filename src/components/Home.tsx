@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ABSENCE_TYPES, visibleAbsences } from '../lib/absences';
 import { DEMO } from '../lib/demo';
 import { sessionDay } from '../lib/shift';
@@ -46,8 +46,19 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
     state.projects.find((p) => p.id === active?.projectId) ??
     projects.find((p) => p.id === state.selectedProjectId) ??
     projects[0];
+  // Summen zeigen nur Minuten: einmal pro Minute rechnen, nicht bei jedem Sekundentakt des Timers
+  const minute = Math.floor(now / 60_000) * 60_000;
+  const totals = useMemo(() => {
+    if (!project) return undefined;
+    const d = new Date(minute);
+    return {
+      month: monthSummary(state, project, d.getFullYear(), d.getMonth(), minute),
+      yearNow: yearOverview(state, project, d.getFullYear(), minute),
+      missing: untrackedDays(state, project, minute),
+    };
+  }, [state, project, minute]);
 
-  if (!project) {
+  if (!project || !totals) {
     return (
       <div className="page">
         <div className="card onboarding">
@@ -72,9 +83,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
   const raw = active ? sessionStats(active, now) : undefined;
   const stats = raw && { net: raw.net - autoInActive, pause: raw.pause + autoInActive };
   const d = new Date(now);
-  const month = monthSummary(state, project, d.getFullYear(), d.getMonth(), now);
-  const yearNow = yearOverview(state, project, d.getFullYear(), now);
-  const missing = untrackedDays(state, project, now);
+  const { month, yearNow, missing } = totals;
 
   const start = () => {
     const session = { id: uid(), projectId: project.id, start: Date.now(), pauses: [] };

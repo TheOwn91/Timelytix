@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ABSENCE_TYPES } from '../lib/absences';
 import { dayRemarks, monthSummary } from '../lib/calc';
 import { notify } from '../lib/demo';
@@ -24,15 +24,28 @@ export function MonthView() {
   // PDF-Modul vorladen, damit der Export direkt im Klick passiert (nötig fürs Teilen-Menü auf iOS)
   const pdf = useRef<typeof import('../lib/pdf') | null>(null);
   useEffect(() => {
-    if (import.meta.env.MODE !== 'demo') void import('../lib/pdf').then((m) => (pdf.current = m));
+    if (import.meta.env.MODE === 'demo') return;
+    // Erst wenn der Browser Zeit hat – sonst bremst das große Modul das Öffnen der Monatsansicht
+    const load = () => void import('../lib/pdf').then((m) => (pdf.current = m));
+    const idle = window.requestIdleCallback?.(load, { timeout: 2000 });
+    const t = idle === undefined ? setTimeout(load, 500) : undefined;
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      clearTimeout(t);
+    };
   }, []);
 
   const projects = state.projects.filter((p) => !p.archived);
   const project = projects.find((p) => p.id === state.selectedProjectId) ?? projects[0];
-  if (!project) return <div className="page"><p className="card muted">Bitte zuerst einen Arbeitgeber anlegen.</p></div>;
+  // Anzeige in Minuten: bei laufender Zeit einmal pro Minute neu rechnen statt jede Sekunde
+  const minute = Math.floor(now / 60_000) * 60_000;
+  const totals = useMemo(
+    () => project && { sum: monthSummary(state, project, ym.y, ym.m, minute), year: yearOverview(state, project, ym.y, minute) },
+    [state, project, ym, minute],
+  );
+  if (!project || !totals) return <div className="page"><p className="card muted">Bitte zuerst einen Arbeitgeber anlegen.</p></div>;
 
-  const sum = monthSummary(state, project, ym.y, ym.m, now);
-  const year = yearOverview(state, project, ym.y, now);
+  const { sum, year } = totals;
   const today = dateKey(now);
   const shift = (delta: number) =>
     setYm(({ y, m }) => {

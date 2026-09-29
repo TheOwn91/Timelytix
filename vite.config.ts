@@ -38,20 +38,19 @@ function serviceWorker(): Plugin {
 const FILES = ${JSON.stringify(files)};
 // Pfad der App (z. B. /Timelytix/); unter derselben Domain liegt noch die alte App …/TimeTrack/
 const SCOPE = new URL('./', self.location).pathname;
-// Einstellung „Updates automatisch installieren“, von der App hier abgelegt (lib/update.ts)
+// Freigabe für ein Update („Jetzt installieren“), von der App hier abgelegt (lib/update.ts)
 const SETTINGS = 'timelytix-settings';
 
-// Manuelle Updates: im Hintergrund nichts installieren – sonst würde der Browser die neue Version
+// Updates nur von Hand: im Hintergrund nichts installieren – sonst würde der Browser die neue Version
 // aktivieren, sobald die App ganz geschlossen wird. „Jetzt installieren“ gibt kurz frei (allowUntil).
 async function installAllowed() {
   if (!self.registration.active) return true; // erste Installation
   try {
     const res = await (await caches.open(SETTINGS)).match('update-settings');
-    if (!res) return true;
-    const s = await res.json();
-    return s.auto !== false || (s.allowUntil || 0) > Date.now();
+    const s = res ? await res.json() : {};
+    return (s.allowUntil || 0) > Date.now();
   } catch {
-    return true;
+    return false;
   }
 }
 
