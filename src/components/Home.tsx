@@ -214,11 +214,12 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
         {month.credit > 0 && (
           <p className="muted small">Davon {hours(month.credit)} h Gutschrift (Urlaub, Krank …)</p>
         )}
-        <h3>Zulagen</h3>
-        {month.surcharges.length === 0 ? (
-          <p className="muted small">Keine Zulagen konfiguriert.</p>
-        ) : (
-          <SurchargeList month={month} />
+        {/* Nur Zulagen, die im Monat schon angefallen sind (wie in der Monatsansicht) */}
+        {month.surcharges.some((s) => s.minutes > 0) && (
+          <>
+            <h3>Zulagen</h3>
+            <SurchargeList month={month} hideEmpty />
+          </>
         )}
       </section>
 
