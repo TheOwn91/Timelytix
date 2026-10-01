@@ -29,6 +29,9 @@ export function YearView() {
   const available = v.entitlement + v.carryIn;
   const pct = termsAt(project, dateKey(now)).overtimeSurchargePercent;
   const pastYear = year < new Date(now).getFullYear();
+  // Krankheitstage je Monat (Schlüssel „Krank“)
+  const sickMonths = o.months.map((m) => ({ month0: m.month0, days: m.summary.absenceCounts.krank ?? 0 }));
+  const sick = { months: sickMonths, total: sickMonths.reduce((n, m) => n + m.days, 0) };
   const usedShare = available > 0 ? Math.min(1, v.taken / available) : 0;
   const plannedShare = available > 0 ? Math.min(1 - usedShare, v.planned / available) : 0;
 
@@ -87,6 +90,29 @@ export function YearView() {
                 ? `${fmtDays(v.remaining)} Tage wurden ins Jahr ${year + 1} übernommen.`
                 : `Nicht genommener Urlaub wird automatisch ins Jahr ${year + 1} übernommen.`}
             </p>
+          </section>
+
+          <section className="card">
+            <h2>Krankheitstage {year}</h2>
+            {sick.total === 0 ? (
+              <p className="muted small">Keine Krankheitstage eingetragen.</p>
+            ) : (
+              <div className="field-list readonly">
+                {sick.months.map(
+                  ({ month0, days }) =>
+                    days > 0 && (
+                      <div key={month0} className="field-row">
+                        <span>{MONTHS[month0]}</span>
+                        <span>{fmtDays(days)} {days === 1 ? 'Tag' : 'Tage'}</span>
+                      </div>
+                    ),
+                )}
+                <div className="field-row">
+                  <span>Gesamt</span>
+                  <strong>{fmtDays(sick.total)} {sick.total === 1 ? 'Tag' : 'Tage'}</strong>
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="card">

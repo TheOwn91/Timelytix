@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.21.0",
+    "date": "01.10.2026",
+    "changes": [
+      "Jahresübersicht: Krankheitstage je Monat und gesamt",
+      "Startseite: Es erscheinen nur Zulagen, die im Monat schon angefallen sind – wie in der Monatsansicht"
+    ]
+  },
+  {
     "version": "0.20.0",
     "date": "29.09.2026",
     "changes": [
