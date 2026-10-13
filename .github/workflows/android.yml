@@ -1,8 +1,10 @@
 name: Android-App bauen
 
-# Baut die Android-App (Capacitor) für den Play Store:
-# - immer eine Test-APK zum direkten Installieren (Artefakt „timelytix-apk“)
-# - mit hinterlegtem Signaturschlüssel zusätzlich das App-Paket für den Play Store (Artefakt „timelytix-aab“)
+# Baut die Android-App (Capacitor):
+# - ohne Signaturschlüssel nur eine Test-APK (Artefakt „timelytix-apk“, Updates darüber nicht möglich)
+# - mit Signaturschlüssel die signierte APK zum Herunterladen (Artefakt „timelytix-apk“) und das
+#   App-Paket für den Play Store (Artefakt „timelytix-aab“); auf main wird die APK an das GitHub-Release
+#   der Version gehängt (Download-Seite und Update-Suche der App holen sie dort)
 # Einrichtung des Schlüssels: docs/android.md
 on:
   workflow_dispatch:
@@ -20,7 +22,7 @@ on:
       - '.github/workflows/android.yml'
 
 permissions:
-  contents: read
+  contents: write # APK an das Release hängen (nur auf main)
 
 concurrency:
   group: android-${{ github.ref }}
@@ -62,13 +64,18 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
-          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then ./gradlew --no-daemon bundleRelease; fi
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then
+            ./gradlew --no-daemon assembleRelease bundleRelease
+            cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/Timelytix-$(node -p "require('../package.json').version").apk"
+          else
+            ./gradlew --no-daemon assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/Timelytix-test.apk"
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
           name: timelytix-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ runner.temp }}/Timelytix-*.apk
           retention-days: 14
       - uses: actions/upload-artifact@v4
         if: env.ANDROID_KEYSTORE_PATH != ''
@@ -76,6 +83,16 @@ jobs:
           name: timelytix-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
+
+      - name: APK an das Release hängen
+        if: github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_PATH != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          # Das Release legt der Workflow „Versionen auf GitHub anlegen“ an – kurz darauf warten
+          for i in $(seq 1 30); do gh release view "v$version" >/dev/null 2>&1 && break; sleep 10; done
+          gh release upload "v$version" "$RUNNER_TEMP/Timelytix-$version.apk" --clobber
 
       - name: Schlüssel entfernen
         if: always()
