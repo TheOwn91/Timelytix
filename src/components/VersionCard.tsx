@@ -38,31 +38,26 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
         {IN_DEVELOPMENT && ' · in Entwicklung'}
       </p>
 
-      {NATIVE ? (
-        <p className="muted small">Neue Versionen kommen über den Google Play Store.</p>
-      ) : (
-        <>
-          <p className="muted small">
-            Neue Versionen werden nur installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu
-            ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt.
-          </p>
+      <p className="muted small">
+        Neue Versionen werden nur installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu
+        ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt
+        {NATIVE ? ' (auf GitHub; die neue Version wird heruntergeladen und von Android installiert).' : '.'}
+      </p>
 
-          <div className="update-actions">
-            <button className="btn secondary" disabled={!supported || busy} onClick={() => void checkForUpdates()}>
-              Auf Updates prüfen
-            </button>
-            {status.state === 'available' && (
-              <button className="btn primary" onClick={openUpdatePreview}>
-                Jetzt aktualisieren
-              </button>
-            )}
-          </div>
-          {text && (
-            <p className={`small update-status ${status.state === 'available' ? 'highlight' : 'muted'}`} role="status">
-              {text}
-            </p>
-          )}
-        </>
+      <div className="update-actions">
+        <button className="btn secondary" disabled={!supported || busy} onClick={() => void checkForUpdates()}>
+          Auf Updates prüfen
+        </button>
+        {status.state === 'available' && (
+          <button className="btn primary" onClick={openUpdatePreview}>
+            Jetzt aktualisieren
+          </button>
+        )}
+      </div>
+      {text && (
+        <p className={`small update-status ${status.state === 'available' ? 'highlight' : 'muted'}`} role="status">
+          {text}
+        </p>
       )}
 
       <button className="btn secondary full" onClick={onShowWhatsNew}>

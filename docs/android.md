@@ -14,13 +14,23 @@ Die Android-App ist dieselbe Web-App, verpackt mit [Capacitor](https://capacitor
 App-Kennung: `de.timelytix.app` (lässt sich nach dem ersten Hochladen in den Play Store nicht mehr ändern).
 Version: kommt aus `package.json` (`0.21.0` → versionName `0.21.0`, versionCode `21000`).
 
+## Verteilung über GitHub (ohne Play Store)
+
+- Auf `main` hängt der Workflow die signierte `Timelytix-X.Y.Z.apk` an das GitHub-Release `vX.Y.Z`.
+- Download-Seite: `https://theown91.github.io/Timelytix/android.html` (zeigt immer die neueste APK).
+- Die App sucht höchstens alle 12 Stunden bei GitHub nach einer neueren APK (`src/lib/apk-update.ts`) und zeigt
+  „Update verfügbar“; „Jetzt installieren“ öffnet den Download im Browser, Android fragt dann „Diese App aktualisieren?“.
+- Updates funktionieren nur, wenn jede APK mit **demselben Schlüssel** signiert ist (Secrets unten).
+- Kommt später der Play Store dazu: Dort installierte Apps aktualisiert Google; die GitHub-Update-Suche sollte dann
+  für die Play-Store-Version abgeschaltet werden.
+
 ## Bauen
 
 Der Workflow **„Android-App bauen“** (`.github/workflows/android.yml`) baut bei jedem Push auf `main`
 (und auf `claude/…`-Branches) und lässt sich unter *Actions → Android-App bauen → Run workflow* auch von Hand
 starten. Ergebnis (unter *Artifacts* des Laufs):
 
-- **timelytix-apk** – Test-App zum direkten Installieren auf dem Handy (nicht für den Play Store)
+- **timelytix-apk** – APK zum direkten Installieren (mit Signaturschlüssel signiert und updatefähig, ohne Schlüssel nur eine Test-App)
 - **timelytix-aab** – App-Paket für den Play Store (nur, wenn der Signaturschlüssel hinterlegt ist)
 
 Lokal (mit Android Studio / Android-SDK): `npm run android`, danach `android/` in Android Studio öffnen.

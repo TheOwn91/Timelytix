@@ -1,5 +1,6 @@
 import { APP_VERSION, releasesForUpdate, type LatestRelease, type Release } from './changelog';
-import { DEMO } from './demo';
+import { compareVersions, fetchLatestApk } from './apk-update';
+import { DEMO, notify } from './demo';
 import { NATIVE } from './native';
 
 /**
@@ -43,8 +44,8 @@ export function onUpdateStatus(fn: (s: UpdateStatus) => void) {
 }
 
 export function updateSupported(): boolean {
-  // Android-App: Updates kommen über den Play Store
-  return !DEMO && !NATIVE && import.meta.env.PROD && 'serviceWorker' in navigator;
+  // Android-App: neue Versionen als APK über GitHub (lib/apk-update.ts)
+  return !DEMO && import.meta.env.PROD && (NATIVE || 'serviceWorker' in navigator);
 }
 
 /** Einstellung für den Service Worker ablegen (er kann localStorage nicht lesen), siehe sw.js. */
@@ -93,12 +94,17 @@ export async function fetchUpdateNotes(): Promise<Release[]> {
 }
 
 async function registration(): Promise<ServiceWorkerRegistration | undefined> {
-  if (!updateSupported()) return undefined;
+  if (!updateSupported() || NATIVE) return undefined;
   return (await navigator.serviceWorker.getRegistration()) ?? undefined;
 }
 
 /** Neuester Stand auf dem Server (ohne Cache). */
 async function fetchLatest(): Promise<LatestRelease> {
+  if (NATIVE) {
+    const latest = await fetchLatestApk();
+    if (!latest) throw new Error('keine APK');
+    return latest;
+  }
   const res = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(String(res.status));
   return (await res.json()) as LatestRelease;
@@ -117,12 +123,17 @@ function waitForInstalled(worker: ServiceWorker, timeoutMs = 30_000): Promise<vo
   });
 }
 
+/** Web: jede andere Version auf dem Server (auch zurückgezogene); Android-App: nur neuere APKs. */
+function isNewer(version: string): boolean {
+  return NATIVE ? compareVersions(version, APP_VERSION) > 0 : version !== APP_VERSION;
+}
+
 /** Bei manuellen Updates gefundene neue Version – der Hinweis bleibt nach dem Schließen der App stehen. */
 const PENDING_KEY = 'timetrack.pendingUpdate';
 
 function rememberPending(latest?: LatestRelease) {
   try {
-    if (latest && latest.version !== APP_VERSION) localStorage.setItem(PENDING_KEY, JSON.stringify(latest));
+    if (latest && isNewer(latest.version)) localStorage.setItem(PENDING_KEY, JSON.stringify(latest));
     else localStorage.removeItem(PENDING_KEY);
   } catch {
     /* ignorieren */
@@ -132,7 +143,7 @@ function rememberPending(latest?: LatestRelease) {
 function restorePending() {
   try {
     const latest = JSON.parse(localStorage.getItem(PENDING_KEY) ?? 'null') as LatestRelease | null;
-    if (latest && latest.version !== APP_VERSION) setStatus({ state: 'available', release: latest });
+    if (latest && isNewer(latest.version)) setStatus({ state: 'available', release: latest });
     else localStorage.removeItem(PENDING_KEY);
   } catch {
     /* ignorieren */
@@ -184,7 +195,7 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
   if (reg?.waiting) {
     // Selbst geprüft → Update mit Knopf anbieten (auch bei automatischen Updates)
     setStatus({ state: 'available', release: latest });
-  } else if (latest && latest.version !== APP_VERSION) {
+  } else if (latest && isNewer(latest.version)) {
     // Server kennt eine neuere Version, der Browser hat sie aber noch nicht geladen
     setStatus({ state: 'available', release: latest });
   } else {
@@ -199,6 +210,7 @@ export async function checkForUpdates(): Promise<UpdateStatus> {
  * Die Änderungen wurden in der Vorschau schon gezeigt → nach dem Neustart kein „Was ist neu?“.
  */
 export async function applyUpdate() {
+  if (NATIVE) return installApk();
   const reg = await registration();
   setStatus({ state: 'installing' });
   try {
@@ -226,9 +238,38 @@ export async function applyUpdate() {
   }
 }
 
+/**
+ * Android-App: APK der neuen Version im Browser herunterladen; Android fragt danach „Diese App
+ * aktualisieren?“ (die Daten bleiben erhalten).
+ */
+async function installApk() {
+  const url = (status.state === 'available' ? (status.release as LatestRelease | undefined)?.apkUrl : undefined) ?? (await fetchLatest().catch(() => undefined))?.apkUrl;
+  if (!url) {
+    setStatus({ state: 'offline' });
+    return;
+  }
+  try {
+    sessionStorage.setItem(NOTES_SHOWN_KEY, '1');
+  } catch {
+    /* ignorieren */
+  }
+  const { AppLauncher } = await import('@capacitor/app-launcher');
+  await AppLauncher.openUrl({ url });
+  notify('Download gestartet – danach in der Benachrichtigung auf die Datei tippen und „Aktualisieren“ wählen.');
+}
+
 /** Beim Start: Service Worker registrieren und auf neue Versionen achten. */
 export function registerServiceWorker() {
   if (!updateSupported()) return;
+  if (NATIVE) {
+    // Android-App: kein Service Worker, nur selten bei GitHub nach einer neuen APK fragen
+    restorePending();
+    if (updateCheckDue()) void checkForUpdates();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && updateCheckDue()) void checkForUpdates();
+    });
+    return;
+  }
   const hadController = !!navigator.serviceWorker.controller;
   let reloading = false;
   // Nach einem Update einmal neu laden, damit alle Dateien zur neuen Version passen

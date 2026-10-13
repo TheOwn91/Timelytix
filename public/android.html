@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Timelytix für Android</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f3f4f7;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #4b5563;
+        --link: #1d4ed8;
+        --primary: #2563eb;
+        --on-primary: #ffffff;
+        --border: #e5e7eb;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d1117;
+          --card: #161b22;
+          --text: #e6edf3;
+          --muted: #9ca3af;
+          --link: #7aa7ff;
+          --primary: #3b82f6;
+          --border: #30363d;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 1.5rem 1rem 3rem;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      header img {
+        width: 56px;
+        height: 56px;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin: 0;
+      }
+      section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 0 0 0.5rem;
+      }
+      p,
+      li {
+        color: var(--muted);
+      }
+      a {
+        color: var(--link);
+      }
+      .download {
+        display: block;
+        text-align: center;
+        background: var(--primary);
+        color: var(--on-primary);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        margin: 0.5rem 0;
+      }
+      .download[aria-disabled='true'] {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      ol {
+        padding-left: 1.2rem;
+        margin: 0;
+      }
+      .small {
+        font-size: 0.88rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="./icon-192.png" alt="" />
+        <div>
+          <h1>Timelytix für Android</h1>
+          <p class="small" style="margin: 0">Arbeitszeit, Pausen, Zulagen und Monatsbericht – offline, ohne Konto</p>
+        </div>
+      </header>
+
+      <section>
+        <a id="download" class="download" href="https://github.com/TheOwn91/Timelytix/releases" aria-disabled="true">Neueste Version wird gesucht …</a>
+        <p id="info" class="small">Die App wird direkt von GitHub heruntergeladen (nicht über den Play Store).</p>
+      </section>
+
+      <section>
+        <h2>Installieren</h2>
+        <ol>
+          <li>Auf „Herunterladen“ tippen und den Download abwarten.</li>
+          <li>Die Datei öffnen (Benachrichtigung „Download abgeschlossen“ oder App „Dateien“ → Downloads).</li>
+          <li>
+            Android fragt einmal, ob der Browser Apps installieren darf: „Einstellungen“ → „Aus dieser Quelle zulassen“
+            → zurück → „Installieren“.
+          </li>
+          <li>Falls Play Protect warnt („Unbekannte App“): „Trotzdem installieren“ bzw. „Details“ → „Trotzdem installieren“.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Updates</h2>
+        <p class="small">
+          Die App schaut selbst höchstens alle 12 Stunden nach einer neuen Version und zeigt „Update verfügbar“. Nach
+          „Jetzt aktualisieren“ → „Jetzt installieren“ wird die neue Version heruntergeladen; Android fragt „Diese App
+          aktualisieren?“. Deine Daten bleiben erhalten.
+        </p>
+      </section>
+
+      <section>
+        <h2>Daten aus der Web-App übernehmen</h2>
+        <p class="small">
+          In der Web-App unter Einstellungen → Datensicherung „Sicherung exportieren“, in der Android-App „Sicherung
+          importieren“ und die Datei auswählen.
+        </p>
+      </section>
+
+      <p class="small">
+        <a href="./">Zur Web-App</a> · <a href="./datenschutz.html">Datenschutz</a> ·
+        <a href="https://github.com/TheOwn91/Timelytix/releases">Alle Versionen</a>
+      </p>
+    </main>
+    <script>
+      // Neueste Version mit APK aus den GitHub-Releases (wie die Update-Suche der App)
+      (async function () {
+        var link = document.getElementById('download');
+        var info = document.getElementById('info');
+        try {
+          var res = await fetch('https://api.github.com/repos/TheOwn91/Timelytix/releases?per_page=30');
+          if (!res.ok) throw new Error(res.status);
+          var list = await res.json();
+          var num = function (v) {
+            return v.split('.').map(Number);
+          };
+          var newer = function (a, b) {
+            var x = num(a), y = num(b);
+            for (var i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+            return false;
+          };
+          var best = null;
+          list.forEach(function (r) {
+            if (r.draft || !/^v\d+\.\d+\.\d+$/.test(r.tag_name)) return;
+            var apk = (r.assets || []).find(function (a) {
+              return /\.apk$/.test(a.name);
+            });
+            if (apk && (!best || newer(r.tag_name.slice(1), best.version))) best = { version: r.tag_name.slice(1), apk: apk };
+          });
+          if (!best) throw new Error('keine APK');
+          link.href = best.apk.browser_download_url;
+          link.textContent = 'Herunterladen – Version ' + best.version;
+          link.removeAttribute('aria-disabled');
+          info.textContent =
+            'Version ' + best.version + ' · ' + (best.apk.size / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB · direkt von GitHub (nicht über den Play Store).';
+        } catch (e) {
+          link.textContent = 'Zu den Downloads auf GitHub';
+          link.removeAttribute('aria-disabled');
+          info.textContent = 'Die neueste Version konnte nicht ermittelt werden – unter „Assets“ die Datei „Timelytix-….apk“ wählen.';
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -68,4 +68,4 @@ alle Fragen zu Gewalt, Sexualität, Glücksspiel usw. → Nein; Nutzerinteraktio
 - Benachrichtigungen: Anzeige „Zeit läuft“ in der Statusleiste
 - Speicher (nur Android 9/10 und älter): automatische Sicherung in „Dokumente/Timelytix“
 - Start nach Neustart (`RECEIVE_BOOT_COMPLETED`): stellt die Anzeige „Zeit läuft“ nach einem Neustart wieder her
-- Internet: wird von der App nicht genutzt (Standard der App-Hülle)
+- Internet: nur für die Update-Suche bei GitHub (in der Play-Store-Version überflüssig, siehe docs/android.md)
