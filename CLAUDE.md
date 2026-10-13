@@ -43,6 +43,15 @@ Repository und nicht in den Changelog.
 - Laufender Timer: Summen (Monat, Jahr, fehlende Tage) nur einmal pro Minute rechnen (`useMemo` mit
   minutengenauem `now`), nicht bei jedem Sekundentakt.
 
+## Android-App (Play Store)
+
+- Capacitor (`capacitor.config.ts`, Ordner `android/`), Anleitung und Play-Store-Schritte in `docs/android.md`.
+- Unterschiede zur Web-App nur über `NATIVE` aus `src/lib/native.ts` (Dateien, Teilen, Benachrichtigung; kein
+  Service Worker, Updates über den Play Store). Capacitor-Plugins nur dynamisch importieren (`await import(…)`).
+- Gebaut wird im Workflow `.github/workflows/android.yml` (hier gibt es kein Android-SDK). Nach Änderungen am
+  Web-Code genügt ein Push; nach neuen Plugins `npx cap sync android` und die Änderungen in `android/` committen.
+- App-Symbole: Quellen in `assets/`, erzeugen mit `npx @capacitor/assets generate --android --assetPath assets`.
+
 ## Berechnung / Daten
 
 - Den Zustand (`AppState`) nie direkt verändern, nur über `update()`/`replace()` im Store (legt eine Kopie an).

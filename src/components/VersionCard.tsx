@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { APP_VERSION, IN_DEVELOPMENT } from '../lib/changelog';
+import { NATIVE } from '../lib/native';
 import { checkForUpdates, getUpdateStatus, onUpdateStatus, openUpdatePreview, updateSupported, type UpdateStatus } from '../lib/update';
 
 function statusText(s: UpdateStatus): string | null {
@@ -39,7 +40,8 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
 
       <p className="muted small">
         Neue Versionen werden nur installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu
-        ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt.
+        ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt
+        {NATIVE ? ' (auf GitHub; die neue Version wird heruntergeladen und von Android installiert).' : '.'}
       </p>
 
       <div className="update-actions">

@@ -1,5 +1,6 @@
 import { DEMO, notify } from './demo';
-import { downloadBlob, isIOS } from './device';
+import { isIOS, saveBackupFile } from './device';
+import { NATIVE } from './native';
 import { addDays, dateKey } from './time';
 import type { AppState } from './types';
 
@@ -61,11 +62,20 @@ export function autoBackupDue(state: AppState, today = dateKey(new Date()), last
 }
 
 /** Beim Start und beim Zurückholen der App aufrufen. */
-export function runAutoBackup(state: AppState) {
+export async function runAutoBackup(state: AppState) {
   // Demo ohne Downloads; auf dem iPhone würde ein Download die App mit einer Vorschau unterbrechen
-  if (DEMO || isIOS() || !autoBackupDue(state)) return;
-  const name = backupFileName();
-  downloadBlob(backupBlob(state), name);
-  markBackedUp();
-  notify(`Automatische Sicherung gespeichert: Downloads/${name}`);
+  if (DEMO || (isIOS() && !NATIVE) || saving || !autoBackupDue(state)) return;
+  saving = true;
+  try {
+    const where = await saveBackupFile(backupBlob(state), backupFileName());
+    markBackedUp();
+    notify(`Automatische Sicherung gespeichert: ${where}`);
+  } catch {
+    notify('Automatische Sicherung fehlgeschlagen – bitte „Sicherung exportieren“ nutzen.');
+  } finally {
+    saving = false;
+  }
 }
+
+/** Eine Sicherung läuft gerade (Android: Schreiben ist asynchron). */
+let saving = false;

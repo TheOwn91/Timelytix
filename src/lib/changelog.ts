@@ -61,7 +61,8 @@ export function releasesSince(lastSeen: string | null, changelog = CHANGELOG): R
 }
 
 /** Inhalt von `version.json`: neueste Version, ab 0.11.2 mit den letzten Einträgen. */
-export type LatestRelease = Release & { history?: Release[] };
+/** `apkUrl`: Android-App – Download der APK dieser Version (GitHub-Release). */
+export type LatestRelease = Release & { history?: Release[]; apkUrl?: string };
 
 /** Was bringt ein Update von `current` auf `latest`? Neueste zuerst, mindestens die neueste Version. */
 export function releasesForUpdate(latest: LatestRelease, current = APP_VERSION): Release[] {

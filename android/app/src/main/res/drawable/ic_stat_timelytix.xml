@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Symbol in der Statusleiste („Zeit läuft“): Ring mit Uhrzeigern, einfarbig weiß -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:pathData="M256,106 A150,150 0 1,1 106,256"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="48"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M256,256 L256,170 M256,256 L316,292"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="32"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M256,232 a24,24 0 1,0 0.1,0 z"
+        android:fillColor="#FFFFFFFF" />
+</vector>

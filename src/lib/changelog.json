@@ -1,5 +1,15 @@
 [
   {
+    "version": "0.22.0",
+    "date": "13.10.2026",
+    "changes": [
+      "Timelytix gibt es jetzt auch als Android-App: Download unter theown91.github.io/Timelytix/android.html",
+      "In der Android-App bleiben die Daten in der App, die automatische Sicherung landet im Ordner „Dokumente/Timelytix“",
+      "Die Android-App sucht selbst nach Updates und installiert sie nach Bestätigung",
+      "Datenschutzerklärung unter …/datenschutz.html"
+    ]
+  },
+  {
     "version": "0.21.0",
     "date": "01.10.2026",
     "changes": [
