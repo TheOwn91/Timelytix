@@ -73,25 +73,62 @@ export async function nativeNotifyPermission(request = false): Promise<NativePer
   return res.display === 'granted' ? 'granted' : res.display === 'denied' ? 'denied' : 'prompt';
 }
 
-/** Dauerhafte Benachrichtigung „Zeit läuft“ zeigen bzw. (ohne `notice`) entfernen. */
-export async function showRunningNative(notice: { title: string; body: string } | null, test = false) {
+/**
+ * Zwei Kanäle: „Zeit gestartet“ meldet sich einmal (mit Ton/Einblendung wie eingestellt), „Zeit läuft“
+ * ist still – für Änderungen (Pause) und zum Wiederherstellen, ohne erneut zu melden.
+ */
+const ALERT_CHANNEL = 'running-start';
+const QUIET_CHANNEL = 'running';
+let channels: Promise<void> | undefined;
+
+function ensureChannels() {
+  channels ??= import('@capacitor/local-notifications').then(async ({ LocalNotifications }) => {
+    await LocalNotifications.createChannel({ id: ALERT_CHANNEL, name: 'Zeit gestartet', importance: 3, vibration: false, visibility: 1 });
+    await LocalNotifications.createChannel({ id: QUIET_CHANNEL, name: 'Zeit läuft', importance: 2, vibration: false, visibility: 1 });
+  });
+  return channels.catch(() => undefined);
+}
+
+/** Ist die Anzeige „Zeit läuft“ gerade in der Benachrichtigungsleiste? */
+export async function runningNativeDelivered(): Promise<boolean> {
   const { LocalNotifications } = await import('@capacitor/local-notifications');
-  const id = test ? TEST_ID : RUNNING_ID;
+  const { notifications } = await LocalNotifications.getDeliveredNotifications();
+  return notifications.some((n) => n.id === RUNNING_ID);
+}
+
+/**
+ * Dauerhafte Benachrichtigung „Zeit läuft“ zeigen bzw. (ohne `notice`) entfernen.
+ * `quiet`: still aktualisieren/wiederherstellen, ohne sich erneut zu melden.
+ */
+export async function showRunningNative(notice: { title: string; body: string } | null, opts: { test?: boolean; quiet?: boolean } = {}) {
+  const { LocalNotifications } = await import('@capacitor/local-notifications');
+  const id = opts.test ? TEST_ID : RUNNING_ID;
   if (!notice) {
     await LocalNotifications.cancel({ notifications: [{ id }] });
     return;
   }
+  await ensureChannels();
   await LocalNotifications.schedule({
     notifications: [
       {
         id,
         title: notice.title,
         body: notice.body,
-        ongoing: !test,
-        autoCancel: test,
+        channelId: opts.quiet ? QUIET_CHANNEL : ALERT_CHANNEL,
+        ongoing: !opts.test,
+        autoCancel: !!opts.test,
         // Sofort zeigen, ohne Wecker – sonst verlangt Android die Berechtigung „Wecker und Erinnerungen“
         isExactNotification: false,
       },
     ],
   });
+}
+
+/** Antippen der Anzeige: Das Plugin entfernt sie dabei immer – `onTap` stellt sie wieder her. */
+export function onRunningNotificationTap(onTap: () => void) {
+  void import('@capacitor/local-notifications').then(({ LocalNotifications }) =>
+    LocalNotifications.addListener('localNotificationActionPerformed', (e) => {
+      if (e.notification.id === RUNNING_ID) onTap();
+    }),
+  );
 }
