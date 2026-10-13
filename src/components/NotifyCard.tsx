@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NATIVE } from '../lib/native';
-import { FORGOT_OPTIONS, WEEK_REMINDER_HOUR, forgotStopHours, syncReminders, weekReminderEnabled } from '../lib/reminders';
+import { FORGOT_OPTIONS, forgotStopHours, syncReminders, weekReminderEnabled, weekReminderTime } from '../lib/reminders';
 import {
   notifyEnabled,
   notifySupport,
@@ -26,6 +26,7 @@ export function NotifyCard() {
   const [enabled, setEnabled] = useState(notifyEnabled);
   const [support, setSupport] = useState(notifySupport);
   const week = weekReminderEnabled(state);
+  const weekTime = weekReminderTime(state);
   const forgot = forgotStopHours(state);
   const off = support === 'unsupported' || support === 'install';
 
@@ -43,7 +44,7 @@ export function NotifyCard() {
     await syncRunningStatus(state, true);
   };
 
-  const setReminders = async (patch: { weekReminder?: boolean; forgotStopHours?: number }) => {
+  const setReminders = async (patch: { weekReminder?: boolean; weekReminderTime?: string; forgotStopHours?: number }) => {
     update((d) => {
       d.settings = { ...d.settings, ...patch };
     });
@@ -66,9 +67,21 @@ export function NotifyCard() {
           disabled={off}
           onChange={(e) => void setReminders({ weekReminder: e.target.checked })}
         />
-        Samstags um {WEEK_REMINDER_HOUR} Uhr erinnern, wenn in der Woche Einträge fehlen
+        Samstags erinnern, wenn in der Woche Einträge fehlen
       </label>
       <div className="field-list">
+        {week && (
+          <label className="select-row">
+            <span>Uhrzeit</span>
+            <input
+              id="notify-week-time"
+              type="time"
+              value={weekTime}
+              disabled={off}
+              onChange={(e) => e.target.value && void setReminders({ weekReminderTime: e.target.value })}
+            />
+          </label>
+        )}
         <label className="select-row">
           <span>Erinnern</span>
           <select
@@ -86,7 +99,9 @@ export function NotifyCard() {
         </label>
       </div>
       <p className="muted small">
-        Läuft die Zeit länger als eingestellt, fragt Timelytix nach, ob du vergessen hast abzustempeln. {HINTS[support]}
+        „Erinnern“: Läuft die Zeit länger als eingestellt, fragt Timelytix nach, ob du vergessen hast abzustempeln.
+        {NATIVE && ' Die Anzeige „Zeit läuft“ bleibt stehen, bis du die Zeit stoppst – weggewischt erscheint sie gleich wieder.'}{' '}
+        {HINTS[support]}
         {support === 'ok' &&
           (NATIVE
             ? ' Erinnerungen kommen auch, wenn die App geschlossen ist.'

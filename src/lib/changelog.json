@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.24.0",
+    "date": "13.10.2026",
+    "changes": [
+      "Die Uhrzeit der Erinnerung am Samstag lässt sich einstellen (Einstellungen → Benachrichtigungen)",
+      "Android-App: Die Anzeige „Zeit läuft“ bleibt stehen, bis du die Zeit stoppst – weggewischt erscheint sie sofort wieder, auch nach einem Neustart des Handys"
+    ]
+  },
+  {
     "version": "0.23.0",
     "date": "13.10.2026",
     "changes": [

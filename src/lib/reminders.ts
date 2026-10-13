@@ -1,12 +1,12 @@
 import { buildIndex, daySummary } from './calc';
 import { DEMO } from './demo';
 import { NATIVE, cancelNative, scheduleReminderNative } from './native';
-import { WEEKDAYS_SHORT, addDays, dateKey, fmtTime, parseDateKey } from './time';
+import { WEEKDAYS_SHORT, addDays, combine, dateKey, fmtTime, parseDateKey } from './time';
 import type { AppState, DateKey } from './types';
 
 /**
  * Erinnerungen per Benachrichtigung:
- * - samstags um 10 Uhr, wenn in der Woche (Montag bis Freitag) Einträge fehlen,
+ * - samstags zur eingestellten Uhrzeit (Standard 10 Uhr), wenn in der Woche (Montag bis Freitag) Einträge fehlen,
  * - wenn die Zeit länger als eingestellt läuft (vergessen abzustempeln?).
  *
  * Android-App: Android zeigt sie zur geplanten Zeit, auch wenn die App geschlossen ist (neu geplant bei
@@ -14,7 +14,7 @@ import type { AppState, DateKey } from './types';
  * die App geöffnet ist bzw. beim nächsten Öffnen.
  */
 
-export const WEEK_REMINDER_HOUR = 10;
+export const DEFAULT_WEEK_REMINDER_TIME = '10:00';
 export const DEFAULT_FORGOT_HOURS = 10;
 export const FORGOT_OPTIONS = [0, 8, 9, 10, 11, 12, 14, 16];
 
@@ -31,18 +31,22 @@ export function weekReminderEnabled(state: AppState): boolean {
   return state.settings?.weekReminder !== false;
 }
 
+/** Uhrzeit der Erinnerung am Samstag (HH:MM). */
+export function weekReminderTime(state: AppState): string {
+  return state.settings?.weekReminderTime ?? DEFAULT_WEEK_REMINDER_TIME;
+}
+
 /** Stunden, nach denen an das Abstempeln erinnert wird (0 = aus). */
 export function forgotStopHours(state: AppState): number {
   return state.settings?.forgotStopHours ?? DEFAULT_FORGOT_HOURS;
 }
 
-/** Samstag 10 Uhr der Woche von `key` (Woche Montag–Sonntag). */
-function saturdayOf(key: DateKey): number {
+/** Samstag zur Uhrzeit `hm` in der Woche von `key` (Woche Montag–Sonntag). */
+function saturdayOf(key: DateKey, hm: string): number {
   const d = new Date(`${key}T12:00:00`);
   const toSat = 6 - ((d.getDay() + 6) % 7) - 1; // Montag = 0 … Sonntag = 6, Samstag = 5
   d.setDate(d.getDate() + toSat);
-  d.setHours(WEEK_REMINDER_HOUR, 0, 0, 0);
-  return d.getTime();
+  return combine(dateKey(d), hm);
 }
 
 /** Fehlende Arbeitstage Montag–Freitag vor dem Samstag `sat` (je Arbeitgeber). */
@@ -64,7 +68,8 @@ export function weekGaps(state: AppState, sat: number): { name: string; dates: D
 
 /** Zwei Kennungen im Wechsel: Die Erinnerung vom Wochenende bleibt stehen, während die nächste geplant wird. */
 function weekId(sat: number): number {
-  return 10 + (Math.round(sat / (7 * 864e5)) % 2);
+  // Nach dem Datum (nicht der Uhrzeit), damit eine andere Uhrzeit die Kennung nicht ändert
+  return 10 + (Math.round(Date.parse(`${dateKey(sat)}T00:00Z`) / (7 * 864e5)) % 2);
 }
 
 /** Kurz, z. B. „Mi 7.10.“ */
@@ -111,8 +116,9 @@ function forgotReminder(state: AppState): Reminder | null {
  */
 export function reminders(state: AppState, now: number) {
   const today = dateKey(now);
-  const thisSat = saturdayOf(today);
-  const nextSat = now < thisSat ? thisSat : saturdayOf(addDays(today, 7));
+  const hm = weekReminderTime(state);
+  const thisSat = saturdayOf(today, hm);
+  const nextSat = now < thisSat ? thisSat : saturdayOf(addDays(today, 7), hm);
   const week = weekReminderEnabled(state);
   return {
     currentAt: thisSat,

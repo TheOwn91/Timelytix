@@ -131,6 +131,7 @@ export function validateState(data: unknown): AppState {
           autoBackup: typeof data.settings.autoBackup === 'boolean' ? data.settings.autoBackup : undefined,
           backupIntervalDays: optNum(data.settings.backupIntervalDays),
           weekReminder: typeof data.settings.weekReminder === 'boolean' ? data.settings.weekReminder : undefined,
+          weekReminderTime: isHM(data.settings.weekReminderTime) ? data.settings.weekReminderTime : undefined,
           forgotStopHours: (() => {
             const h = optNum(data.settings.forgotStopHours);
             return h === undefined ? undefined : Math.min(24, Math.max(0, h));

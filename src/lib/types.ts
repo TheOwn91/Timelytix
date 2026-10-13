@@ -125,6 +125,8 @@ export interface AppSettings {
   backupIntervalDays?: number;
   /** Samstags erinnern, wenn in der Woche Einträge fehlen (Standard: an), siehe lib/reminders.ts. */
   weekReminder?: boolean;
+  /** Uhrzeit der Erinnerung am Samstag als HH:MM (Standard 10:00). */
+  weekReminderTime?: string;
   /** Erinnern, wenn die Zeit länger als so viele Stunden läuft (Standard 10, 0 = aus). */
   forgotStopHours?: number;
 }
