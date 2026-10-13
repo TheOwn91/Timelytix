@@ -10,7 +10,8 @@ import { ConfirmHost } from './components/ConfirmHost';
 import { UpdatePreview } from './components/UpdatePreview';
 import { runAutoBackup } from './lib/backup';
 import { DEMO, demoState } from './lib/demo';
-import { syncRunningStatus } from './lib/status';
+import { requestNotifyPermission, setNotifyEnabled, shouldAskNotifyOnStart, syncRunningStatus } from './lib/status';
+import { ask } from './lib/confirm';
 import { useStore } from './lib/store';
 import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStatus, onUpdateStatus, openUpdatePreview } from './lib/update';
 
@@ -64,6 +65,23 @@ export function App() {
       document.removeEventListener('visibilitychange', check);
     };
   }, []);
+
+  // Android-App: nach der Installation einmal nach der Anzeige „Zeit läuft“ fragen
+  // (erst nach dem Einrichtungs-Assistenten – der bietet sie selbst an)
+  useEffect(() => {
+    if (wizard) return;
+    const t = setTimeout(async () => {
+      if (!(await shouldAskNotifyOnStart())) return;
+      const ok = await ask('Soll Timelytix in der Statusleiste anzeigen, dass die Zeit läuft?', {
+        detail: 'Nach „Erlauben“ fragt Android einmal nach der Erlaubnis für Benachrichtigungen. Ändern kannst du das jederzeit unter Einstellungen → Statusleiste.',
+        confirmLabel: 'Erlauben',
+        cancelLabel: 'Nicht jetzt',
+        onConfirm: () => void requestNotifyPermission().then((granted) => granted && void syncRunningStatus(stateRef.current, true)),
+      });
+      if (!ok) setNotifyEnabled(false);
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [wizard]);
 
   // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {

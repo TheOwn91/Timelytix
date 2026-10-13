@@ -62,6 +62,10 @@ Repository und nicht in den Changelog.
 
 ## Versionen / „Was ist neu?“
 
+**PRs mergt Claude selbst**, wenn der Nutzer einen PR möchte („mach bitte einen PR“): PR erstellen, warten bis der
+Workflow „Android-App bauen“ auf dem Branch grün ist, dann mergen und Veröffentlichung, Release und APK prüfen.
+Nie ungefragt mergen; bei „PR, aber nicht mergen“ nur den PR erstellen.
+
 **Neue Versionsnummer erst direkt vor dem Erstellen eines PR** – nicht bei jeder einzelnen Änderung.
 Dann in `src/lib/changelog.json` oben einen Eintrag ergänzen (neue Versionsnummer, Datum, alle für
 Nutzer sichtbaren Änderungen des PR in einfachen Worten) und `version` in `package.json` angleichen.
