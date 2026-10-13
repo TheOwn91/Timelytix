@@ -1,4 +1,4 @@
-import { APP_VERSION, releasesForUpdate, type LatestRelease, type Release } from './changelog';
+import { APP_VERSION, BUILD_VERSION, releasesForUpdate, type LatestRelease, type Release } from './changelog';
 import { compareVersions, fetchLatestApk } from './apk-update';
 import { DEMO, notify } from './demo';
 import { NATIVE } from './native';
@@ -125,7 +125,7 @@ function waitForInstalled(worker: ServiceWorker, timeoutMs = 30_000): Promise<vo
 
 /** Web: jede andere Version auf dem Server (auch zurückgezogene); Android-App: nur neuere APKs. */
 function isNewer(version: string): boolean {
-  return NATIVE ? compareVersions(version, APP_VERSION) > 0 : version !== APP_VERSION;
+  return NATIVE ? compareVersions(version, BUILD_VERSION) > 0 : version !== APP_VERSION;
 }
 
 /** Bei manuellen Updates gefundene neue Version – der Hinweis bleibt nach dem Schließen der App stehen. */

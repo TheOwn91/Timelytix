@@ -21,6 +21,11 @@ Version: kommt aus `package.json` (`0.21.0` → versionName `0.21.0`, versionCod
 - Die App sucht höchstens alle 12 Stunden bei GitHub nach einer neueren APK (`src/lib/apk-update.ts`) und zeigt
   „Update verfügbar“; „Jetzt installieren“ öffnet den Download im Browser, Android fragt dann „Diese App aktualisieren?“.
 - Updates funktionieren nur, wenn jede APK mit **demselben Schlüssel** signiert ist (Secrets unten).
+- **Betas:** Jeder Push auf einen `claude/…`-Branch veröffentlicht zusätzlich eine Beta als Pre-Release
+  `vX.Y.Z-beta.N` (X.Y.Z = nächste Version, N = Laufnummer des Workflows). Angeboten wird sie nur auf Geräten mit
+  „Einstellungen → App-Version & Updates → Beta-Versionen testen“. versionCode = der der richtigen Version − 1, damit
+  sich die richtige Version später darüber installieren lässt. Es bleibt immer nur die neueste Beta stehen; mit der
+  richtigen Version auf `main` werden alle Betas entfernt. Die Download-Seite zeigt nie eine Beta.
 - Kommt später der Play Store dazu: Dort installierte Apps aktualisiert Google; die GitHub-Update-Suche sollte dann
   für die Play-Store-Version abgeschaltet werden.
 

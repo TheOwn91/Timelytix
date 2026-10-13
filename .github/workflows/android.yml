@@ -5,6 +5,8 @@ name: Android-App bauen
 # - mit Signaturschlüssel die signierte APK zum Herunterladen (Artefakt „timelytix-apk“) und das
 #   App-Paket für den Play Store (Artefakt „timelytix-aab“); auf main wird die APK an das GitHub-Release
 #   der Version gehängt (Download-Seite und Update-Suche der App holen sie dort)
+# - auf claude/…-Branches (mit Schlüssel) zusätzlich eine Beta als Pre-Release „vX.Y.Z-beta.N“ – nur
+#   Geräte mit „Beta-Versionen testen“ bekommen sie angeboten; ältere Betas werden dabei entfernt
 # Einrichtung des Schlüssels: docs/android.md
 on:
   workflow_dispatch:
@@ -22,7 +24,7 @@ on:
       - '.github/workflows/android.yml'
 
 permissions:
-  contents: write # APK an das Release hängen (nur auf main)
+  contents: write # APK an das Release hängen (main) bzw. Beta veröffentlichen (claude/…)
 
 concurrency:
   group: android-${{ github.ref }}
@@ -35,6 +37,8 @@ jobs:
       KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Tags und Verlauf für die Beta-Versionshinweise
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -47,6 +51,27 @@ jobs:
       - run: npm test
         env:
           TZ: Europe/Berlin
+
+      - name: Beta-Version bestimmen
+        if: startsWith(github.ref, 'refs/heads/claude/') && env.KEYSTORE_BASE64 != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          # Schon veröffentlicht (Versionsnummer wird erst vor dem PR erhöht) → Beta der nächsten Version
+          if gh release view "v$version" >/dev/null 2>&1; then
+            version=$(node -p "const [a, b, c] = require('./package.json').version.split('.').map(Number); [a, b, c + 1].join('.')")
+          fi
+          IFS=. read -r major minor patch <<< "$version"
+          beta="$version-beta.$GITHUB_RUN_NUMBER"
+          {
+            echo "BETA_VERSION=$beta"
+            echo "APP_VERSION_NAME=$beta"
+            echo "APP_VERSION_CODE=$((major * 1000000 + minor * 1000 + patch * 10 - 1))"
+            echo "VITE_APP_VERSION=$beta"
+          } >> "$GITHUB_ENV"
+          echo "Beta: $beta"
+
       - run: npm run build
       - run: npx cap sync android
 
@@ -66,7 +91,7 @@ jobs:
           chmod +x gradlew
           if [ -n "$ANDROID_KEYSTORE_PATH" ]; then
             ./gradlew --no-daemon assembleRelease bundleRelease
-            cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/Timelytix-$(node -p "require('../package.json').version").apk"
+            cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/Timelytix-${APP_VERSION_NAME:-$(node -p "require('../package.json').version")}.apk"
           else
             ./gradlew --no-daemon assembleDebug
             cp app/build/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/Timelytix-test.apk"
@@ -93,6 +118,24 @@ jobs:
           # Das Release legt der Workflow „Versionen auf GitHub anlegen“ an – kurz darauf warten
           for i in $(seq 1 30); do gh release view "v$version" >/dev/null 2>&1 && break; sleep 10; done
           gh release upload "v$version" "$RUNNER_TEMP/Timelytix-$version.apk" --clobber
+          # Betas sind mit der richtigen Version überholt
+          gh release list --limit 100 --json tagName --jq '.[].tagName' | { grep -E -- '-beta\.[0-9]+$' || true; } |
+            while read -r tag; do gh release delete "$tag" --yes --cleanup-tag; done
+
+      - name: Beta veröffentlichen
+        if: env.BETA_VERSION != '' && env.ANDROID_KEYSTORE_PATH != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Versionshinweise: Commits seit der letzten richtigen Version (ohne „Version …“ und Merges)
+          last=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --exclude '*-beta*' 2>/dev/null || true)
+          changes=$(git log --no-merges --format='- %s' ${last:+"$last..HEAD"} | { grep -v -E '^- Version [0-9]' || true; } | head -30)
+          notes=$(printf '**%s**\n\nBeta zum Testen – Änderungen seit %s:\n\n%s\n' "$(TZ=Europe/Berlin date +%d.%m.%Y)" "${last:-Beginn}" "$changes")
+          gh release create "v$BETA_VERSION" "$RUNNER_TEMP/Timelytix-$BETA_VERSION.apk" --target "$GITHUB_SHA" \
+            --title "Timelytix $BETA_VERSION (Beta)" --notes "$notes" --prerelease --latest=false
+          # Nur die neueste Beta behalten
+          gh release list --limit 100 --json tagName --jq '.[].tagName' | { grep -E -- '-beta\.[0-9]+$' || true; } |
+            { grep -v -x -F "v$BETA_VERSION" || true; } | while read -r tag; do gh release delete "$tag" --yes --cleanup-tag; done
 
       - name: Schlüssel entfernen
         if: always()

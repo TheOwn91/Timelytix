@@ -24,6 +24,23 @@ describe('Updates der Android-App über GitHub', () => {
     expect(latest?.history?.map((r) => r.version)).toEqual(['0.22.0', '0.21.0']);
   });
 
+  it('Beta liegt vor ihrer Version', () => {
+    expect(compareVersions('0.25.0-beta.2', '0.24.1')).toBeGreaterThan(0);
+    expect(compareVersions('0.25.0-beta.2', '0.25.0')).toBeLessThan(0);
+    expect(compareVersions('0.25.0-beta.10', '0.25.0-beta.9')).toBeGreaterThan(0);
+    expect(compareVersions('0.25.0-beta.3', '0.25.0-beta.3')).toBe(0);
+  });
+
+  it('Betas nur, wenn eingeschaltet', () => {
+    const list = [rel('0.25.0-beta.12'), rel('0.24.1'), rel('0.24.0')];
+    expect(latestApkRelease(list)?.version).toBe('0.24.1');
+    const beta = latestApkRelease(list, true);
+    expect(beta?.version).toBe('0.25.0-beta.12');
+    expect(beta?.history?.map((r) => r.version)).toEqual(['0.25.0-beta.12', '0.24.1', '0.24.0']);
+    // Die richtige Version ist neuer als ihre Beta
+    expect(latestApkRelease([rel('0.25.0'), ...list], true)?.version).toBe('0.25.0');
+  });
+
   it('ohne APK kein Update', () => {
     expect(latestApkRelease([rel('0.21.0', false)])).toBeUndefined();
   });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Release } from '../lib/changelog';
-import { APP_VERSION } from '../lib/changelog';
+import { BUILD_VERSION } from '../lib/changelog';
 import { UPDATE_PREVIEW_EVENT, applyUpdate, fetchUpdateNotes } from '../lib/update';
 import { Modal } from './Modal';
 import { ReleaseList } from './WhatsNew';
@@ -24,7 +24,7 @@ export function UpdatePreview() {
   const target = releases?.[0]?.version;
   return (
     <Modal title={target ? `Update auf Version ${target}` : 'Update verfügbar'} onClose={() => setOpen(false)}>
-      <p className="muted small">Installiert ist Version {APP_VERSION}. Das ist neu:</p>
+      <p className="muted small">Installiert ist Version {BUILD_VERSION}. Das ist neu:</p>
       {releases === null ? (
         <p className="muted">Änderungen werden geladen …</p>
       ) : releases.length ? (

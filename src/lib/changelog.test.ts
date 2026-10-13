@@ -23,6 +23,8 @@ describe('releasesForUpdate', () => {
     expect(releasesForUpdate(latest, '0.11.1').map((x) => x.version)).toEqual(['0.12.0', '0.11.2']));
   it('nichts, wenn schon aktuell', () => expect(releasesForUpdate(latest, '0.12.0')).toEqual([]));
   it('unbekannte Version: alle bekannten Einträge', () => expect(releasesForUpdate(latest, '0.1.0')).toHaveLength(4));
+  it('von einer Beta: nur die Versionen danach', () =>
+    expect(releasesForUpdate(latest, '0.12.0-beta.5').map((x) => x.version)).toEqual(['0.12.0']));
   it('ältere version.json ohne Verlauf: nur die neueste', () =>
     expect(releasesForUpdate(r('0.12.0'), '0.11.1').map((x) => x.version)).toEqual(['0.12.0']));
 });
