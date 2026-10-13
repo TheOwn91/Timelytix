@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.22.1",
+    "date": "13.10.2026",
+    "changes": [
+      "Android-App: Beim Start der Zeit fragt Android nicht mehr nach „Wecker und Erinnerungen“ – die Anzeige „Zeit läuft“ erscheint direkt",
+      "Android-App: Beim ersten Start fragt die App, ob die Anzeige „Zeit läuft“ in der Statusleiste erlaubt werden soll"
+    ]
+  },
+  {
     "version": "0.22.0",
     "date": "13.10.2026",
     "changes": [
