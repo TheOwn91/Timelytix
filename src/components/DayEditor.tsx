@@ -2,10 +2,10 @@ import { Fragment } from 'react';
 import { ABSENCE_ORDER, ABSENCE_TYPES, visibleAbsences } from '../lib/absences';
 import { buildIndex, daySummary } from '../lib/calc';
 import { ask } from '../lib/confirm';
-import { shiftsToNextDay, workDate } from '../lib/shift';
+import { crossesMidnight, shiftsToNextDay, workDate } from '../lib/shift';
 import { projectAt } from '../lib/terms';
 import { useNow, useStore } from '../lib/store';
-import { MINUTE, combine, dateKey, fmtDate, fmtDuration, fmtTime, uid } from '../lib/time';
+import { MINUTE, addDays, combine, dateKey, fmtDate, fmtDuration, fmtTime, uid } from '../lib/time';
 import type { AbsenceType, DateKey, Project, Session } from '../lib/types';
 import { Modal } from './Modal';
 
@@ -44,14 +44,21 @@ export function DayEditor({ project, date, onClose }: Props) {
 
   const addSession = () => {
     const last = day.sessions[day.sessions.length - 1];
-    // Beginn: aktuelle Uhrzeit am angezeigten Tag (ab 18 Uhr bei „Nachtschicht dem Folgetag zuordnen“
-    // am Vortag). Würde das eine vorhandene Buchung überschneiden, 30 min nach deren Ende.
+    // Beginn: aktuelle Uhrzeit am angezeigten Tag. Würde das eine vorhandene Buchung überschneiden,
+    // 30 min nach deren Ende.
     const startHm = fmtTime(Date.now());
-    let startTs = combine(workDate(project, date, startHm), startHm);
-    if (last && startTs < (last.end ?? now)) startTs = (last.end ?? now) + 30 * MINUTE;
     const workMin = Math.round(terms.dailyTargetHours * 60);
-    const pauses = !last && workMin > 360 ? [{ start: startTs + 240 * MINUTE, end: startTs + 270 * MINUTE }] : [];
-    const endTs = startTs + (workMin + (pauses.length ? 30 : 0)) * MINUTE;
+    const withPause = !last && workMin > 360;
+    const durationMin = workMin + (withPause ? 30 : 0);
+    let startTs = combine(date, startHm);
+    // „Nachtschicht dem Folgetag zuordnen“: Ginge die Schicht über Mitternacht, stünde sie beim Folgetag –
+    // dann am Vortag beginnen, damit sie bei diesem Tag steht
+    if (shiftsToNextDay(project) && crossesMidnight({ start: startTs, end: startTs + durationMin * MINUTE })) {
+      startTs = combine(addDays(date, -1), startHm);
+    }
+    if (last && startTs < (last.end ?? now)) startTs = (last.end ?? now) + 30 * MINUTE;
+    const pauses = withPause ? [{ start: startTs + 240 * MINUTE, end: startTs + 270 * MINUTE }] : [];
+    const endTs = startTs + durationMin * MINUTE;
     update((d) => {
       d.sessions.push({ id: uid(), projectId: project.id, start: startTs, end: endTs, pauses });
       d.absences = d.absences.filter(
@@ -93,8 +100,8 @@ export function DayEditor({ project, date, onClose }: Props) {
                     e.target.value &&
                     updateSession(s.id, (x) => {
                       const duration = (x.end ?? now) - x.start;
-                      // Beginn ab 18 Uhr bei „Nachtschicht dem Folgetag zuordnen“: am Vortag, sonst am angezeigten Tag
-                      const start = combine(workDate(project, date, e.target.value), e.target.value);
+                      // „Nachtschicht dem Folgetag zuordnen“: Beginn später als das Ende (über Mitternacht) → am Vortag
+                      const start = combine(workDate(project, date, e.target.value, fmtTime(x.end ?? now)), e.target.value);
                       const shift = start - x.start;
                       const dayChanged = dateKey(start) !== dateKey(x.start);
                       x.start = start;
@@ -271,7 +278,7 @@ export function DayEditor({ project, date, onClose }: Props) {
       )}
       <p className="muted small">
         {shiftsToNextDay(project)
-          ? `Nachtschichten stehen beim Folgetag: Ein Beginn ab 18 Uhr bezieht sich auf ${fmtDate(workDate(project, date, '18:00'))}, früher auf diesen Tag. `
+          ? `Schichten über Mitternacht stehen beim Folgetag: Liegt der Beginn nach dem Ende (z. B. 21:30–06:00), beginnt die Schicht am ${fmtDate(addDays(date, -1))}. Endet sie vor Mitternacht, steht sie am Tag des Beginns. `
           : 'Tipp: Endzeiten vor der Beginnzeit werden dem Folgetag zugeordnet (Nachtschicht). '}
         Tagessoll: {fmtDuration(terms.dailyTargetHours * 60)} h
       </p>

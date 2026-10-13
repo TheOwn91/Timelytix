@@ -44,15 +44,27 @@ describe('Nachtschicht dem Folgetag zuordnen', () => {
     expect(shiftsToNextDay({})).toBe(false);
     const p: Project = { ...hahn(), name: 'Muster GmbH' };
     setShiftToNextDay(p, true);
-    expect(sessionDay(p, { start: combine('2026-09-27', '21:30') })).toBe('2026-09-28');
+    expect(sessionDay(p, { start: combine('2026-09-27', '21:30'), end: combine('2026-09-28', '06:00') })).toBe('2026-09-28');
   });
 
-  it('nur Schichten ab 18 Uhr wandern, Tagesschichten bleiben', () => {
+  it('nur Schichten über Mitternacht wandern', () => {
     const p = { shiftToNextDay: true };
-    expect(sessionDay(p, { start: combine('2026-09-27', '18:00') })).toBe('2026-09-28');
-    expect(sessionDay(p, { start: combine('2026-09-27', '17:59') })).toBe('2026-09-27');
-    expect(sessionDay(p, { start: combine('2026-09-28', '06:00') })).toBe('2026-09-28');
-    expect(sessionDay(p, { start: combine('2026-09-28', '00:30') })).toBe('2026-09-28');
+    const at = (d: string, t: string) => combine(d, t);
+    expect(sessionDay(p, { start: at('2026-09-27', '21:30'), end: at('2026-09-28', '06:00') })).toBe('2026-09-28');
+    // Spätschicht bis vor Mitternacht bleibt am Tag
+    expect(sessionDay(p, { start: at('2026-09-27', '18:00'), end: at('2026-09-27', '23:30') })).toBe('2026-09-27');
+    // Ende genau um 0:00 zählt noch zum Tag des Beginns
+    expect(sessionDay(p, { start: at('2026-09-27', '16:00'), end: at('2026-09-28', '00:00') })).toBe('2026-09-27');
+    // Auch ein früher Beginn wandert, wenn die Schicht über Mitternacht geht
+    expect(sessionDay(p, { start: at('2026-09-27', '15:00'), end: at('2026-09-28', '00:30') })).toBe('2026-09-28');
+    expect(sessionDay(p, { start: at('2026-09-28', '06:00'), end: at('2026-09-28', '14:00') })).toBe('2026-09-28');
+  });
+
+  it('laufende Zeit wechselt erst nach Mitternacht zum Folgetag', () => {
+    const p = { shiftToNextDay: true };
+    const s = { start: combine('2026-09-27', '21:30') };
+    expect(sessionDay(p, s, combine('2026-09-27', '23:59'))).toBe('2026-09-27');
+    expect(sessionDay(p, s, combine('2026-09-28', '00:10'))).toBe('2026-09-28');
   });
 
   it('Frühschicht steht mit Option beim eigenen Tag', () => {
@@ -95,12 +107,25 @@ describe('Nachtschicht dem Folgetag zuordnen', () => {
     expect(p.workdays).toEqual([0, 1, 2, 3, 4]);
   });
 
-  it('Beginn ab 18 Uhr im Tages-Editor bezieht sich auf den Vortag', () => {
+  it('Beginn im Tages-Editor: über Mitternacht am Vortag, sonst am angezeigten Tag', () => {
     const p = hahn();
-    expect(workDate(p, '2026-09-28', '21:30')).toBe('2026-09-28');
+    expect(workDate(p, '2026-09-28', '21:30', '06:00')).toBe('2026-09-28');
     setShiftToNextDay(p, true);
-    expect(workDate(p, '2026-09-28', '21:30')).toBe('2026-09-27');
-    expect(workDate(p, '2026-09-28', '06:00')).toBe('2026-09-28');
+    expect(workDate(p, '2026-09-28', '21:30', '06:00')).toBe('2026-09-27');
+    expect(workDate(p, '2026-09-28', '18:00', '23:00')).toBe('2026-09-28');
+    expect(workDate(p, '2026-09-28', '06:00', '14:00')).toBe('2026-09-28');
+  });
+
+  it('Spätschicht bis 23 Uhr steht mit Option an ihrem Tag', () => {
+    const p = hahn();
+    setShiftToNextDay(p, true);
+    const st: AppState = {
+      ...state(p),
+      sessions: [{ id: 'sp', projectId: 'p', start: combine('2026-09-29', '15:00'), end: combine('2026-09-29', '23:00'), pauses: [] }],
+    };
+    const idx = buildIndex(st, 'p');
+    expect(daySummary(p, '2026-09-29', idx, now).sessions).toHaveLength(1);
+    expect(daySummary(p, '2026-09-30', idx, now).sessions).toHaveLength(0);
   });
 
   it('Monatsgrenze: Schicht ab 30.09. zählt im Oktober', () => {

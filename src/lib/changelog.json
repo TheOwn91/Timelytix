@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.22.3",
+    "date": "13.10.2026",
+    "changes": [
+      "„Nachtschicht dem Folgetag zuordnen“: Eine Schicht wird nur noch verschoben, wenn sie über 0:00 Uhr geht – Spätschichten, die vor Mitternacht enden, bleiben an ihrem Tag",
+      "Eine laufende Zeit wechselt erst nach Mitternacht zum Folgetag"
+    ]
+  },
+  {
     "version": "0.22.2",
     "date": "13.10.2026",
     "changes": [

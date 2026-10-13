@@ -156,9 +156,9 @@ function ProjectForm({ project }: { project: Project }) {
           Nachtschicht dem Folgetag zuordnen
         </label>
         <p className="muted small">
-          Für Schichten, die ab 18 Uhr beginnen: Anstempeln Sonntagabend → die Schicht steht beim Montag, Montag →
-          Dienstag usw. Früher beginnende Schichten bleiben an ihrem Tag. Zulagen (z. B. Sonntag) werden weiter nach
-          den echten Uhrzeiten berechnet. Die Arbeitstage wandern mit
+          Für Schichten über Mitternacht: Anstempeln Sonntagabend, Ende Montag früh → die Schicht steht beim Montag,
+          Montag → Dienstag usw. Schichten, die vor Mitternacht enden, bleiben an ihrem Tag. Zulagen (z. B. Sonntag)
+          werden weiter nach den echten Uhrzeiten berechnet. Die Arbeitstage wandern mit
           {project.shiftToNextDay ? '.' : ` (${fmtWorkdays(project.workdays)} → ${fmtWorkdays(shiftWeekdays(project.workdays, 1))}).`}
         </p>
       </div>

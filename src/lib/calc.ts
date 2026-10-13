@@ -231,10 +231,12 @@ const indexCache = new WeakMap<AppState, Map<string, Index>>();
 export function buildIndex(state: AppState, projectId: string): Index {
   let perState = indexCache.get(state);
   if (!perState) indexCache.set(state, (perState = new Map()));
-  const cached = perState.get(projectId);
+  // Eine laufende Zeit wechselt nach Mitternacht zum Folgetag („Nachtschicht dem Folgetag zuordnen“)
+  const key = state.sessions.some((s) => s.end === undefined) ? `${projectId}|${dateKey(Date.now())}` : projectId;
+  const cached = perState.get(key);
   if (cached) return cached;
   const index = createIndex(state, projectId);
-  perState.set(projectId, index);
+  perState.set(key, index);
   return index;
 }
 

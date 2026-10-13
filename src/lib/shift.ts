@@ -2,11 +2,10 @@ import { addDays, dateKey, parseHM } from './time';
 import type { DateKey, Project, Session, Weekday } from './types';
 
 /**
- * Option „Nachtschicht dem Folgetag zuordnen“: Eine Schicht, die ab 18 Uhr beginnt, steht beim
- * Folgetag (Anstempeln Sonntag 21:30 → steht beim Montag). Früher beginnende Schichten bleiben an
- * ihrem Tag. Zulagen werden weiter nach den echten Uhrzeiten berechnet.
+ * Option „Nachtschicht dem Folgetag zuordnen“: Eine Schicht, die über 0:00 Uhr geht, steht beim
+ * Folgetag (Anstempeln Sonntag 21:30, Ende Montag 06:00 → steht beim Montag). Endet sie vor
+ * Mitternacht, bleibt sie an ihrem Tag. Zulagen werden weiter nach den echten Uhrzeiten berechnet.
  */
-export const NIGHT_SHIFT_FROM = '18:00';
 
 type ShiftProject = Pick<Project, 'shiftToNextDay'>;
 
@@ -15,25 +14,24 @@ export function shiftsToNextDay(p: ShiftProject): boolean {
   return !!p.shiftToNextDay;
 }
 
-/** Beginnt eine Schicht zu dieser Uhrzeit („HH:MM“) als Nachtschicht? */
-export function isNightStart(hm: string): boolean {
-  return parseHM(hm) >= parseHM(NIGHT_SHIFT_FROM);
+/** Geht eine Buchung über 0:00 Uhr? Eine laufende Zeit erst, wenn Mitternacht vorbei ist. */
+export function crossesMidnight(s: Pick<Session, 'start' | 'end'>, now = Date.now()): boolean {
+  // Ende genau um 0:00 zählt noch zum Vortag
+  return dateKey((s.end ?? now) - 1) > dateKey(s.start);
 }
 
 /** Tag, bei dem eine Buchung angezeigt und gezählt wird. */
-export function sessionDay(p: ShiftProject, s: Pick<Session, 'start'>): DateKey {
+export function sessionDay(p: ShiftProject, s: Pick<Session, 'start' | 'end'>, now = Date.now()): DateKey {
   const day = dateKey(s.start);
-  const d = new Date(s.start);
-  const nightStart = d.getHours() * 60 + d.getMinutes() >= parseHM(NIGHT_SHIFT_FROM);
-  return shiftsToNextDay(p) && nightStart ? addDays(day, 1) : day;
+  return shiftsToNextDay(p) && crossesMidnight(s, now) ? addDays(day, 1) : day;
 }
 
 /**
- * Kalendertag, auf den sich eine Beginnzeit am angezeigten Tag bezieht: bei aktiver Option und
- * Beginn ab 18 Uhr der Vortag, sonst der Tag selbst.
+ * Kalendertag des Beginns einer Buchung, die am Tag `shownDate` steht: bei aktiver Option und einer
+ * Schicht über Mitternacht (Beginn später als Ende, z. B. 21:30–06:00) der Vortag, sonst der Tag selbst.
  */
-export function workDate(p: ShiftProject, shownDate: DateKey, startHm: string): DateKey {
-  return shiftsToNextDay(p) && isNightStart(startHm) ? addDays(shownDate, -1) : shownDate;
+export function workDate(p: ShiftProject, shownDate: DateKey, startHm: string, endHm: string): DateKey {
+  return shiftsToNextDay(p) && parseHM(startHm) > parseHM(endHm) ? addDays(shownDate, -1) : shownDate;
 }
 
 /** Arbeitstage um `delta` Tage verschieben (z. B. So–Do → Mo–Fr). */
