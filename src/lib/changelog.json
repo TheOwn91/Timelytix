@@ -1,5 +1,15 @@
 [
   {
+    "version": "0.23.0",
+    "date": "13.10.2026",
+    "changes": [
+      "Neu: Erinnerung samstags um 10 Uhr, wenn in der Woche (Montag bis Freitag) noch Einträge fehlen",
+      "Neu: Erinnerung, wenn die Zeit länger als eingestellt läuft (Standard 10 Stunden) – vergessen abzustempeln?",
+      "Beides lässt sich unter Einstellungen → Benachrichtigungen ein- und ausschalten; die Android-App erinnert auch, wenn sie geschlossen ist",
+      "Android-App: Die Anzeige „Zeit läuft“ verschwindet beim Stoppen zuverlässig aus der Benachrichtigungsleiste"
+    ]
+  },
+  {
     "version": "0.22.3",
     "date": "13.10.2026",
     "changes": [
