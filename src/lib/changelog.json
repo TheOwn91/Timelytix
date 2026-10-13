@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.25.0",
+    "date": "13.10.2026",
+    "changes": [
+      "Android-App: Neuer Schalter „Beta-Versionen testen“ (Einstellungen → App-Version & Updates) – damit bekommst du Testversionen schon vor der richtigen Version",
+      "Ohne den Schalter gibt es wie bisher nur die richtigen Versionen"
+    ]
+  },
+  {
     "version": "0.24.1",
     "date": "13.10.2026",
     "changes": [
