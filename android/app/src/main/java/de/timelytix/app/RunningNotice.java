@@ -19,7 +19,12 @@ import androidx.core.app.NotificationManagerCompat;
 final class RunningNotice {
     static final int ID = 1;
     static final String ALERT_CHANNEL = "running-start";
-    static final String QUIET_CHANNEL = "running";
+    /**
+     * Still, aber mit normaler Wichtigkeit: Symbol in der Statusleiste und nicht im Bereich „Lautlos“.
+     * (Ersetzt den Kanal „running“ mit niedriger Wichtigkeit – die lässt sich nachträglich nicht ändern.)
+     */
+    static final String QUIET_CHANNEL = "running-silent";
+    private static final String OLD_QUIET_CHANNEL = "running";
     private static final String PREFS = "running-notice";
 
     private RunningNotice() {}
@@ -82,14 +87,16 @@ final class RunningNotice {
     private static void createChannels(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         NotificationManager nm = context.getSystemService(NotificationManager.class);
-        // Gleiche Kanäle wie bisher (src/lib/native.ts) – bestehende Einstellungen bleiben erhalten
+        // „Zeit gestartet“ wie bisher (src/lib/native.ts) – bestehende Einstellungen bleiben erhalten
         NotificationChannel alert = new NotificationChannel(ALERT_CHANNEL, "Zeit gestartet", NotificationManager.IMPORTANCE_DEFAULT);
         alert.enableVibration(false);
         alert.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
-        NotificationChannel quiet = new NotificationChannel(QUIET_CHANNEL, "Zeit läuft", NotificationManager.IMPORTANCE_LOW);
+        NotificationChannel quiet = new NotificationChannel(QUIET_CHANNEL, "Zeit läuft", NotificationManager.IMPORTANCE_DEFAULT);
+        quiet.setSound(null, null);
         quiet.enableVibration(false);
         quiet.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
         nm.createNotificationChannel(alert);
         nm.createNotificationChannel(quiet);
+        nm.deleteNotificationChannel(OLD_QUIET_CHANNEL);
     }
 }

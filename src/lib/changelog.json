@@ -1,5 +1,12 @@
 [
   {
+    "version": "0.24.1",
+    "date": "13.10.2026",
+    "changes": [
+      "Android-App: Das Symbol „Zeit läuft“ bleibt in der Statusleiste – auch nach dem Wegwischen erscheint die Anzeige wieder im normalen Bereich statt unter „Lautlos“ (ohne Ton)"
+    ]
+  },
+  {
     "version": "0.24.0",
     "date": "13.10.2026",
     "changes": [
