@@ -49,6 +49,29 @@ export function notifySupport(): NotifySupport {
   return 'ask';
 }
 
+/** Wie notifySupport, in der Android-App aber erst nach dem Abfragen der aktuellen Berechtigung. */
+export async function refreshNotifySupport(): Promise<NotifySupport> {
+  if (NATIVE) nativePermission = await nativeNotifyPermission().catch(() => nativePermission);
+  return notifySupport();
+}
+
+const ASKED_KEY = 'timetrack.notifyAsked';
+
+/**
+ * Android-App: Beim ersten Start einmal fragen, ob die Anzeige „Zeit läuft“ erlaubt werden soll
+ * (statt erst beim ersten „Zeit starten“). `true`, wenn jetzt gefragt werden soll.
+ */
+export async function shouldAskNotifyOnStart(): Promise<boolean> {
+  if (!NATIVE || !notifyEnabled()) return false;
+  try {
+    if (localStorage.getItem(ASKED_KEY)) return false;
+    localStorage.setItem(ASKED_KEY, '1');
+  } catch {
+    return false;
+  }
+  return (await refreshNotifySupport()) === 'ask';
+}
+
 /** Muss direkt aus einem Tipp heraus aufgerufen werden (sonst lehnt iOS die Anfrage ab). */
 export async function requestNotifyPermission(): Promise<boolean> {
   if (NATIVE) {

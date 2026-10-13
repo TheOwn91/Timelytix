@@ -82,6 +82,16 @@ export async function showRunningNative(notice: { title: string; body: string } 
     return;
   }
   await LocalNotifications.schedule({
-    notifications: [{ id, title: notice.title, body: notice.body, ongoing: !test, autoCancel: test }],
+    notifications: [
+      {
+        id,
+        title: notice.title,
+        body: notice.body,
+        ongoing: !test,
+        autoCancel: test,
+        // Sofort zeigen, ohne Wecker – sonst verlangt Android die Berechtigung „Wecker und Erinnerungen“
+        isExactNotification: false,
+      },
+    ],
   });
 }
