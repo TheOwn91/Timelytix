@@ -74,18 +74,16 @@ export async function nativeNotifyPermission(request = false): Promise<NativePer
 }
 
 /**
- * Zwei Kanäle: „Zeit gestartet“ meldet sich einmal (mit Ton/Einblendung wie eingestellt), „Zeit läuft“
- * ist still – für Änderungen (Pause) und zum Wiederherstellen, ohne erneut zu melden.
+ * Kanäle für Probe-Benachrichtigung und Erinnerungen. Die Anzeige „Zeit läuft“ legt ihre Kanäle selbst an
+ * (RunningNotice.java: „Zeit gestartet“ meldet sich einmal, „Zeit läuft“ still für Pause/Wiederherstellen).
  */
 const ALERT_CHANNEL = 'running-start';
-const QUIET_CHANNEL = 'running';
 const REMINDER_CHANNEL = 'reminders';
 let channels: Promise<void> | undefined;
 
 function ensureChannels() {
   channels ??= import('@capacitor/local-notifications').then(async ({ LocalNotifications }) => {
     await LocalNotifications.createChannel({ id: ALERT_CHANNEL, name: 'Zeit gestartet', importance: 3, vibration: false, visibility: 1 });
-    await LocalNotifications.createChannel({ id: QUIET_CHANNEL, name: 'Zeit läuft', importance: 2, vibration: false, visibility: 1 });
     await LocalNotifications.createChannel({ id: REMINDER_CHANNEL, name: 'Erinnerungen', importance: 4, visibility: 1 });
   });
   return channels.catch(() => undefined);
