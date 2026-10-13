@@ -94,7 +94,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
     // erst in der App, die Abfrage des Browsers kommt nur nach „Erlauben“
     if (notifyEnabled() && notifySupport() === 'ask') {
       void ask('Soll Timelytix in der Statusleiste anzeigen, dass die Zeit läuft?', {
-        detail: 'Nach „Erlauben“ fragt dein Handy einmal nach der Erlaubnis. Ändern kannst du das jederzeit unter Einstellungen → Statusleiste.',
+        detail: 'Nach „Erlauben“ fragt dein Handy einmal nach der Erlaubnis. Ändern kannst du das jederzeit unter Einstellungen → Benachrichtigungen.',
         confirmLabel: 'Erlauben',
         cancelLabel: 'Nicht jetzt',
         // Nach der Erlaubnis die Anzeige gleich zeigen, nicht erst beim nächsten Tipp

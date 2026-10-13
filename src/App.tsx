@@ -10,7 +10,8 @@ import { ConfirmHost } from './components/ConfirmHost';
 import { UpdatePreview } from './components/UpdatePreview';
 import { runAutoBackup } from './lib/backup';
 import { DEMO, demoState } from './lib/demo';
-import { requestNotifyPermission, setNotifyEnabled, shouldAskNotifyOnStart, syncRunningStatus } from './lib/status';
+import { syncReminders } from './lib/reminders';
+import { refreshNotifySupport, requestNotifyPermission, setNotifyEnabled, shouldAskNotifyOnStart, syncRunningStatus } from './lib/status';
 import { ask } from './lib/confirm';
 import { useStore } from './lib/store';
 import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStatus, onUpdateStatus, openUpdatePreview } from './lib/update';
@@ -72,8 +73,9 @@ export function App() {
     if (wizard) return;
     const t = setTimeout(async () => {
       if (!(await shouldAskNotifyOnStart())) return;
-      const ok = await ask('Soll Timelytix in der Statusleiste anzeigen, dass die Zeit läuft?', {
-        detail: 'Nach „Erlauben“ fragt Android einmal nach der Erlaubnis für Benachrichtigungen. Ändern kannst du das jederzeit unter Einstellungen → Statusleiste.',
+      const ok = await ask('Soll Timelytix Benachrichtigungen zeigen?', {
+        detail:
+          'Die Anzeige „Zeit läuft“ in der Statusleiste und Erinnerungen, wenn Einträge fehlen oder du vergessen hast abzustempeln. Nach „Erlauben“ fragt Android einmal nach der Erlaubnis. Ändern kannst du das jederzeit unter Einstellungen → Benachrichtigungen.',
         confirmLabel: 'Erlauben',
         cancelLabel: 'Nicht jetzt',
         onConfirm: () => void requestNotifyPermission().then((granted) => granted && void syncRunningStatus(stateRef.current, true)),
@@ -86,6 +88,21 @@ export function App() {
   // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {
     void syncRunningStatus(state);
+  }, [state]);
+
+  // Erinnerungen (fehlende Tage, vergessen abzustempeln): bei Änderungen neu planen und jede Minute
+  // prüfen – die Web-App kann sie nur zeigen, solange sie geöffnet ist
+  useEffect(() => {
+    const sync = async () => {
+      void syncReminders(stateRef.current, (await refreshNotifySupport()) === 'ok');
+    };
+    void sync();
+    const timer = setInterval(() => void sync(), 60_000);
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', sync);
+    };
   }, [state]);
 
   useEffect(() => {
