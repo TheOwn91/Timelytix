@@ -45,7 +45,7 @@ export interface Project {
   surchargeMode?: SurchargeMode;
   /** Ab diesem Tag werden fehlende Einträge angezeigt. */
   startDate: DateKey;
-  /** Nachtschichten (Beginn ab 18 Uhr) dem Folgetag zuordnen, siehe shift.ts. */
+  /** Schichten über Mitternacht dem Folgetag zuordnen, siehe shift.ts. */
   shiftToNextDay?: boolean;
   /** Urlaubsanspruch pro Kalenderjahr in Tagen (Standard 30). */
   vacationDaysPerYear?: number;
