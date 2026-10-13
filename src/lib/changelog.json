@@ -1,5 +1,13 @@
 [
   {
+    "version": "1.0.0",
+    "date": "13.10.2026",
+    "changes": [
+      "Timelytix 1.0 – die erste offizielle Version 🎉",
+      "Danke fürs Testen! Alle bisherigen Funktionen und Daten bleiben unverändert"
+    ]
+  },
+  {
     "version": "0.25.0",
     "date": "13.10.2026",
     "changes": [

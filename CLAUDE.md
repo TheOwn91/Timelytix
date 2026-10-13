@@ -74,8 +74,8 @@ Nie ungefragt mergen; bei „PR, aber nicht mergen“ nur den PR erstellen.
 **Neue Versionsnummer erst direkt vor dem Erstellen eines PR** – nicht bei jeder einzelnen Änderung.
 Dann in `src/lib/changelog.json` oben einen Eintrag ergänzen (neue Versionsnummer, Datum, alle für
 Nutzer sichtbaren Änderungen des PR in einfachen Worten) und `version` in `package.json` angleichen.
-Die Version bleibt bei 0.x (neue Funktionen: 0.x → 0.x+1, Korrekturen: 0.x.y → 0.x.y+1);
-1.0.0 erst nach Absprache mit dem Nutzer zum offiziellen Start.
+Seit 1.0.0 (offizieller Start) gilt: neue Funktionen 1.x → 1.x+1, Korrekturen 1.x.y → 1.x.y+1;
+2.0.0 nur nach Absprache mit dem Nutzer.
 Nach einem Update zeigt die App diese Einträge einmalig beim Start (abschaltbar).
 Sobald die Version auf `main` ankommt, legt `.github/workflows/release.yml` Tag `vX.Y.Z` und
-GitHub-Release an (0.x als Pre-release). Aus dieser Umgebung lassen sich keine Tags pushen.
+GitHub-Release an (Versionen 0.x waren Pre-releases, ab 1.0.0 richtige Releases). Aus dieser Umgebung lassen sich keine Tags pushen.
