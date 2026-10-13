@@ -4,6 +4,12 @@ apply plugin: 'com.android.application'
 def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
 def (vMajor, vMinor, vPatch) = appVersion.tokenize('.').collect { it.toInteger() }
 def appVersionCode = vMajor * 1000000 + vMinor * 1000 + vPatch * 10
+// Beta (Workflow „Android-App bauen“ auf claude/…-Branches): z. B. "0.25.0-beta.7" mit versionCode 24999 –
+// eins unter der richtigen Version, damit diese sich später darüber installieren lässt
+if (System.getenv('APP_VERSION_NAME')) {
+    appVersion = System.getenv('APP_VERSION_NAME')
+    appVersionCode = System.getenv('APP_VERSION_CODE').toInteger()
+}
 
 // Signatur für den Play Store: Schlüssel kommt aus den GitHub-Secrets (siehe docs/android.md)
 def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH')

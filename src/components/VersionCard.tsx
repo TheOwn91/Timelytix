@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { APP_VERSION, IN_DEVELOPMENT } from '../lib/changelog';
+import { betaUpdatesEnabled, setBetaUpdatesEnabled } from '../lib/apk-update';
+import { BUILD_VERSION, IN_DEVELOPMENT, IS_BETA } from '../lib/changelog';
 import { NATIVE } from '../lib/native';
 import { checkForUpdates, getUpdateStatus, onUpdateStatus, openUpdatePreview, updateSupported, type UpdateStatus } from '../lib/update';
 
@@ -29,13 +30,20 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
   const supported = updateSupported();
   const text = supported ? statusText(status) : 'In der Demo gibt es keine Updates – nur in der installierten App.';
   const busy = status.state === 'checking' || status.state === 'installing';
+  const [beta, setBeta] = useState(betaUpdatesEnabled);
+
+  const toggleBeta = (on: boolean) => {
+    setBetaUpdatesEnabled(on);
+    setBeta(on);
+    void checkForUpdates();
+  };
 
   return (
     <section className="card">
       <h2>App-Version &amp; Updates</h2>
       <p className="muted small">
-        Timelytix {APP_VERSION}
-        {IN_DEVELOPMENT && ' · in Entwicklung'}
+        Timelytix {BUILD_VERSION}
+        {IS_BETA ? ' · Beta' : IN_DEVELOPMENT && ' · in Entwicklung'}
       </p>
 
       <p className="muted small">
@@ -58,6 +66,20 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
         <p className={`small update-status ${status.state === 'available' ? 'highlight' : 'muted'}`} role="status">
           {text}
         </p>
+      )}
+
+      {NATIVE && (
+        <>
+          <label className="checkbox toggle-row">
+            <input id="beta-updates" type="checkbox" checked={beta} disabled={busy} onChange={(e) => toggleBeta(e.target.checked)} />
+            Beta-Versionen testen
+          </label>
+          <p className="muted small">
+            {beta
+              ? 'Du bekommst auch Testversionen mit den neuesten Änderungen – sie können noch Fehler enthalten. Ausgeschaltet bleibt die Beta installiert, bis die nächste richtige Version erscheint.'
+              : 'Nur für Tester: Testversionen mit den neuesten Änderungen, noch vor der richtigen Version.'}
+          </p>
+        </>
       )}
 
       <button className="btn secondary full" onClick={onShowWhatsNew}>

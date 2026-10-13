@@ -1,3 +1,4 @@
+import { compareVersions } from './apk-update';
 import { DEMO } from './demo';
 import releases from './changelog.json';
 
@@ -16,6 +17,13 @@ export interface Release {
 export const CHANGELOG: Release[] = releases;
 
 export const APP_VERSION = CHANGELOG[0].version;
+
+/**
+ * Version dieses Builds: wie APP_VERSION, bei einer Beta der Android-App z. B. „0.25.0-beta.7“
+ * (setzt der Workflow „Android-App bauen“ über VITE_APP_VERSION).
+ */
+export const BUILD_VERSION: string = import.meta.env.VITE_APP_VERSION || APP_VERSION;
+export const IS_BETA = BUILD_VERSION.includes('-beta.');
 
 /** Solange die Version mit 0. beginnt, ist die App noch in Entwicklung. */
 export const IN_DEVELOPMENT = APP_VERSION.startsWith('0.');
@@ -65,11 +73,14 @@ export function releasesSince(lastSeen: string | null, changelog = CHANGELOG): R
 export type LatestRelease = Release & { history?: Release[]; apkUrl?: string };
 
 /** Was bringt ein Update von `current` auf `latest`? Neueste zuerst, mindestens die neueste Version. */
-export function releasesForUpdate(latest: LatestRelease, current = APP_VERSION): Release[] {
+export function releasesForUpdate(latest: LatestRelease, current = BUILD_VERSION): Release[] {
   const history = latest.history?.length ? latest.history : [latest];
   const idx = history.findIndex((r) => r.version === current);
   if (idx === 0) return [];
-  return idx === -1 ? history : history.slice(0, idx);
+  if (idx > 0) return history.slice(0, idx);
+  // Installierte Version fehlt im Verlauf (z. B. eine Beta): alles Neuere, mindestens die neueste
+  const newer = history.filter((r) => compareVersions(r.version, current) > 0);
+  return newer.length ? newer : history.slice(0, 1);
 }
 
 /**
