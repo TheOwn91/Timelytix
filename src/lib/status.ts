@@ -1,5 +1,5 @@
 import { DEMO } from './demo';
-import { NATIVE, nativeNotifyPermission, onRunningNotificationTap, runningNativeDelivered, showRunningNative, type NativePermission } from './native';
+import { NATIVE, nativeNotifyPermission, runningNativeDelivered, showRunningNative, showTestNative, type NativePermission } from './native';
 import { fmtTime } from './time';
 import type { AppState } from './types';
 
@@ -161,7 +161,6 @@ export async function syncRunningStatus(state: AppState, force = false) {
 
 /** Android-App: zuletzt gezeigte Anzeige („Buchung|Titel|Text“), übersteht das Schließen der App. */
 const SHOWN_KEY = 'timetrack.notifyShown';
-let shownNotice: { title: string; body: string } | null = null;
 
 function readShown(): string | null {
   try {
@@ -188,13 +187,11 @@ async function syncNative(notice: ReturnType<typeof runningNotice>) {
   nativePermission = await nativeNotifyPermission().catch(() => nativePermission);
   const shown = readShown();
   if (!notice) {
-    shownNotice = null;
-    if (shown) await showRunningNative(null);
+    await showRunningNative(null);
     writeShown(null);
     return;
   }
   if (nativePermission !== 'granted') return;
-  shownNotice = notice;
   const key = `${notice.session}|${notice.title}|${notice.body}`;
   if (shown === key && (await runningNativeDelivered().catch(() => false))) return;
   // Dieselbe Buchung wurde schon gemeldet (Pause, App neu geöffnet, Anzeige angetippt) → still
@@ -202,13 +199,11 @@ async function syncNative(notice: ReturnType<typeof runningNotice>) {
   writeShown(key);
 }
 
-// Antippen entfernt die Anzeige (Plugin) – solange die Zeit läuft, still wieder anzeigen
-if (NATIVE) onRunningNotificationTap(() => void (shownNotice && showRunningNative(shownNotice, { quiet: true }).catch(() => undefined)));
 
 /** Probe-Benachrichtigung aus den Einstellungen. */
 export async function showTestNotification() {
   if (NATIVE) {
-    await showRunningNative({ title: 'Timelytix', body: 'So sieht die Anzeige aus, solange die Zeit läuft.' }, { test: true });
+    await showTestNative({ title: 'Timelytix', body: 'So sieht die Anzeige aus, solange die Zeit läuft.' });
     return;
   }
   const reg = await registration();

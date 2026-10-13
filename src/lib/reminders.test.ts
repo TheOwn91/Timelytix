@@ -143,3 +143,23 @@ describe('Vergessen abzustempeln', () => {
     expect(d2.shown).toEqual([]);
   });
 });
+
+describe('Uhrzeit am Samstag', () => {
+  it('lässt sich einstellen', () => {
+    const st = state({ sessions: [day('2026-10-05')], settings: { weekReminderTime: '18:30' } });
+    expect(reminders(st, combine('2026-10-08', '12:00')).next?.at).toBe(combine('2026-10-10', '18:30'));
+    // Samstag 12 Uhr: noch vor 18:30 → diese Woche
+    expect(reminders(st, combine('2026-10-10', '12:00')).next?.at).toBe(combine('2026-10-10', '18:30'));
+    expect(reminders(st, combine('2026-10-10', '19:00')).current?.at).toBe(combine('2026-10-10', '18:30'));
+  });
+
+  it('andere Uhrzeit: neu geplant unter derselben Kennung', async () => {
+    const d = new FakeDriver();
+    const st = state({ sessions: [day('2026-10-05')] });
+    await applyReminders(st, combine('2026-10-08', '12:00'), d, true);
+    await applyReminders({ ...st, settings: { weekReminderTime: '23:45' } }, combine('2026-10-08', '12:01'), d, true);
+    expect(d.shown.map((r) => r.at)).toEqual([SAT, combine('2026-10-10', '23:45')]);
+    expect(new Set(d.shown.map((r) => r.id)).size).toBe(1);
+    expect(d.removed).toEqual([d.shown[0].id]);
+  });
+});

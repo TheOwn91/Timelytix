@@ -1,4 +1,4 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 
 /**
  * Android-App (Play Store, gebaut mit Capacitor): dieselbe Web-App, aber Dateien, Teilen und die
@@ -91,48 +91,41 @@ function ensureChannels() {
   return channels.catch(() => undefined);
 }
 
+/** Eigene Android-Erweiterung (android/…/RunningNotice.java): Anzeige „Zeit läuft“, die nach Wegwischen wiederkommt. */
+interface RunningNoticePlugin {
+  show(o: { title: string; body: string; quiet?: boolean }): Promise<void>;
+  hide(): Promise<void>;
+  isShown(): Promise<{ shown: boolean }>;
+}
+const RunningNotice = registerPlugin<RunningNoticePlugin>('RunningNotice');
+
 /** Ist die Anzeige „Zeit läuft“ gerade in der Benachrichtigungsleiste? */
 export async function runningNativeDelivered(): Promise<boolean> {
-  const { LocalNotifications } = await import('@capacitor/local-notifications');
-  const { notifications } = await LocalNotifications.getDeliveredNotifications();
-  return notifications.some((n) => n.id === RUNNING_ID);
+  return (await RunningNotice.isShown()).shown;
 }
 
 /**
- * Dauerhafte Benachrichtigung „Zeit läuft“ zeigen bzw. (ohne `notice`) entfernen.
+ * Dauerhafte Benachrichtigung „Zeit läuft“ zeigen bzw. (ohne `notice`) entfernen. Weggewischt erscheint
+ * sie sofort still wieder, bis die Zeit gestoppt ist.
  * `quiet`: still aktualisieren/wiederherstellen, ohne sich erneut zu melden.
  */
-export async function showRunningNative(notice: { title: string; body: string } | null, opts: { test?: boolean; quiet?: boolean } = {}) {
-  const { LocalNotifications } = await import('@capacitor/local-notifications');
-  const id = opts.test ? TEST_ID : RUNNING_ID;
+export async function showRunningNative(notice: { title: string; body: string } | null, opts: { quiet?: boolean } = {}) {
   if (!notice) {
-    await cancelNative([id]);
+    await RunningNotice.hide();
+    // Frühere Versionen zeigten sie über das Benachrichtigungs-Plugin (gleiche ID) – Reste entfernen
+    await cancelNative([RUNNING_ID]).catch(() => undefined);
     return;
   }
-  await ensureChannels();
-  await LocalNotifications.schedule({
-    notifications: [
-      {
-        id,
-        title: notice.title,
-        body: notice.body,
-        channelId: opts.quiet ? QUIET_CHANNEL : ALERT_CHANNEL,
-        ongoing: !opts.test,
-        autoCancel: !!opts.test,
-        // Sofort zeigen, ohne Wecker – sonst verlangt Android die Berechtigung „Wecker und Erinnerungen“
-        isExactNotification: false,
-      },
-    ],
-  });
+  await RunningNotice.show({ ...notice, quiet: !!opts.quiet });
 }
 
-/** Antippen der Anzeige: Das Plugin entfernt sie dabei immer – `onTap` stellt sie wieder her. */
-export function onRunningNotificationTap(onTap: () => void) {
-  void import('@capacitor/local-notifications').then(({ LocalNotifications }) =>
-    LocalNotifications.addListener('localNotificationActionPerformed', (e) => {
-      if (e.notification.id === RUNNING_ID) onTap();
-    }),
-  );
+/** Probe-Benachrichtigung aus den Einstellungen (lässt sich wegwischen). */
+export async function showTestNative(notice: { title: string; body: string }) {
+  const { LocalNotifications } = await import('@capacitor/local-notifications');
+  await ensureChannels();
+  await LocalNotifications.schedule({
+    notifications: [{ id: TEST_ID, ...notice, channelId: ALERT_CHANNEL, autoCancel: true, isExactNotification: false }],
+  });
 }
 
 /** Geplante und bereits angezeigte Benachrichtigungen entfernen (`cancel` allein betrifft nur geplante). */

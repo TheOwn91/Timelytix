@@ -998,6 +998,9 @@ html {
 .field-list label.select-row select {
   min-width: 9.5rem;
 }
+.field-list label.select-row input[type='time'] {
+  width: 9.5rem;
+}
 .release-list {
   display: flex;
   flex-direction: column;
