@@ -123,6 +123,10 @@ export interface AppSettings {
   autoBackup?: boolean;
   /** Abstand der automatischen Sicherung in Tagen (Standard 7). */
   backupIntervalDays?: number;
+  /** Samstags erinnern, wenn in der Woche Einträge fehlen (Standard: an), siehe lib/reminders.ts. */
+  weekReminder?: boolean;
+  /** Erinnern, wenn die Zeit länger als so viele Stunden läuft (Standard 10, 0 = aus). */
+  forgotStopHours?: number;
 }
 
 export interface AppState {

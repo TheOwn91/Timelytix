@@ -79,12 +79,14 @@ export async function nativeNotifyPermission(request = false): Promise<NativePer
  */
 const ALERT_CHANNEL = 'running-start';
 const QUIET_CHANNEL = 'running';
+const REMINDER_CHANNEL = 'reminders';
 let channels: Promise<void> | undefined;
 
 function ensureChannels() {
   channels ??= import('@capacitor/local-notifications').then(async ({ LocalNotifications }) => {
     await LocalNotifications.createChannel({ id: ALERT_CHANNEL, name: 'Zeit gestartet', importance: 3, vibration: false, visibility: 1 });
     await LocalNotifications.createChannel({ id: QUIET_CHANNEL, name: 'Zeit läuft', importance: 2, vibration: false, visibility: 1 });
+    await LocalNotifications.createChannel({ id: REMINDER_CHANNEL, name: 'Erinnerungen', importance: 4, visibility: 1 });
   });
   return channels.catch(() => undefined);
 }
@@ -104,7 +106,7 @@ export async function showRunningNative(notice: { title: string; body: string } 
   const { LocalNotifications } = await import('@capacitor/local-notifications');
   const id = opts.test ? TEST_ID : RUNNING_ID;
   if (!notice) {
-    await LocalNotifications.cancel({ notifications: [{ id }] });
+    await cancelNative([id]);
     return;
   }
   await ensureChannels();
@@ -131,4 +133,31 @@ export function onRunningNotificationTap(onTap: () => void) {
       if (e.notification.id === RUNNING_ID) onTap();
     }),
   );
+}
+
+/** Geplante und bereits angezeigte Benachrichtigungen entfernen (`cancel` allein betrifft nur geplante). */
+export async function cancelNative(ids: number[]) {
+  const { LocalNotifications } = await import('@capacitor/local-notifications');
+  await LocalNotifications.cancel({ notifications: ids.map((id) => ({ id })) });
+  await LocalNotifications.removeDeliveredNotificationsById({ ids });
+}
+
+/** Erinnerung zum Zeitpunkt `at` planen (liegt er nicht in der Zukunft: sofort zeigen). */
+export async function scheduleReminderNative(r: { id: number; title: string; body: string; at: number }) {
+  const { LocalNotifications } = await import('@capacitor/local-notifications');
+  await ensureChannels();
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        id: r.id,
+        title: r.title,
+        body: r.body,
+        channelId: REMINDER_CHANNEL,
+        autoCancel: true,
+        // Ungenauer Wecker reicht (wenige Minuten Verzögerung) – keine Berechtigung „Wecker und Erinnerungen“ nötig
+        isExactNotification: false,
+        schedule: r.at > Date.now() ? { at: new Date(r.at), allowWhileIdle: true } : undefined,
+      },
+    ],
+  });
 }

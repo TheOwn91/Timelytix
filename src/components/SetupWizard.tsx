@@ -236,10 +236,13 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
           )}
           {showNotify && (
             <section className="wizard-section">
-              <p className="wizard-subhead">Symbol in der Statusleiste</p>
+              <p className="wizard-subhead">Benachrichtigungen</p>
               {notify === 'ask' ? (
                 <>
-                  <p className="muted small">Solange die Zeit läuft, zeigt Timelytix eine Benachrichtigung an.</p>
+                  <p className="muted small">
+                    Solange die Zeit läuft, zeigt Timelytix eine Benachrichtigung an. Außerdem erinnert die App, wenn Einträge
+                    fehlen oder du vergessen hast abzustempeln.
+                  </p>
                   <button
                     className="btn secondary full"
                     onClick={async () => {

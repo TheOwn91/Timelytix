@@ -17,6 +17,7 @@
 > • Gesetzliche Pause nach 6 und 9 Stunden automatisch (ArbZG)
 > • Nachtschichten auf Wunsch dem Folgetag zuordnen
 > • Anzeige „Zeit läuft“ in der Statusleiste
+> • Erinnerung samstags bei fehlenden Einträgen und wenn du vergessen hast abzustempeln
 >
 > 📅 MONAT UND JAHR
 > • Soll, Ist und Saldo für jeden Monat
@@ -65,7 +66,7 @@ alle Fragen zu Gewalt, Sexualität, Glücksspiel usw. → Nein; Nutzerinteraktio
 **Behörden-App / Finanzfunktionen / Gesundheit**: Nein
 
 **Berechtigungen der App** (zur Info, falls Google fragt)
-- Benachrichtigungen: Anzeige „Zeit läuft“ in der Statusleiste
+- Benachrichtigungen: Anzeige „Zeit läuft“ in der Statusleiste und Erinnerungen
 - Speicher (nur Android 9/10 und älter): automatische Sicherung in „Dokumente/Timelytix“
 - Start nach Neustart (`RECEIVE_BOOT_COMPLETED`): stellt die Anzeige „Zeit läuft“ nach einem Neustart wieder her
 - Internet: nur für die Update-Suche bei GitHub (in der Play-Store-Version überflüssig, siehe docs/android.md)
