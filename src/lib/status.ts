@@ -1,5 +1,5 @@
 import { DEMO } from './demo';
-import { NATIVE, nativeNotifyPermission, showRunningNative, type NativePermission } from './native';
+import { NATIVE, nativeNotifyPermission, onRunningNotificationTap, runningNativeDelivered, showRunningNative, type NativePermission } from './native';
 import { fmtTime } from './time';
 import type { AppState } from './types';
 
@@ -111,15 +111,15 @@ async function clearNotification() {
 }
 
 /** Text der Benachrichtigung für den aktuellen Zustand (ohne laufende Buchung: null). */
-export function runningNotice(state: AppState): { title: string; body: string; start: number } | null {
+export function runningNotice(state: AppState): { title: string; body: string; start: number; session: string } | null {
   const s = state.sessions.find((x) => x.end === undefined);
   if (!s) return null;
   const project = state.projects.find((p) => p.id === s.projectId);
   const pause = s.pauses.find((p) => p.end === undefined);
   const name = project?.name ?? 'Timelytix';
   return pause
-    ? { title: `⏸ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start }
-    : { title: `⏱ Zeit läuft – ${name}`, body: `Seit ${fmtTime(s.start)} · Tippen zum Öffnen`, start: s.start };
+    ? { title: `⏸ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start, session: s.id }
+    : { title: `⏱ Zeit läuft – ${name}`, body: `Seit ${fmtTime(s.start)} · Tippen zum Öffnen`, start: s.start, session: s.id };
 }
 
 let last = '';
@@ -133,8 +133,7 @@ export async function syncRunningStatus(state: AppState, force = false) {
   last = key;
 
   if (NATIVE) {
-    nativePermission = await nativeNotifyPermission().catch(() => nativePermission);
-    if (!notice || nativePermission === 'granted') await showRunningNative(notice).catch(() => undefined);
+    await syncNative(notice).catch(() => undefined);
     return;
   }
 
@@ -160,10 +159,56 @@ export async function syncRunningStatus(state: AppState, force = false) {
   }
 }
 
+/** Android-App: zuletzt gezeigte Anzeige („Buchung|Titel|Text“), übersteht das Schließen der App. */
+const SHOWN_KEY = 'timetrack.notifyShown';
+let shownNotice: { title: string; body: string } | null = null;
+
+function readShown(): string | null {
+  try {
+    return localStorage.getItem(SHOWN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeShown(key: string | null) {
+  try {
+    if (key) localStorage.setItem(SHOWN_KEY, key);
+    else localStorage.removeItem(SHOWN_KEY);
+  } catch {
+    /* ignorieren */
+  }
+}
+
+/**
+ * Android-App: Die Anzeige meldet sich nur einmal beim Start der Zeit. Beim Öffnen der App bleibt
+ * sie unverändert stehen; Änderungen (Pause) und das Wiederherstellen geschehen still.
+ */
+async function syncNative(notice: ReturnType<typeof runningNotice>) {
+  nativePermission = await nativeNotifyPermission().catch(() => nativePermission);
+  const shown = readShown();
+  if (!notice) {
+    shownNotice = null;
+    if (shown) await showRunningNative(null);
+    writeShown(null);
+    return;
+  }
+  if (nativePermission !== 'granted') return;
+  shownNotice = notice;
+  const key = `${notice.session}|${notice.title}|${notice.body}`;
+  if (shown === key && (await runningNativeDelivered().catch(() => false))) return;
+  // Dieselbe Buchung wurde schon gemeldet (Pause, App neu geöffnet, Anzeige angetippt) → still
+  await showRunningNative(notice, { quiet: !!shown?.startsWith(`${notice.session}|`) });
+  writeShown(key);
+}
+
+// Antippen entfernt die Anzeige (Plugin) – solange die Zeit läuft, still wieder anzeigen
+if (NATIVE) onRunningNotificationTap(() => void (shownNotice && showRunningNative(shownNotice, { quiet: true }).catch(() => undefined)));
+
 /** Probe-Benachrichtigung aus den Einstellungen. */
 export async function showTestNotification() {
   if (NATIVE) {
-    await showRunningNative({ title: 'Timelytix', body: 'So sieht die Anzeige aus, solange die Zeit läuft.' }, true);
+    await showRunningNative({ title: 'Timelytix', body: 'So sieht die Anzeige aus, solange die Zeit läuft.' }, { test: true });
     return;
   }
   const reg = await registration();

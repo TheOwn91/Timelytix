@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.22.2",
+    "date": "13.10.2026",
+    "changes": [
+      "Android-App: Die Benachrichtigung „Zeit läuft“ meldet sich nur noch einmal beim Start der Zeit – nicht mehr bei jedem Öffnen der App",
+      "Beim Antippen bleibt sie in der Benachrichtigungsleiste, bis die Zeit gestoppt wird; Pausen ändern den Text still"
+    ]
+  },
+  {
     "version": "0.22.1",
     "date": "13.10.2026",
     "changes": [
