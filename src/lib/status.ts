@@ -1,12 +1,17 @@
 import { DEMO } from './demo';
+import { NATIVE, nativeNotifyPermission, showRunningNative, type NativePermission } from './native';
 import { fmtTime } from './time';
 import type { AppState } from './types';
 
 /**
  * Zeigt, solange die Zeit läuft, eine Benachrichtigung (Symbol in der Statusleiste) und eine
  * Markierung am App-Symbol. Android: im Browser und als installierte App. iPhone: ab iOS 16.4,
- * nur als installierte App (Home-Bildschirm).
+ * nur als installierte App (Home-Bildschirm). Android-App: dauerhafte Benachrichtigung über Android.
  */
+
+/** Android-App: zuletzt bekannte Berechtigung (wird beim Start und nach Anfragen aktualisiert). */
+let nativePermission: NativePermission = 'prompt';
+if (NATIVE) void nativeNotifyPermission().then((p) => (nativePermission = p), () => undefined);
 
 const TAG = 'timetrack-running';
 const PREF_KEY = 'timetrack.notify';
@@ -31,6 +36,7 @@ export function setNotifyEnabled(on: boolean) {
 
 export function notifySupport(): NotifySupport {
   if (DEMO) return 'unsupported';
+  if (NATIVE) return nativePermission === 'granted' ? 'ok' : nativePermission === 'denied' ? 'denied' : 'ask';
   const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const standalone =
     window.matchMedia?.('(display-mode: standalone)').matches ||
@@ -45,6 +51,10 @@ export function notifySupport(): NotifySupport {
 
 /** Muss direkt aus einem Tipp heraus aufgerufen werden (sonst lehnt iOS die Anfrage ab). */
 export async function requestNotifyPermission(): Promise<boolean> {
+  if (NATIVE) {
+    nativePermission = await nativeNotifyPermission(true).catch(() => nativePermission);
+    return nativePermission === 'granted';
+  }
   if (notifySupport() !== 'ask') return notifySupport() === 'ok';
   try {
     return (await Notification.requestPermission()) === 'granted';
@@ -99,6 +109,12 @@ export async function syncRunningStatus(state: AppState, force = false) {
   if (key === last && !force) return;
   last = key;
 
+  if (NATIVE) {
+    nativePermission = await nativeNotifyPermission().catch(() => nativePermission);
+    if (!notice || nativePermission === 'granted') await showRunningNative(notice).catch(() => undefined);
+    return;
+  }
+
   await setBadge(!!runningNotice(state));
   if (!notice) {
     await clearNotification();
@@ -123,6 +139,10 @@ export async function syncRunningStatus(state: AppState, force = false) {
 
 /** Probe-Benachrichtigung aus den Einstellungen. */
 export async function showTestNotification() {
+  if (NATIVE) {
+    await showRunningNative({ title: 'Timelytix', body: 'So sieht die Anzeige aus, solange die Zeit läuft.' }, true);
+    return;
+  }
   const reg = await registration();
   await reg?.showNotification('Timelytix', {
     body: 'So sieht die Anzeige aus, solange die Zeit läuft.',

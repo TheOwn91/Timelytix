@@ -1,5 +1,6 @@
 import { APP_VERSION, releasesForUpdate, type LatestRelease, type Release } from './changelog';
 import { DEMO } from './demo';
+import { NATIVE } from './native';
 
 /**
  * Updates der installierten App über den Service Worker – immer von Hand: Die App sucht selten nach
@@ -42,7 +43,8 @@ export function onUpdateStatus(fn: (s: UpdateStatus) => void) {
 }
 
 export function updateSupported(): boolean {
-  return !DEMO && import.meta.env.PROD && 'serviceWorker' in navigator;
+  // Android-App: Updates kommen über den Play Store
+  return !DEMO && !NATIVE && import.meta.env.PROD && 'serviceWorker' in navigator;
 }
 
 /** Einstellung für den Service Worker ablegen (er kann localStorage nicht lesen), siehe sw.js. */

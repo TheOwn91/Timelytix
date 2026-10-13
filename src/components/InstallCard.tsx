@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DEMO } from '../lib/demo';
 import { isIOS, isStandalone } from '../lib/device';
+import { NATIVE } from '../lib/native';
 
 interface InstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -70,6 +71,8 @@ export function InstallHelp() {
 }
 
 export function InstallCard() {
+  // Android-App aus dem Play Store: nichts zu installieren
+  if (NATIVE) return null;
   if (DEMO) {
     return (
       <section className="card">

@@ -1,8 +1,10 @@
 import { DEMO, notify } from './demo';
+import { NATIVE, saveToDocuments, shareFileNative } from './native';
 
 /** Läuft die App als installierte App (Homescreen)? */
 export function isStandalone(): boolean {
   return (
+    NATIVE ||
     window.matchMedia?.('(display-mode: standalone)').matches ||
     (navigator as Navigator & { standalone?: boolean }).standalone === true
   );
@@ -22,6 +24,7 @@ export async function shareOrDownload(blob: Blob, fileName: string): Promise<boo
     notify('In der Demo sind Downloads gesperrt. In der installierten App wird die Datei gespeichert oder geteilt.');
     return false;
   }
+  if (NATIVE) return shareFileNative(blob, fileName);
   const file = new File([blob], fileName, { type: blob.type });
   const touch = window.matchMedia?.('(pointer: coarse)').matches;
   if (touch && navigator.canShare?.({ files: [file] })) {
@@ -34,6 +37,13 @@ export async function shareOrDownload(blob: Blob, fileName: string): Promise<boo
   }
   downloadBlob(blob, fileName);
   return true;
+}
+
+/** Sicherungsdatei ablegen: im Browser im Download-Ordner, in der Android-App unter „Dokumente/Timelytix“. */
+export async function saveBackupFile(blob: Blob, fileName: string): Promise<string> {
+  if (NATIVE) return saveToDocuments(blob, fileName);
+  downloadBlob(blob, fileName);
+  return `Downloads/${fileName}`;
 }
 
 /** Datei direkt in den Download-Ordner speichern. */
@@ -49,11 +59,14 @@ export function downloadBlob(blob: Blob, fileName: string) {
 
 /** Bittet den Browser, die lokalen Daten nicht automatisch zu löschen. */
 export async function requestPersistentStorage(): Promise<void> {
+  // Android-App: Die Daten gehören der App, der Browser räumt dort nichts auf
+  if (NATIVE) return;
   await navigator.storage?.persist?.().catch(() => undefined);
 }
 
 /** Sind die Daten als dauerhaft gespeichert markiert? (undefined = Browser kann es nicht sagen) */
 export async function storagePersisted(): Promise<boolean | undefined> {
+  if (NATIVE) return undefined;
   try {
     return (await navigator.storage?.persisted?.()) ?? undefined;
   } catch {

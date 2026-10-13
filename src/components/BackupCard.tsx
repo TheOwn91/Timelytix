@@ -10,6 +10,7 @@ import {
 } from '../lib/backup';
 import { ask } from '../lib/confirm';
 import { notify } from '../lib/demo';
+import { NATIVE, NATIVE_BACKUP_FOLDER } from '../lib/native';
 import { isIOS, requestPersistentStorage, shareOrDownload, storagePersisted } from '../lib/device';
 import { useStore, validateState } from '../lib/store';
 import { fmtDate } from '../lib/time';
@@ -67,7 +68,7 @@ export function BackupCard() {
 
       <label className="checkbox toggle-row">
         <input id="auto-backup" type="checkbox" checked={auto} onChange={(e) => setSettings({ autoBackup: e.target.checked })} />
-        Automatisch sichern (Download-Ordner)
+        Automatisch sichern ({NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download-Ordner'})
       </label>
       {auto && (
         <div className="field-list">
@@ -85,7 +86,9 @@ export function BackupCard() {
       )}
       <p className="muted small">
         {auto
-          ? isIOS()
+          ? NATIVE
+            ? `Beim Öffnen der App wird die Sicherung abgelegt, sobald sie fällig ist (Ordner „Dokumente/${NATIVE_BACKUP_FOLDER}“). Dort bleibt sie auch, wenn die App gelöscht wird.`
+            : isIOS()
             ? 'Auf dem iPhone sind automatische Downloads nicht möglich – bitte „Sicherung exportieren“ nutzen.'
             : 'Beim Öffnen der App wird die Sicherung abgelegt, sobald sie fällig ist (Datei „timelytix-backup-Datum.json“). Tipp: Den Download-Ordner mit Google Drive sichern.'
           : 'Ohne automatische Sicherung bitte regelmäßig „Sicherung exportieren“ nutzen.'}

@@ -1,0 +1,82 @@
+name: Android-App bauen
+
+# Baut die Android-App (Capacitor) für den Play Store:
+# - immer eine Test-APK zum direkten Installieren (Artefakt „timelytix-apk“)
+# - mit hinterlegtem Signaturschlüssel zusätzlich das App-Paket für den Play Store (Artefakt „timelytix-aab“)
+# Einrichtung des Schlüssels: docs/android.md
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'claude/**']
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - 'vite.config.ts'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm test
+        env:
+          TZ: Europe/Berlin
+      - run: npm run build
+      - run: npx cap sync android
+
+      - name: Signaturschlüssel bereitstellen
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Bauen
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then ./gradlew --no-daemon bundleRelease; fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: timelytix-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: env.ANDROID_KEYSTORE_PATH != ''
+        with:
+          name: timelytix-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Schlüssel entfernen
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"
