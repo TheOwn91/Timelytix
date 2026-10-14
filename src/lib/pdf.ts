@@ -24,7 +24,7 @@ export function buildMonthReport(state: AppState, project: Project, year: number
   doc.text(title, 14, 18);
   doc.setFontSize(11);
   doc.setTextColor(90);
-  doc.text(`Arbeitgeber / Projekt: ${project.name}`, 14, 25);
+  doc.text(pdfSafe(`Arbeitgeber / Projekt: ${project.name}`), 14, 25);
   doc.text(
     `Soll/Tag: ${fmtDuration(sum.endTerms.dailyTargetHours * 60)} h  ·  Feiertage: ${STATES[project.state] ?? '–'}`,
     14,
@@ -118,7 +118,12 @@ export function buildMonthReport(state: AppState, project: Project, year: number
   ];
   const { fromAccount, uncovered, added } = sum.shortTime;
   const overview = yearOverview(state, project, year, now);
-  const account = overview.overtime.months[month0];
+  // Monate vor dem Jahr des Erfassungsbeginns haben keine Kontoführung: Anfangsstand zeigen
+  const account = overview.overtime.months[month0] ?? {
+    total: (project.overtimeAtStartHours ?? 0) * 60,
+    surcharge: 0,
+    complete: true,
+  };
   if (fromAccount + uncovered > 0) {
     const total = fromAccount + uncovered;
     summaryRows.push(['Kurzarbeitstage', `${fmtDuration(total)} h`, `${fmtHoursDecimal(total)} h`]);
@@ -128,7 +133,7 @@ export function buildMonthReport(state: AppState, project: Project, year: number
       summaryRows.push(['+ fehlende Stunden des Monats', `${fmtDuration(added, true)} h`, `${fmtHoursDecimal(added)} h`]);
     const remaining = uncovered + added;
     summaryRows.push(['= Kurzarbeit gesamt', `${fmtDuration(remaining)} h`, `${fmtHoursDecimal(remaining)} h`]);
-    summaryRows.push(['Stundenkonto danach', `${fmtDuration(account?.total ?? 0, true)} h`, `${fmtHoursDecimal(account?.total ?? 0)} h`]);
+    summaryRows.push(['Stundenkonto danach', `${fmtDuration(account.total, true)} h`, `${fmtHoursDecimal(account.total)} h`]);
   }
   const pct = sum.endTerms.overtimeSurchargePercent ?? 0;
   if (pct > 0) {

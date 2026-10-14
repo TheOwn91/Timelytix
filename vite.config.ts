@@ -144,7 +144,13 @@ export default defineConfig(({ mode }) =>
         // Demo: alles in einer Datei, ohne Service Worker (für eingebettete Vorschau)
         base: './',
         plugins: [react()],
-        build: { outDir: 'dist-demo', assetsInlineLimit: 100_000_000, cssCodeSplit: false },
+        build: {
+          outDir: 'dist-demo',
+          assetsInlineLimit: 100_000_000,
+          cssCodeSplit: false,
+          // Auch nachgeladene Teile (Capacitor-Plugins) in die eine Datei – die Demo besteht aus genau einem Skript
+          rolldownOptions: { output: { inlineDynamicImports: true } },
+        },
       }
     : {
         define,

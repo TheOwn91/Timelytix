@@ -1,5 +1,18 @@
 [
   {
+    "version": "1.0.1",
+    "date": "14.10.2026",
+    "changes": [
+      "Startseite stürzt nicht mehr ab, wenn „Erfassung ab“ in einem künftigen Jahr liegt",
+      "PDF-Monatsbericht funktioniert jetzt auch für Monate vor dem Jahr des Erfassungsbeginns",
+      "Tag bearbeiten: Beim Ändern des Beginns bleiben die Pausen an ihrer Stelle (sie lagen sonst außerhalb der Buchung)",
+      "„+ Pause hinzufügen“ legt die Pause immer innerhalb der Buchung an",
+      "Doppeltes Tippen auf „Zeit starten“ startet die Zeit nur einmal",
+      "Zahlenfelder speichern genau den angezeigten Wert (gerundet auf die Nachkommastellen)",
+      "Feiertage korrigiert: Reformationstag 2017 bundesweit, in Bremen, Hamburg, Niedersachsen und Schleswig-Holstein erst ab 2018; 8. Mai 2020 und 2025 in Berlin"
+    ]
+  },
+  {
     "version": "1.0.0",
     "date": "13.10.2026",
     "changes": [
