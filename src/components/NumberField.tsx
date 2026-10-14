@@ -37,7 +37,8 @@ export function NumberField({ value, onChange, decimals = 0, minDecimals = 0, mi
     if (!focused) setText(format(value, decimals, minDecimals));
   }, [value, decimals, minDecimals, focused]);
 
-  const clamp = (n: number) => Math.min(max ?? Infinity, Math.max(min, n));
+  // Auf die erlaubten Nachkommastellen runden – gespeichert wird, was das Feld anzeigt
+  const clamp = (n: number) => Math.min(max ?? Infinity, Math.max(min, Number(n.toFixed(decimals))));
   const negative = min < 0;
 
   return (

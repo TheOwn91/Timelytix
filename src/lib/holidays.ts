@@ -66,6 +66,8 @@ export function holidays(year: number, state: string): Map<DateKey, string> {
   add(easter, 'Ostersonntag', ['BB']);
   add(addDays(easter, 1), 'Ostermontag');
   add(fixed(5, 1), 'Tag der Arbeit');
+  // Einmalig in Berlin: 75. und 80. Jahrestag des Kriegsendes
+  if (year === 2020 || year === 2025) add(fixed(5, 8), 'Tag der Befreiung', ['BE']);
   add(addDays(easter, 39), 'Christi Himmelfahrt');
   add(addDays(easter, 49), 'Pfingstsonntag', ['BB']);
   add(addDays(easter, 50), 'Pfingstmontag');
@@ -73,7 +75,9 @@ export function holidays(year: number, state: string): Map<DateKey, string> {
   add(fixed(8, 15), 'Mariä Himmelfahrt', ['SL']);
   if (year >= 2019) add(fixed(9, 20), 'Weltkindertag', ['TH']);
   add(fixed(10, 3), 'Tag der Deutschen Einheit');
-  add(fixed(10, 31), 'Reformationstag', ['BB', 'HB', 'HH', 'MV', 'NI', 'SN', 'ST', 'SH', 'TH']);
+  // 2017 (500 Jahre Reformation) bundesweit; in HB, HH, NI und SH erst seit 2018
+  if (year === 2017) add(fixed(10, 31), 'Reformationstag');
+  else add(fixed(10, 31), 'Reformationstag', year >= 2018 ? ['BB', 'HB', 'HH', 'MV', 'NI', 'SN', 'ST', 'SH', 'TH'] : ['BB', 'MV', 'SN', 'ST', 'TH']);
   add(fixed(11, 1), 'Allerheiligen', ['BW', 'BY', 'NW', 'RP', 'SL']);
   if (state === 'SN') {
     // Buß- und Bettag: Mittwoch vor dem 23. November

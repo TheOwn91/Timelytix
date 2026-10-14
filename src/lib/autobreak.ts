@@ -13,14 +13,19 @@ export function materializeAutoBreaks(state: AppState): boolean {
   let changed = false;
   for (const project of state.projects) {
     if (!project.autoBreak) continue;
+    const own = state.sessions.filter((s) => s.projectId === project.id);
+    // Meist ist schon alles eingetragen – dann nur die wenigen offenen Tage betrachten
+    const open = new Set(own.filter((s) => !s.autoBreaksApplied).map((s) => sessionDay(project, s)));
+    if (!open.size) continue;
     const byDay = new Map<string, Session[]>();
-    for (const s of state.sessions) {
-      if (s.projectId !== project.id) continue;
+    for (const s of own) {
       const day = sessionDay(project, s);
-      byDay.set(day, [...(byDay.get(day) ?? []), s]);
+      if (!open.has(day)) continue;
+      const list = byDay.get(day);
+      if (list) list.push(s);
+      else byDay.set(day, [s]);
     }
     for (const sessions of byDay.values()) {
-      if (sessions.every((s) => s.autoBreaksApplied)) continue;
       // Solange die Zeit läuft, rechnet die App die Pause nur mit (Timer); gespeichert wird beim Beenden
       if (sessions.some((s) => s.end === undefined)) continue;
       const intervals = sessions.flatMap((s) => workIntervals(s, 0));

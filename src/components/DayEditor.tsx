@@ -105,12 +105,16 @@ export function DayEditor({ project, date, onClose }: Props) {
                       const shift = start - x.start;
                       const dayChanged = dateKey(start) !== dateKey(x.start);
                       x.start = start;
-                      // Wechselt der Kalendertag, wandert die ganze Schicht mit (Dauer bleibt)
-                      if (x.end !== undefined && (dayChanged || x.end <= start)) x.end = dayChanged ? x.end + shift : start + duration;
-                      x.pauses = x.pauses.map((p) => ({
-                        start: p.start + shift,
-                        end: p.end !== undefined ? p.end + shift : undefined,
-                      }));
+                      // Wechselt der Kalendertag oder läge das Ende davor, wandert die ganze Schicht samt Pausen mit
+                      // (Dauer bleibt); sonst ändert sich nur der Beginn
+                      if (x.end !== undefined && (dayChanged || x.end <= start)) {
+                        x.end = dayChanged ? x.end + shift : start + duration;
+                        x.pauses = x.pauses.map((p) => ({
+                          ...p,
+                          start: p.start + shift,
+                          end: p.end !== undefined ? p.end + shift : undefined,
+                        }));
+                      }
                     })
                   }
                 />
@@ -177,8 +181,10 @@ export function DayEditor({ project, date, onClose }: Props) {
                   updateSession(s.id, (x) => {
                     const lastPause = x.pauses[x.pauses.length - 1];
                     const base = lastPause?.end ?? x.start + 4 * 60 * MINUTE;
-                    const start = Math.min(base, (x.end ?? now) - 30 * MINUTE);
-                    x.pauses.push({ start, end: start + 30 * MINUTE });
+                    const end = x.end ?? now;
+                    // Innerhalb der Buchung bleiben (auch bei kurzen Buchungen)
+                    const start = Math.max(x.start, Math.min(base, end - 30 * MINUTE));
+                    x.pauses.push({ start, end: Math.min(start + 30 * MINUTE, Math.max(end, start + MINUTE)) });
                   })
                 }
               >

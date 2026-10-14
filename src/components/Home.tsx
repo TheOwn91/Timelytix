@@ -88,7 +88,8 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
   const start = () => {
     const session = { id: uid(), projectId: project.id, start: Date.now(), pauses: [] };
     update((s) => {
-      s.sessions.push(session);
+      // Doppelt getippt: nur eine laufende Zeit
+      if (!s.sessions.some((x) => x.end === undefined)) s.sessions.push(session);
     });
     // Beim ersten Start fragen, ob die App eine „Zeit läuft“-Benachrichtigung zeigen darf –
     // erst in der App, die Abfrage des Browsers kommt nur nach „Erlauben“
@@ -209,7 +210,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
           year={d.getFullYear()}
           vacationRemaining={yearNow.vacation.remaining}
           complete={false}
-          account={yearNow.overtime.months[d.getMonth()].total}
+          account={yearNow.overtime.months[d.getMonth()]?.total ?? (project.overtimeAtStartHours ?? 0) * 60}
         />
         {month.credit > 0 && (
           <p className="muted small">Davon {hours(month.credit)} h Gutschrift (Urlaub, Krank …)</p>
