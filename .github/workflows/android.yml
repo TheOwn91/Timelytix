@@ -5,8 +5,8 @@ name: Android-App bauen
 # - mit Signaturschlüssel die signierte APK zum Herunterladen (Artefakt „timelytix-apk“) und das
 #   App-Paket für den Play Store (Artefakt „timelytix-aab“); auf main wird die APK an das GitHub-Release
 #   der Version gehängt (Download-Seite und Update-Suche der App holen sie dort)
-# - auf claude/…-Branches (mit Schlüssel) zusätzlich eine Beta als Pre-Release „vX.Y.Z-beta.N“ – nur
-#   Geräte mit „Beta-Versionen testen“ bekommen sie angeboten; ältere Betas werden dabei entfernt
+# - auf claude/…-Branches (mit Schlüssel) zusätzlich eine Beta als Pre-Release „vX.Y.Z-beta.N“ (N zählt je
+#   Version ab 1) – nur Geräte mit „Beta-Versionen testen“ bekommen sie angeboten; ältere Betas werden dabei entfernt
 # Einrichtung des Schlüssels: docs/android.md
 on:
   workflow_dispatch:
@@ -58,12 +58,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           version=$(node -p "require('./package.json').version")
-          # Schon veröffentlicht (Versionsnummer wird erst vor dem PR erhöht) → Beta der nächsten Version
+          # Version schon veröffentlicht (noch keine neue Nummer gesetzt) → Beta der nächsten Korrektur-Version
           if gh release view "v$version" >/dev/null 2>&1; then
             version=$(node -p "const [a, b, c] = require('./package.json').version.split('.').map(Number); [a, b, c + 1].join('.')")
           fi
           IFS=. read -r major minor patch <<< "$version"
-          beta="$version-beta.$GITHUB_RUN_NUMBER"
+          # Nummer je Version ab 1: eins mehr als die (einzige behaltene) Beta dieser Version
+          last=$(gh release list --limit 100 --json tagName --jq '.[].tagName' |
+            { grep -E "^v${version//./\\.}-beta\.[0-9]+$" || true; } | sed 's/.*-beta\.//' | sort -n | tail -1)
+          beta="$version-beta.$(( ${last:-0} + 1 ))"
           {
             echo "BETA_VERSION=$beta"
             echo "APP_VERSION_NAME=$beta"

@@ -50,7 +50,7 @@ Repository und nicht in den Changelog.
   Service Worker, Updates über den Play Store). Capacitor-Plugins nur dynamisch importieren (`await import(…)`).
 - Gebaut wird im Workflow `.github/workflows/android.yml` (hier gibt es kein Android-SDK). Nach Änderungen am
   Web-Code genügt ein Push; nach neuen Plugins `npx cap sync android` und die Änderungen in `android/` committen.
-- **Betas:** Jeder Push auf `claude/…` veröffentlicht (mit Schlüssel) eine Beta `vX.Y.Z-beta.N` als Pre-Release;
+- **Betas:** Jeder Push auf `claude/…` veröffentlicht (mit Schlüssel) eine Beta `vX.Y.Z-beta.N` (N je Version ab 1) als Pre-Release;
   nur Geräte mit „Beta-Versionen testen“ bekommen sie (`apk-update.ts`). Für den Nutzer zum Testen also einfach
   pushen und auf den grünen Workflow warten. Version des Builds: `BUILD_VERSION` (changelog.ts), nicht `APP_VERSION`.
 - Die Anzeige „Zeit läuft“ zeigt die eigene Erweiterung `RunningNotice` (android/…/RunningNotice.java), Erinnerungen
