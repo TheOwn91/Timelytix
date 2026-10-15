@@ -383,6 +383,9 @@ h3 {
 }
 .stat span {
   font-size: 0.78rem;
+  /* Lange Wörter wie „Erfassungsbeginn“ trennen statt abschneiden */
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 .stat strong {
   font-size: clamp(0.8rem, 4vw, 1.15rem);

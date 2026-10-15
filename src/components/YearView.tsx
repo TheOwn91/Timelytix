@@ -61,7 +61,7 @@ export function YearView() {
             <h2>Urlaub {year}</h2>
             <div className="stats">
               <div className="stat">
-                <span className="muted">{y.firstYear ? 'Ab Erfassungsbeginn' : 'Anspruch'}</span>
+                <span className="muted">{y.firstYear ? 'Bei Beginn' : 'Anspruch'}</span>
                 <strong>{fmtDays(v.entitlement)}</strong>
               </div>
               <div className="stat">
