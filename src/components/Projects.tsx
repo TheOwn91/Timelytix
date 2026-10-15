@@ -11,6 +11,7 @@ import type { Project, SurchargeKind, SurchargeRule } from '../lib/types';
 import { vacationPerYear } from '../lib/year';
 import { BackupCard } from './BackupCard';
 import { DisplayCard } from './DisplayCard';
+import { FeedbackCard } from './FeedbackCard';
 import { InstallCard } from './InstallCard';
 import { NotifyCard } from './NotifyCard';
 import { NumberField } from './NumberField';
@@ -385,6 +386,8 @@ export function Projects({
       <BackupCard />
 
       <VersionCard onShowWhatsNew={onShowWhatsNew} />
+
+      <FeedbackCard />
 
       <InstallCard />
     </div>

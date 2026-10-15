@@ -26,20 +26,22 @@ export function DisplayCard() {
             ))}
           </select>
         </label>
+        <label className="select-row">
+          <span>Summen</span>
+          <select
+            id="decimal-hours"
+            value={decimal ? 'decimal' : 'hm'}
+            onChange={(e) =>
+              update((d) => {
+                d.settings = { ...d.settings, decimalHours: e.target.value === 'decimal' };
+              })
+            }
+          >
+            <option value="hm">156:44 h</option>
+            <option value="decimal">156,73 h</option>
+          </select>
+        </label>
       </div>
-      <label className="checkbox toggle-row">
-        <input
-          id="decimal-hours"
-          type="checkbox"
-          checked={decimal}
-          onChange={(e) =>
-            update((d) => {
-              d.settings = { ...d.settings, decimalHours: e.target.checked };
-            })
-          }
-        />
-        Summen als Dezimalzahl (156,73 h statt 156:44 h)
-      </label>
     </section>
   );
 }

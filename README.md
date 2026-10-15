@@ -136,6 +136,10 @@ Urlaub am 24.12. und 31.12. zählt als halber Tag. Nicht benötigte Schlüssel l
 - **Automatische Sicherung** (einstellbar von täglich bis monatlich): in der Android-App unter „Dokumente/Timelytix“, in der Web-App im Download-Ordner.
 - **Sicherung exportieren / importieren** jederzeit unter *Einstellungen → Datensicherung*.
 
+## Feedback
+
+Fehler gefunden oder eine Idee? In der App unter *Einstellungen → Feedback* oder direkt per E-Mail an **timelytix@schiers.me**.
+
 ## Entwicklung
 
 React + TypeScript + Vite, als Android-App mit Capacitor.

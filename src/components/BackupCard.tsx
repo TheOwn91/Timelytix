@@ -68,7 +68,7 @@ export function BackupCard() {
 
       <label className="checkbox toggle-row">
         <input id="auto-backup" type="checkbox" checked={auto} onChange={(e) => setSettings({ autoBackup: e.target.checked })} />
-        Automatisch sichern ({NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download-Ordner'})
+        Automatisch sichern
       </label>
       {auto && autoPossible && (
         <div className="field-list">
@@ -86,15 +86,22 @@ export function BackupCard() {
       )}
       <p className="muted small">
         {auto && !autoPossible && 'Auf dem iPhone nicht möglich – bitte von Hand exportieren. '}
-        Letzte Sicherung: {last ? fmtDate(last) : 'noch keine'}
-        {auto && autoPossible && <> · nächste: {fmtDate(nextAutoBackup(state))}</>}
+        {auto && autoPossible ? (
+          <>
+            Ordner: {NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download'}
+            <br />
+            Zuletzt: {last ? fmtDate(last) : 'noch nie'} · nächste: {fmtDate(nextAutoBackup(state))}
+          </>
+        ) : (
+          <>Zuletzt gesichert: {last ? fmtDate(last) : 'noch nie'}</>
+        )}
       </p>
 
-      <div className="row">
-        <button className="btn secondary grow" onClick={() => void exportBackup()}>
+      <div className="button-row">
+        <button className="btn secondary" onClick={() => void exportBackup()}>
           Sicherung exportieren
         </button>
-        <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>
+        <button className="btn secondary" onClick={() => fileRef.current?.click()}>
           Sicherung importieren
         </button>
         <input
