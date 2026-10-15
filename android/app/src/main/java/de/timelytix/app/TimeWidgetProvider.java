@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 /**
- * Widget für den Startbildschirm (3×1): Arbeitgeber wählen, laufende Zeit (zählt von selbst weiter) und
- * rechts daneben Start bzw. Pause/Weiter und Beenden.
+ * Widget für den Startbildschirm (3×1): Arbeitgeber wählen und laufende Zeit (zählt von selbst weiter),
+ * darunter Start bzw. Pause/Weiter und Beenden.
  */
 public class TimeWidgetProvider extends AppWidgetProvider {
     static final String ACTION_REFRESH = "de.timelytix.app.WIDGET_REFRESH";
@@ -85,7 +85,8 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
         v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START, null));
         v.setViewVisibility(R.id.widget_pause, running ? View.VISIBLE : View.GONE);
-        v.setImageViewResource(R.id.widget_pause, paused ? R.drawable.ic_widget_play : R.drawable.ic_widget_pause);
+        v.setImageViewResource(R.id.widget_pause_icon, paused ? R.drawable.ic_widget_play : R.drawable.ic_widget_pause);
+        v.setTextViewText(R.id.widget_pause_label, paused ? "Weiter" : "Pause");
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE, null));

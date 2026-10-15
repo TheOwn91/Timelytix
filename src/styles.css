@@ -116,6 +116,15 @@ body.no-scroll {
   overflow: hidden;
 }
 
+/* Symbole (components/Icon.tsx): so groß und so farbig wie der Text daneben */
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
 button {
   font: inherit;
   color: inherit;
@@ -342,6 +351,12 @@ h3 {
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-top: 0.4rem;
+}
+/* Symbol und Text in einer Zeile, auch bei 320 px */
+.timer-actions .btn {
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+  font-size: clamp(1rem, 4.8vw, 1.15rem);
 }
 
 /* Statistiken */
