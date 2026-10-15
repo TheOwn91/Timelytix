@@ -65,7 +65,7 @@
 - **Widget für den Startbildschirm**: Arbeitgeber wählen, laufende Zeit, Start, Pause und Beenden direkt vom Startbildschirm
 - **Benachrichtigung „Zeit läuft“** mit Knöpfen für Pause/Weiter und Beenden
 - **Erinnerungen**: samstags, wenn in der Woche Einträge fehlen, und wenn die Zeit ungewöhnlich lange läuft
-- **Design im Stil von Android** mit Farben vom Hintergrundbild (ab Android 12), hell und dunkel
+- **Hell und dunkel**, passend zur Einstellung des Handys
 - **Automatische Sicherung** in den Ordner „Dokumente/Timelytix“ – sie bleibt auch nach dem Deinstallieren erhalten
 - Updates direkt aus der App, mit Übersicht, was neu ist
 

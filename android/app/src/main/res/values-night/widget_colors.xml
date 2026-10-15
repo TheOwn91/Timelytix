@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="widget_bg">#F21E293B</color>
+    <color name="widget_border">#33FFFFFF</color>
     <color name="widget_text">#F1F5F9</color>
     <color name="widget_muted">#94A3B8</color>
     <color name="widget_primary">#2563EB</color>
     <color name="widget_warning">#B45309</color>
     <color name="widget_danger">#B91C1C</color>
     <color name="widget_on_button">#FFFFFF</color>
-    <color name="widget_on_primary">#FFFFFF</color>
 </resources>

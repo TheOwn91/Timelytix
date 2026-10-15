@@ -22,10 +22,6 @@ Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Spr
   `:root:not([data-theme='light'])` und `:root[data-theme='dark']`. Neue Tokens in allen drei Blöcken setzen.
 - Textfarben (`--link`, `--danger`, `--success`, `--c-*`) sind im Dark Mode hellere Varianten;
   Button-Hintergründe haben eigene Tokens (`--primary`, `--danger-bg`, `--warning-bg`).
-- Design im Stil von Material 3 Expressive (Android): Karten als Flächen ohne Rahmen, Knöpfe als Pillen (beim Drücken
-  eckiger), Rundungen `--radius`/`--radius-md`, Federn über `--spring`. Android-App ab Android 12: Flächen- und
-  Akzentfarben kommen vom Hintergrundbild (`lib/theme.ts` überschreibt die Tokens, Widget über `values-v31`);
-  Signalfarben (Pause, Beenden, Abwesenheiten, Saldo) bleiben fest.
 
 ## Demo
 
