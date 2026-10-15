@@ -182,7 +182,7 @@ function TermsEditor({ project, initial, isFirst, isNew, onClose, onSave, onDele
       </div>
       <div className="terms-workdays">
         <span>Arbeitstage</span>
-        <WeekdayToggle value={t.workdays} onChange={(v) => set({ workdays: v })} />
+        <WeekdayToggle value={t.workdays} onChange={(v) => set({ workdays: v })} label="Arbeitstage" />
       </div>
       <p className="muted small">
         Tage vor dem „gültig ab“ werden weiter mit den bisherigen Werten berechnet – vergangene Monate, Überstunden und

@@ -61,21 +61,29 @@ export function BackupCard() {
 
   // Auf dem iPhone kann die Web-App nicht von selbst speichern
   const autoPossible = NATIVE || !isIOS();
+  // Abstand aus einer älteren Sicherung, den es in der Auswahl nicht gibt, trotzdem anzeigen
+  const intervals = BACKUP_INTERVALS.some((i) => i.days === days)
+    ? BACKUP_INTERVALS
+    : [...BACKUP_INTERVALS, { days, label: `alle ${days} Tage` }].sort((a, b) => a.days - b.days);
   return (
     <section className="card">
       <h2>Datensicherung</h2>
-      <p className="muted small">Alle Daten liegen nur auf diesem Gerät.</p>
+      <p className="muted small">
+        Alle Daten liegen nur auf diesem Gerät.{!autoPossible && ' Auf dem iPhone bitte regelmäßig von Hand exportieren.'}
+      </p>
 
-      <label className="checkbox toggle-row">
-        <input id="auto-backup" type="checkbox" checked={auto} onChange={(e) => setSettings({ autoBackup: e.target.checked })} />
-        Automatisch sichern
-      </label>
+      {autoPossible && (
+        <label className="checkbox toggle-row">
+          <input id="auto-backup" type="checkbox" checked={auto} onChange={(e) => setSettings({ autoBackup: e.target.checked })} />
+          Automatisch sichern
+        </label>
+      )}
       {auto && autoPossible && (
         <div className="field-list">
           <label className="select-row">
             <span>Abstand</span>
             <select value={days} onChange={(e) => setSettings({ backupIntervalDays: Number(e.target.value) })}>
-              {BACKUP_INTERVALS.map((i) => (
+              {intervals.map((i) => (
                 <option key={i.days} value={i.days}>
                   {i.label}
                 </option>
@@ -85,7 +93,6 @@ export function BackupCard() {
         </div>
       )}
       <p className="muted small">
-        {auto && !autoPossible && 'Auf dem iPhone nicht möglich – bitte von Hand exportieren. '}
         {auto && autoPossible ? (
           <>
             Ordner: {NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download'}

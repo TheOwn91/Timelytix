@@ -117,7 +117,7 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
         <div className="wizard-body">
           <div className="wizard-field">
             <span>An welchen Tagen arbeitest du?</span>
-            <WeekdayToggle value={p.workdays} onChange={(workdays) => set({ workdays })} />
+            <WeekdayToggle value={p.workdays} onChange={(workdays) => set({ workdays })} label="Arbeitstage" />
           </div>
           <div className="field-list">
             <label>

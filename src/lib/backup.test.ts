@@ -28,6 +28,16 @@ describe('Automatische Sicherung', () => {
     expect(nextAutoBackup(state(), '2026-10-20', '2026-10-20', '2026-10-15')).toBe('2026-11-19');
   });
 
+  it('Datum in der Zukunft (Uhr war verstellt) oder überfällig: gleich sichern', () => {
+    expect(autoBackupDue(state(), '2026-10-15', '2027-10-01')).toBe(true);
+    expect(autoBackupDue(state(), '2026-10-15', undefined, '2027-01-01')).toBe(true);
+    expect(nextAutoBackup(state(), '2026-10-15', '2027-10-01')).toBe('2026-10-15');
+    // Lange nicht geöffnet: nächste Sicherung ist heute, nicht ein Tag in der Vergangenheit
+    expect(nextAutoBackup(state(), '2026-10-15', '2026-01-01')).toBe('2026-10-15');
+    // Kürzerer Abstand: sofort fällig
+    expect(autoBackupDue(state({ backupIntervalDays: 1 }), '2026-10-15', '2026-10-01')).toBe(true);
+  });
+
   it('nicht, wenn ausgeschaltet oder noch keine Daten da sind', () => {
     expect(autoBackupDue(state({ autoBackup: false }), '2026-09-29', undefined)).toBe(false);
     expect(autoBackupDue(state(undefined, 0), '2026-09-29', undefined)).toBe(false);

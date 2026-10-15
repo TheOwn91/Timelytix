@@ -54,7 +54,7 @@ export function setShiftToNextDay(p: Project, on: boolean) {
 /**
  * Beginn für „Zeit nachtragen“ am Tag `date`: zur Uhrzeit `hm` (meist die aktuelle). Überschneidet das eine
  * vorhandene Buchung, 30 min nach der letzten – stünde die neue Buchung dann aber beim Folgetag (spät endende
- * Schicht), 30 min vor der ersten. `existing`: die Buchungen des Tages, nach Beginn sortiert.
+ * Schicht), 30 min vor der ersten; passt beides nicht, bleibt es bei `hm`. `existing`: die Buchungen des Tages, nach Beginn sortiert.
  */
 export function suggestedStart(
   p: ShiftProject,
@@ -76,5 +76,6 @@ export function suggestedStart(
   const after = (existing[existing.length - 1].end ?? now) + 30 * MINUTE;
   if (fits(after)) return after;
   const before = existing[0].start - 30 * MINUTE - duration;
-  return fits(before) ? before : after;
+  // Passt nichts: lieber eine sichtbare Überschneidung als ein anderer Tag
+  return fits(before) ? before : start;
 }

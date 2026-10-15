@@ -52,7 +52,8 @@ export function uiScaleChoice(): UiScaleChoice {
  */
 export function uiScaleFactor(choice: UiScaleChoice, fontScale: number, width: number): number {
   const wanted = choice === 'auto' ? (Number.isFinite(fontScale) && fontScale > 0 ? fontScale : 1) : FACTORS[choice];
-  const max = Math.min(1.3, Math.max(1, width / MIN_LAYOUT_WIDTH));
+  // Abgerundet: sonst wäre die Seite bei 360 px um Bruchteile eines Pixels zu breit
+  const max = Math.min(1.3, Math.max(1, Math.floor((width / MIN_LAYOUT_WIDTH) * 100) / 100));
   return Math.round(Math.min(max, Math.max(0.85, wanted)) * 100) / 100;
 }
 

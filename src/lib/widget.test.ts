@@ -38,10 +38,45 @@ describe('Aktionen aus Widget und Benachrichtigung', () => {
     expect(s.sessions).toHaveLength(1);
     expect(s.selectedProjectId).toBeUndefined();
     expect(s.sessions[0].pauses).toEqual([]);
-    applyWidgetActions(s, [{ type: 'stop', at: t('07:00') }]);
-    expect(s.sessions[0].end).toBe(t('08:00')); // nie vor dem Beginn
-    applyWidgetActions(s, [{ type: 'start', at: t('10:00'), projectId: 'c' }]); // archiviert
+    applyWidgetActions(s, [{ type: 'stop', at: t('07:00') }]); // vor dem Beginn: gehört zu einer früheren Zeit
+    expect(s.sessions[0].end).toBeUndefined();
+  });
+
+  it('startet auch für einen archivierten Arbeitgeber (das Widget bot ihn an)', () => {
+    const s = state();
+    applyWidgetActions(s, [{ type: 'start', at: t('10:00'), projectId: 'c' }]);
+    expect(s.sessions).toMatchObject([{ projectId: 'c', start: t('10:00') }]);
+    applyWidgetActions(s, [{ type: 'stop', at: t('11:00') }, { type: 'start', at: t('12:00'), projectId: 'gibt-es-nicht' }]);
     expect(s.sessions).toHaveLength(1);
+  });
+
+  it('übernimmt dieselben Aktionen nur einmal (Android löscht sie erst nach dem Speichern)', () => {
+    const s = state();
+    const batch = [
+      { type: 'start', at: t('08:00'), projectId: 'a' },
+      { type: 'pause', at: t('12:00') },
+      { type: 'resume', at: t('12:30') },
+      { type: 'stop', at: t('16:30') },
+    ] as const;
+    applyWidgetActions(s, [...batch]);
+    const once = structuredClone(s.sessions);
+    applyWidgetActions(s, [...batch]);
+    expect(s.sessions).toEqual(once);
+    // Auch wenn danach in der App schon eine neue Zeit läuft
+    s.sessions.push({ id: 'neu', projectId: 'a', start: t('17:00'), pauses: [] });
+    applyWidgetActions(s, [...batch]);
+    expect(s.sessions).toHaveLength(2);
+    expect(s.sessions[1]).toMatchObject({ start: t('17:00'), pauses: [] });
+    expect(s.sessions[1].end).toBeUndefined();
+  });
+
+  it('Weiter vor Beginn der Pause lässt die Pause weg; Beenden kürzt spätere Pausen', () => {
+    const s = state({ sessions: [{ id: 'r', projectId: 'a', start: t('08:00'), pauses: [{ start: t('12:00') }] }] });
+    applyWidgetActions(s, [{ type: 'resume', at: t('11:59') }]);
+    expect(s.sessions[0].pauses).toEqual([]);
+    s.sessions[0].pauses.push({ start: t('13:00'), end: t('13:30') }, { start: t('15:00') });
+    applyWidgetActions(s, [{ type: 'stop', at: t('13:10') }]);
+    expect(s.sessions[0]).toMatchObject({ end: t('13:10'), pauses: [{ start: t('13:00'), end: t('13:10') }] });
   });
 
   it('beendet eine offene Pause mit', () => {
@@ -50,14 +85,18 @@ describe('Aktionen aus Widget und Benachrichtigung', () => {
     expect(s.sessions[0]).toMatchObject({ end: t('12:10'), pauses: [{ start: t('12:00'), end: t('12:10') }] });
   });
 
-  it('liest nur gültige Aktionen, sortiert nach Uhrzeit', () => {
+  it('liest nur gültige Aktionen, in der Reihenfolge der Tipps (auch wenn die Uhr zurückgestellt wurde)', () => {
     const raw = JSON.stringify([
-      { type: 'stop', at: 2 },
-      { type: 'start', at: 1, projectId: 'a' },
+      { type: 'stop', at: 2, seq: 7 },
+      { type: 'start', at: 1, projectId: 'a', seq: 8 },
       { type: 'hack', at: 3 },
       { type: 'pause', at: 'x' },
+      { type: 'pause', at: 4, seq: 'y' },
     ]);
-    expect(parseWidgetActions(raw)).toEqual([{ type: 'start', at: 1, projectId: 'a' }, { type: 'stop', at: 2 }]);
+    expect(parseWidgetActions(raw)).toEqual([
+      { type: 'stop', at: 2, seq: 7 },
+      { type: 'start', at: 1, projectId: 'a', seq: 8 },
+    ]);
     expect(parseWidgetActions('kaputt')).toEqual([]);
   });
 });
@@ -70,24 +109,31 @@ describe('Auszug fürs Widget', () => {
     expect(snap.running).toBeNull();
   });
 
-  it('beschreibt die laufende Zeit samt Pausen und automatischer Pause', () => {
+  it('beschreibt die laufende Zeit samt Pausen und der übrigen Arbeit des Tages', () => {
     const s = state({
-      sessions: [{ id: 'r', projectId: 'a', start: t('06:00'), pauses: [{ start: t('09:00'), end: t('09:10') }, { start: t('13:00') }] }],
+      sessions: [
+        { id: 'früh', projectId: 'a', start: t('05:00'), end: t('06:00'), pauses: [{ start: t('05:20'), end: t('05:30') }] },
+        { id: 'r', projectId: 'a', start: t('07:00'), pauses: [{ start: t('09:00'), end: t('09:10') }, { start: t('13:00') }] },
+        { id: 'b', projectId: 'b', start: t('06:00'), end: t('06:30'), pauses: [] },
+      ],
     });
     const snap = widgetSnapshot(s, t('13:05'));
     expect(snap.selected).toBe('a');
-    expect(snap.running).toMatchObject({ projectId: 'a', start: t('06:00'), closedPauseMs: 10 * 60_000, pauseStart: t('13:00') });
-    // 6 h Arbeit um 12:10 erreicht → 20 min fehlen noch bis 30 min Pause
-    expect(snap.running!.autoBreaks).toEqual([[t('12:10'), t('12:30')]]);
-  });
-
-  it('plant die gesetzlichen Pausen einer laufenden Zeit im Voraus (Widget rechnet ohne die App weiter)', () => {
-    const s = state({ sessions: [{ id: 'r', projectId: 'a', start: t('08:00'), pauses: [] }] });
-    // Nach 6 h Arbeit 30 min, nach 9 h der Rest bis 45 min
-    expect(widgetSnapshot(s, t('10:00')).running!.autoBreaks).toEqual([
-      [t('14:00'), t('14:30')],
-      [t('17:30'), t('17:45')],
-    ]);
+    expect(snap.running).toEqual({
+      projectId: 'a',
+      start: t('07:00'),
+      pauses: [
+        [t('09:00'), t('09:10')],
+        [t('13:00'), null],
+      ],
+      dayWork: [
+        [t('05:00'), t('05:20')],
+        [t('05:30'), t('06:00')],
+      ],
+    });
+    expect(snap.projects.find((p) => p.id === 'b')!.today).toEqual([[t('06:00'), t('06:30')]]);
+    expect(snap.projects[0].autoBreak).toBe(30);
+    expect(snap.dayEnd - snap.dayStart).toBe(24 * 3600_000);
   });
 
   it('wandelt Farben für Android um', () => {

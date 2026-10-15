@@ -156,6 +156,13 @@ describe('„Zeit nachtragen“: Beginn der neuen Buchung', () => {
     // Spätschicht bis 23:47 – danach wäre schon der 15.10.
     expect(suggestedStart(plain, d, [{ start: at('15:17'), end: at('23:47') }], 480, '15:17')).toBe(at('06:47'));
   });
+  it('passt nichts, bleibt sie am Tag (lieber sichtbar überschneiden als verschwinden)', () => {
+    const existing = [
+      { start: at('06:00'), end: at('14:00') },
+      { start: at('14:30'), end: at('23:50') },
+    ];
+    expect(suggestedStart(plain, d, existing, 480, '09:00')).toBe(at('09:00'));
+  });
   it('bleibt bei Nachtschichten (Folgetag) am angezeigten Tag', () => {
     const night = { shiftToNextDay: true };
     // Angezeigt am 14.10.: Schicht 13.10. 22:00 – 14.10. 06:00; die neue Buchung muss ebenfalls beim 14.10. stehen

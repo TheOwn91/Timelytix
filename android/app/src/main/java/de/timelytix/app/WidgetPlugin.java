@@ -6,7 +6,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-/** Brücke zur Web-App (src/lib/widget.ts): Auszug fürs Widget ablegen, gemerkte Aktionen abholen. */
+/**
+ * Brücke zur Web-App (src/lib/widget.ts): Auszug fürs Widget ablegen, gemerkte Aktionen lesen und – sobald die
+ * App sie gespeichert hat – bestätigen (erst dann werden sie gelöscht).
+ */
 @CapacitorPlugin(name = "TimelytixWidget")
 public class WidgetPlugin extends Plugin {
     private static volatile WidgetPlugin instance;
@@ -39,9 +42,16 @@ public class WidgetPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void takeActions(PluginCall call) {
+    public void actions(PluginCall call) {
         JSObject ret = new JSObject();
-        ret.put("actions", WidgetState.takeActions(getContext()));
+        ret.put("actions", WidgetState.actions(getContext()));
         call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void ack(PluginCall call) {
+        Object upTo = call.getData().opt("upTo");
+        if (upTo instanceof Number) WidgetState.ack(getContext(), ((Number) upTo).longValue());
+        call.resolve();
     }
 }

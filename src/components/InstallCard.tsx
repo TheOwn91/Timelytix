@@ -22,7 +22,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
-/** Hinweis bzw. Button, um die App auf dem Homescreen zu installieren. */
 /** Wurde die Installation angeboten (Android/Chrome), zeigt der Browser seinen eigenen Dialog. */
 function useInstallPrompt() {
   const [, rerender] = useState(0);

@@ -9,13 +9,11 @@ import android.content.Intent;
 public class WidgetActionReceiver extends BroadcastReceiver {
     static final String ACTION = "de.timelytix.app.WIDGET_ACTION";
     private static final String EXTRA_TYPE = "type";
-    private static final String EXTRA_PROJECT = "projectId";
 
-    static PendingIntent pending(Context context, String type, String projectId) {
+    static PendingIntent pending(Context context, String type) {
         Intent i = new Intent(context, WidgetActionReceiver.class)
             .setAction(ACTION + "." + type)
             .putExtra(EXTRA_TYPE, type);
-        if (projectId != null) i.putExtra(EXTRA_PROJECT, projectId);
         return PendingIntent.getBroadcast(context, type.hashCode(), i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
@@ -23,6 +21,6 @@ public class WidgetActionReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String type = intent.getStringExtra(EXTRA_TYPE);
         if (type == null) return;
-        WidgetActions.perform(context, type, intent.getStringExtra(EXTRA_PROJECT));
+        WidgetActions.perform(context, type, null);
     }
 }

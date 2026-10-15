@@ -85,12 +85,17 @@ export function markBackedUp(date = new Date()) {
 export function autoBackupDue(state: AppState, today = dateKey(new Date()), last = lastBackup(), start = backupStart()): boolean {
   if (!autoBackupEnabled(state) || state.projects.length === 0) return false;
   const from = last ?? start;
-  return !!from && addDays(from, backupIntervalDays(state)) <= today;
+  if (!from) return false;
+  // Datum in der Zukunft (Uhr war verstellt): gleich sichern, dann stimmt die Zählung wieder
+  return from > today || addDays(from, backupIntervalDays(state)) <= today;
 }
 
 /** Tag der nächsten automatischen Sicherung (für die Anzeige in den Einstellungen). */
 export function nextAutoBackup(state: AppState, today = dateKey(new Date()), last = lastBackup(), start = backupStart()): string {
-  return addDays(last ?? start ?? today, backupIntervalDays(state));
+  const from = last ?? start ?? today;
+  const next = addDays(from, backupIntervalDays(state));
+  // Überfällig (z. B. App lange nicht geöffnet) oder Datum in der Zukunft: beim nächsten Öffnen
+  return next < today || from > today ? today : next;
 }
 
 /** Beim Start und beim Zurückholen der App aufrufen. */

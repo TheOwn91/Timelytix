@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 /** Arbeitgeber fürs Widget wählen (kleines Fenster, archivierte fehlen schon im Auszug der App). */
 public class PickProjectActivity extends AppCompatActivity {
+    private AlertDialog dialog;
+
     static PendingIntent pending(Context context) {
         Intent i = new Intent(context, PickProjectActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return PendingIntent.getActivity(context, 11, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -30,7 +32,7 @@ public class PickProjectActivity extends AppCompatActivity {
             names[i] = p.name.isEmpty() ? "Ohne Namen" : p.name;
             if (shown != null && p.id.equals(shown.id)) checked = i;
         }
-        new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this)
             .setTitle("Arbeitgeber wählen")
             .setSingleChoiceItems(names, checked, (d, which) -> {
                 WidgetActions.perform(this, WidgetActions.SELECT, s.projects.get(which).id);
@@ -39,5 +41,15 @@ public class PickProjectActivity extends AppCompatActivity {
             .setNegativeButton("Abbrechen", null)
             .setOnDismissListener(d -> finish())
             .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // z. B. beim Drehen: Fenster schließen, statt es zurückzulassen
+        if (dialog != null) {
+            dialog.setOnDismissListener(null);
+            dialog.dismiss();
+        }
+        super.onDestroy();
     }
 }

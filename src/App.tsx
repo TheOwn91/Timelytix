@@ -15,7 +15,7 @@ import { refreshNotifySupport, requestNotifyPermission, setNotifyEnabled, should
 import { ask } from './lib/confirm';
 import { NATIVE } from './lib/native';
 import { useStore } from './lib/store';
-import { applyWidgetActions, onWidgetActions, syncWidget, takeWidgetActions } from './lib/widget';
+import { ackWidgetActions, applyWidgetActions, onWidgetActions, readWidgetActions, syncWidget } from './lib/widget';
 import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStatus, onUpdateStatus, openUpdatePreview } from './lib/update';
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
@@ -87,20 +87,24 @@ export function App() {
     return () => clearTimeout(t);
   }, [wizard]);
 
-  // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
-  useEffect(() => {
-    void syncRunningStatus(state);
-  }, [state]);
-
   // Android-App: Aktionen aus Widget und Benachrichtigung übernehmen – beim Start, beim Zurückholen bzw.
-  // Verlassen der App und sofort, wenn sie geöffnet ist (lib/widget.ts)
+  // Verlassen der App und sofort, wenn sie geöffnet ist (lib/widget.ts). Bis die ersten übernommen sind,
+  // bleiben Widget und Benachrichtigung beim Stand von Android (sonst zeigten sie kurz den alten Stand der App).
+  const [widgetReady, setWidgetReady] = useState(!NATIVE);
+  // Übernommene Aktionen, die Android löschen darf, sobald der neue Zustand gespeichert ist
+  const ackUpTo = useRef<number | null>(null);
   useEffect(() => {
     if (!NATIVE) return;
     const pull = async () => {
-      const actions = await takeWidgetActions();
-      if (actions.length) updateState((d) => applyWidgetActions(d, actions));
-      // Sonst den Auszug neu ablegen (z. B. Benachrichtigungen in den Einstellungen aus-/eingeschaltet)
-      else void syncWidget(stateRef.current);
+      const actions = await readWidgetActions();
+      if (actions.length) {
+        ackUpTo.current = Math.max(ackUpTo.current ?? 0, ...actions.map((a) => a.seq ?? 0));
+        updateState((d) => applyWidgetActions(d, actions));
+      } else {
+        // Sonst den Auszug neu ablegen (z. B. Benachrichtigungen in den Einstellungen aus-/eingeschaltet)
+        void syncWidget(stateRef.current);
+      }
+      setWidgetReady(true);
     };
     void pull();
     document.addEventListener('visibilitychange', pull);
@@ -111,10 +115,25 @@ export function App() {
     };
   }, [updateState]);
 
-  // Widget: Auszug nach jeder Änderung neu ablegen
+  // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {
-    void syncWidget(state);
-  }, [state]);
+    if (widgetReady) void syncRunningStatus(state);
+  }, [state, widgetReady]);
+
+  // Widget: nach jeder Änderung übernommene Aktionen bestätigen und den Auszug neu ablegen – erst nach dem
+  // Speichern des Zustands (StoreProvider speichert im selben Durchlauf, deshalb ein Takt später)
+  useEffect(() => {
+    if (!widgetReady) return;
+    const t = setTimeout(async () => {
+      const upTo = ackUpTo.current;
+      if (upTo !== null) {
+        await ackWidgetActions(upTo);
+        if (ackUpTo.current === upTo) ackUpTo.current = null;
+      }
+      void syncWidget(state);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [state, widgetReady]);
 
   // Erinnerungen (fehlende Tage, vergessen abzustempeln): bei Änderungen neu planen und jede Minute
   // prüfen – die Web-App kann sie nur zeigen, solange sie geöffnet ist

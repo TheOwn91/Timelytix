@@ -1,9 +1,9 @@
 import { registerPlugin } from '@capacitor/core';
-import { buildIndex, daySummary } from './calc';
+import { DEFAULT_AUTO_BREAK_MINUTES, buildIndex, workIntervals } from './calc';
 import { NATIVE } from './native';
 import { sessionDay } from './shift';
 import { notifyEnabled } from './status';
-import { uid } from './time';
+import { addDays, combine, dateKey, uid } from './time';
 import type { AppState } from './types';
 
 /**
@@ -19,18 +19,32 @@ export interface WidgetAction {
   type: WidgetActionType;
   at: number;
   projectId?: string;
+  /** Laufende Nummer in Android – bis zu ihr bestätigt die App die übernommenen Aktionen. */
+  seq?: number;
 }
+
+type Span = [number, number];
 
 export interface WidgetSnapshot {
   notify: boolean;
   selected: string | null;
-  projects: { id: string; name: string; color: string; autoBreak: number }[];
+  /**
+   * `autoBreak`: Länge der gesetzlichen Pause nach 6 h (0 = aus). `today`: übrige Arbeit des heutigen Tages
+   * (ohne Pausen) zwischen `dayStart` und `dayEnd` – startet das Widget die Zeit, zählt sie für die Pause mit.
+   */
+  projects: { id: string; name: string; color: string; autoBreak: number; today: Span[] }[];
+  dayStart: number;
+  dayEnd: number;
+  /**
+   * Laufende Zeit mit allen Pausen (`null` = offen) und der übrigen Arbeit desselben Tages. Die gesetzlichen
+   * Pausen rechnet das Widget daraus selbst (WidgetState.java, wie `placeAutoBreaks` in calc.ts) – so stimmen
+   * sie auch nach Pause/Weiter im Widget.
+   */
   running: {
     projectId: string;
     start: number;
-    closedPauseMs: number;
-    pauseStart: number | null;
-    autoBreaks: [number, number][];
+    pauses: [number, number | null][];
+    dayWork: Span[];
   } | null;
 }
 
@@ -41,30 +55,29 @@ export function androidColor(color: string): string {
   return /^#[0-9a-f]{6}$/i.test(color) ? color : '#2563eb';
 }
 
+/** Arbeit (ohne Pausen) der beendeten Buchungen eines Tages. */
+function dayWork(state: AppState, projectId: string, day: string, now: number): Span[] {
+  const sessions = buildIndex(state, projectId).sessionsByDay.get(day) ?? [];
+  return sessions.filter((s) => s.end !== undefined).flatMap((s) => workIntervals(s, now));
+}
+
 export function widgetSnapshot(state: AppState, now: number, notify = true): WidgetSnapshot {
   const run = state.sessions.find((s) => s.end === undefined);
   // Archivierte fehlen – außer die Zeit läuft gerade für einen archivierten Arbeitgeber
   const projects = state.projects.filter((p) => !p.archived || p.id === run?.projectId);
   const selected =
     run?.projectId ?? projects.find((p) => p.id === state.selectedProjectId)?.id ?? projects[0]?.id ?? null;
+  const today = dateKey(now);
+  const dayStart = combine(today, '00:00');
   let running: WidgetSnapshot['running'] = null;
   if (run) {
     const project = state.projects.find((p) => p.id === run.projectId);
-    const open = run.pauses.find((p) => p.end === undefined);
-    const closedPauseMs = run.pauses.reduce(
-      (n, p) => (p.end === undefined ? n : n + Math.max(0, Math.min(p.end, now) - Math.max(p.start, run.start))),
-      0,
-    );
-    // Automatische Pausen des Tages als Zeitfenster – auch die noch kommenden: so gerechnet, als liefe die Zeit
-    // weiter (bis zu 16 h), damit das Widget ohne die App nach 6 h die Pause abzieht. Bei offener Pause ist offen,
-    // wann es weitergeht – dann nur die bisherigen.
-    const until = open ? now : now + 16 * 3600_000;
-    const autoBreaks = project
-      ? daySummary(project, sessionDay(project, run, now), buildIndex(state, project.id), until).autoBreaks.map(
-          (b): [number, number] => [b.start, b.end],
-        )
-      : [];
-    running = { projectId: run.projectId, start: run.start, closedPauseMs, pauseStart: open?.start ?? null, autoBreaks };
+    running = {
+      projectId: run.projectId,
+      start: run.start,
+      pauses: run.pauses.map((p) => [p.start, p.end ?? null]),
+      dayWork: project ? dayWork(state, project.id, sessionDay(project, run, now), now) : [],
+    };
   }
   return {
     notify,
@@ -73,30 +86,32 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
       id: p.id,
       name: p.name,
       color: androidColor(p.color),
-      autoBreak: p.autoBreak ? (p.autoBreakMinutes ?? 30) : 0,
+      autoBreak: p.autoBreak ? (p.autoBreakMinutes ?? DEFAULT_AUTO_BREAK_MINUTES) : 0,
+      today: dayWork(state, p.id, today, now),
     })),
+    dayStart,
+    dayEnd: combine(addDays(today, 1), '00:00'),
     running,
   };
 }
 
 const TYPES = new Set<WidgetActionType>(['start', 'pause', 'resume', 'stop', 'select']);
 
-/** Gemerkte Aktionen prüfen (sie kommen aus dem Android-Speicher). */
+/** Gemerkte Aktionen prüfen (sie kommen aus dem Android-Speicher, in der Reihenfolge der Tipps). */
 export function parseWidgetActions(raw: string): WidgetAction[] {
   try {
     const list: unknown = JSON.parse(raw);
     if (!Array.isArray(list)) return [];
-    return list
-      .filter(
-        (a): a is WidgetAction =>
-          !!a &&
-          typeof a === 'object' &&
-          TYPES.has((a as WidgetAction).type) &&
-          typeof (a as WidgetAction).at === 'number' &&
-          Number.isFinite((a as WidgetAction).at) &&
-          ((a as WidgetAction).projectId === undefined || typeof (a as WidgetAction).projectId === 'string'),
-      )
-      .sort((a, b) => a.at - b.at);
+    return list.filter(
+      (a): a is WidgetAction =>
+        !!a &&
+        typeof a === 'object' &&
+        TYPES.has((a as WidgetAction).type) &&
+        typeof (a as WidgetAction).at === 'number' &&
+        Number.isFinite((a as WidgetAction).at) &&
+        ((a as WidgetAction).projectId === undefined || typeof (a as WidgetAction).projectId === 'string') &&
+        ((a as WidgetAction).seq === undefined || typeof (a as WidgetAction).seq === 'number'),
+    );
   } catch {
     return [];
   }
@@ -104,7 +119,8 @@ export function parseWidgetActions(raw: string): WidgetAction[] {
 
 /**
  * Aktionen in den Zustand übernehmen (ändert `draft`, nur innerhalb von `update()` aufrufen). Es zählt die
- * Uhrzeit der Aktion; was nicht (mehr) passt – z. B. Pause ohne laufende Zeit –, wird übersprungen.
+ * Uhrzeit der Aktion; was nicht (mehr) passt – z. B. Pause ohne laufende Zeit –, wird übersprungen. Doppelt
+ * übernommen ändert nichts: Android löscht die Aktionen erst, wenn die App sie gespeichert hat.
  */
 export function applyWidgetActions(draft: AppState, actions: WidgetAction[]) {
   for (const a of actions) {
@@ -115,22 +131,28 @@ export function applyWidgetActions(draft: AppState, actions: WidgetAction[]) {
         if (!run && draft.projects.some((p) => p.id === a.projectId)) draft.selectedProjectId = a.projectId;
         break;
       case 'start': {
-        const project = draft.projects.find((p) => p.id === a.projectId && !p.archived);
-        if (run || !project) break;
+        // Auch für einen archivierten Arbeitgeber – das Widget bietet ihn nur an, wenn seine Zeit zuletzt lief
+        const project = draft.projects.find((p) => p.id === a.projectId);
+        if (run || !project || draft.sessions.some((s) => s.projectId === project.id && s.start === a.at)) break;
         draft.sessions.push({ id: uid(), projectId: project.id, start: a.at, pauses: [] });
         draft.selectedProjectId = project.id;
         break;
       }
       case 'pause':
-        if (run && !open && a.at >= run.start) run.pauses.push({ start: a.at });
+        if (run && !open && a.at >= run.start && !run.pauses.some((p) => p.start === a.at)) run.pauses.push({ start: a.at });
         break;
       case 'resume':
-        if (open) open.end = Math.max(open.start, a.at);
+        if (!run || !open) break;
+        // Weiter vor Beginn der Pause (Uhr verstellt): Pause fällt weg
+        if (a.at <= open.start) run.pauses = run.pauses.filter((p) => p !== open);
+        else open.end = a.at;
         break;
       case 'stop':
-        if (!run) break;
-        for (const p of run.pauses) if (p.end === undefined) p.end = Math.max(p.start, a.at);
-        run.end = Math.max(run.start, a.at);
+        // Ein Beenden vor dem Beginn gehört zu einer früheren Zeit
+        if (!run || a.at < run.start) break;
+        run.pauses = run.pauses.filter((p) => p.start < a.at);
+        for (const p of run.pauses) if (p.end === undefined || p.end > a.at) p.end = a.at;
+        run.end = a.at;
         break;
     }
   }
@@ -138,7 +160,8 @@ export function applyWidgetActions(draft: AppState, actions: WidgetAction[]) {
 
 interface WidgetPlugin {
   sync(o: { snapshot: string }): Promise<{ changed: boolean }>;
-  takeActions(): Promise<{ actions: string }>;
+  actions(): Promise<{ actions: string }>;
+  ack(o: { upTo: number }): Promise<void>;
   addListener(event: 'actions', fn: () => void): Promise<{ remove: () => Promise<void> }>;
 }
 
@@ -153,16 +176,21 @@ export async function syncWidget(state: AppState) {
   await Widget.sync({ snapshot: JSON.stringify(widgetSnapshot(state, Date.now(), notifyEnabled())) }).catch(() => undefined);
 }
 
-/** Gemerkte Aktionen abholen (danach sind sie in Android gelöscht). */
-export async function takeWidgetActions(): Promise<WidgetAction[]> {
+/** Gemerkte Aktionen lesen (sie bleiben in Android, bis die App sie mit `ackWidgetActions` bestätigt). */
+export async function readWidgetActions(): Promise<WidgetAction[]> {
   if (!Widget) return [];
-  const res = await Widget.takeActions().catch(() => ({ actions: '[]' }));
+  const res = await Widget.actions().catch(() => ({ actions: '[]' }));
   return parseWidgetActions(res.actions);
+}
+
+/** Übernommene und gespeicherte Aktionen in Android löschen (alle bis einschließlich Nummer `upTo`). */
+export async function ackWidgetActions(upTo: number) {
+  await Widget?.ack({ upTo }).catch(() => undefined);
 }
 
 /** Aktion aus Widget oder Benachrichtigung, während die App geöffnet ist. */
 export function onWidgetActions(fn: () => void): () => void {
   if (!Widget) return () => undefined;
-  const handle = Widget.addListener('actions', fn);
-  return () => void handle.then((h) => h.remove());
+  const handle = Widget.addListener('actions', fn).catch(() => undefined);
+  return () => void handle.then((h) => h?.remove());
 }

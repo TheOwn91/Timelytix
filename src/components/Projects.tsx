@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ABSENCE_ORDER, ABSENCE_TYPES } from '../lib/absences';
 import { DEFAULT_AUTO_BREAK_MINUTES } from '../lib/calc';
 import { ask } from '../lib/confirm';
@@ -21,36 +21,44 @@ import { TermsSection } from './TermsSection';
 import { VersionCard } from './VersionCard';
 import { WeekdayToggle } from './WeekdayToggle';
 
-/** Kurzbeschreibung einer Zulage, z. B. „18:00–22:00 · 10 %“. */
-function ruleSummary(rule: SurchargeRule): string {
+/** Kurzbeschreibung einer Zulage, z. B. „18:00–22:00 · 10 %“ (`percent`: heute gültiger Satz). */
+function ruleSummary(rule: SurchargeRule, percent: number): string {
   if (!rule.enabled) return 'aus';
   const when =
     rule.kind === 'holiday'
       ? 'Feiertage'
       : rule.kind === 'weekday'
         ? fmtWorkdays(rule.weekdays ?? [])
-        : `${rule.from ?? '?'}–${rule.to ?? '?'}${rule.weekdays?.length ? ` (${fmtWorkdays(rule.weekdays)})` : ''}`;
-  return `${when} · ${rule.percent.toLocaleString('de-DE')} %`;
+        : `${rule.from || '?'}–${rule.to || '?'}${rule.weekdays?.length ? ` (${fmtWorkdays(rule.weekdays)})` : ''}`;
+  return `${when} · ${percent.toLocaleString('de-DE')} %`;
 }
 
 function SurchargeEditor({
   rule,
+  percent,
   isNew,
   onChange,
   onRemove,
 }: {
   rule: SurchargeRule;
-  /** Gerade hinzugefügt: gleich aufgeklappt zum Bearbeiten */
+  percent: number;
+  /** Gerade hinzugefügt: aufgeklappt, Name zum Überschreiben markiert */
   isNew: boolean;
   onChange: (r: SurchargeRule) => void;
   onRemove: () => void;
 }) {
   const set = (patch: Partial<SurchargeRule>) => onChange({ ...rule, ...patch });
+  // Nur beim Hinzufügen offen – danach bleibt sie, wie der Nutzer sie auf- oder zuklappt
+  const [initiallyOpen] = useState(isNew);
+  const nameRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (initiallyOpen) nameRef.current?.select();
+  }, [initiallyOpen]);
   return (
-    <details className={`surcharge-edit ${rule.enabled ? '' : 'disabled'}`} open={isNew || undefined}>
+    <details className={`surcharge-edit ${rule.enabled ? '' : 'disabled'}`} open={initiallyOpen || undefined}>
       <summary>
         <strong>{rule.name || 'Ohne Namen'}</strong>
-        <span className="muted small">{ruleSummary(rule)}</span>
+        <span className="muted small">{ruleSummary(rule, percent)}</span>
       </summary>
       <div className="surcharge-edit-body">
         <div className="row">
@@ -59,6 +67,7 @@ function SurchargeEditor({
             Aktiv
           </label>
           <input
+            ref={nameRef}
             className="grow"
             aria-label="Name der Zulage"
             value={rule.name}
@@ -87,14 +96,14 @@ function SurchargeEditor({
         </select>
         {rule.kind === 'time' && (
           <div className="row times">
-            <input type="time" aria-label="von" value={rule.from ?? ''} onChange={(e) => set({ from: e.target.value })} />
+            <input type="time" aria-label="von" value={rule.from ?? ''} onChange={(e) => e.target.value && set({ from: e.target.value })} />
             <span>–</span>
-            <input type="time" aria-label="bis" value={rule.to ?? ''} onChange={(e) => set({ to: e.target.value })} />
+            <input type="time" aria-label="bis" value={rule.to ?? ''} onChange={(e) => e.target.value && set({ to: e.target.value })} />
           </div>
         )}
         {rule.kind !== 'holiday' && (
           <div className="row">
-            <WeekdayToggle value={rule.weekdays ?? []} onChange={(weekdays) => set({ weekdays })} />
+            <WeekdayToggle value={rule.weekdays ?? []} onChange={(weekdays) => set({ weekdays })} label="Wochentage der Zulage" />
             {rule.kind === 'time' && !rule.weekdays?.length && <span className="muted small">alle Tage</span>}
           </div>
         )}
@@ -104,7 +113,7 @@ function SurchargeEditor({
 }
 
 function ProjectForm({ project }: { project: Project }) {
-  const { update } = useStore();
+  const { state, update } = useStore();
   const set = (fn: (p: Project) => void) =>
     update((d) => {
       const p = d.projects.find((x) => x.id === project.id);
@@ -124,13 +133,14 @@ function ProjectForm({ project }: { project: Project }) {
           <input value={project.name} onChange={(e) => set((p) => (p.name = e.target.value))} />
         </label>
         <div className="color-row">
-          {PROJECT_COLORS.map((c) => (
+          {PROJECT_COLORS.map((c, i) => (
             <button
               key={c}
               className={`color ${project.color === c ? 'active' : ''}`}
               style={{ background: c }}
               onClick={() => set((p) => (p.color = c))}
-              aria-label={`Farbe ${c}`}
+              aria-label={`Farbe ${i + 1}`}
+              aria-pressed={project.color === c}
             />
           ))}
         </div>
@@ -256,6 +266,7 @@ function ProjectForm({ project }: { project: Project }) {
           <SurchargeEditor
             key={r.id}
             rule={r}
+            percent={terms.surchargePercents[r.id] ?? r.percent}
             isNew={r.id === newRule}
             onChange={(nr) => set((p) => (p.surcharges = p.surcharges.map((x) => (x.id === r.id ? nr : x))))}
             onRemove={() => set((p) => (p.surcharges = p.surcharges.filter((x) => x.id !== r.id)))}
@@ -307,7 +318,7 @@ function ProjectForm({ project }: { project: Project }) {
                   })
                 }
               >
-                {shown ? '✓ ' : ''}
+                {shown && <span aria-hidden>✓ </span>}
                 {ABSENCE_TYPES[t].label}
               </button>
             );
@@ -323,16 +334,17 @@ function ProjectForm({ project }: { project: Project }) {
         <button
           className="btn danger"
           onClick={async () => {
-            const ok = await ask(`„${project.name}“ und alle zugehörigen Zeiten endgültig löschen?`, {
-              confirmLabel: 'Löschen',
-              danger: true,
-            });
+            const running = state.sessions.some((s) => s.projectId === project.id && s.end === undefined);
+            const ok = await ask(
+              `„${project.name}“ und alle zugehörigen Zeiten endgültig löschen?${running ? ' Die laufende Zeit wird dabei verworfen.' : ''}`,
+              { confirmLabel: 'Löschen', danger: true },
+            );
             if (!ok) return;
             update((d) => {
               d.projects = d.projects.filter((p) => p.id !== project.id);
               d.sessions = d.sessions.filter((s) => s.projectId !== project.id);
               d.absences = d.absences.filter((a) => a.projectId !== project.id);
-              if (d.selectedProjectId === project.id) d.selectedProjectId = d.projects[0]?.id;
+              if (d.selectedProjectId === project.id) d.selectedProjectId = (d.projects.find((p) => !p.archived) ?? d.projects[0])?.id;
             });
           }}
         >
@@ -368,7 +380,9 @@ export function Projects({
               <span className="dot" style={{ background: p.color }} />
               <strong className="grow">{p.name || 'Ohne Namen'}</strong>
               {p.archived && <span className="muted small">archiviert</span>}
-              <span className="muted">{openId === p.id ? '▴' : '▾'}</span>
+              <span className="muted" aria-hidden>
+                {openId === p.id ? '▴' : '▾'}
+              </span>
             </button>
             {openId === p.id && <ProjectForm project={p} />}
           </div>

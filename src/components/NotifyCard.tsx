@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NATIVE } from '../lib/native';
 import { FORGOT_OPTIONS, forgotStopHours, syncReminders, weekReminderEnabled, weekReminderTime } from '../lib/reminders';
 import {
   notifyEnabled,
   notifySupport,
+  refreshNotifySupport,
   requestNotifyPermission,
   setNotifyEnabled,
   showTestNotification,
@@ -31,6 +32,13 @@ export function NotifyCard() {
   const weekTime = weekReminderTime(state);
   const forgot = forgotStopHours(state);
   const off = support === 'unsupported' || support === 'install';
+
+  // Zurück aus den Handy-Einstellungen (dort erlaubt oder blockiert): Stand neu lesen
+  useEffect(() => {
+    const refresh = () => void refreshNotifySupport().then(setSupport);
+    document.addEventListener('visibilitychange', refresh);
+    return () => document.removeEventListener('visibilitychange', refresh);
+  }, []);
 
   const allow = async () => {
     await requestNotifyPermission();
@@ -104,7 +112,16 @@ export function NotifyCard() {
         <p className="muted small">{HINTS[support] || 'Erinnerungen nur, solange Timelytix geöffnet ist.'}</p>
       )}
       {support === 'ask' && (
-        <button className="btn secondary full" onClick={() => void allow().then((s) => syncReminders(state, s === 'ok'))}>
+        <button
+          className="btn secondary full"
+          onClick={() =>
+            void allow().then((s) => {
+              void syncReminders(state, s === 'ok');
+              // Läuft die Zeit schon, gleich „Zeit läuft“ zeigen
+              void syncRunningStatus(state, true);
+            })
+          }
+        >
           Benachrichtigungen erlauben
         </button>
       )}

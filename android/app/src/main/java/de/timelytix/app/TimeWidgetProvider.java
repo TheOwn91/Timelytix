@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -62,7 +63,7 @@ public class TimeWidgetProvider extends AppWidgetProvider {
             v.setTextColor(R.id.widget_dot, context.getColor(R.color.widget_primary));
             v.setViewVisibility(R.id.widget_chevron, View.GONE);
             v.setOnClickPendingIntent(R.id.widget_name_row, open);
-            v.setChronometer(R.id.widget_clock, SystemClock.elapsedRealtime(), null, false);
+            v.setChronometer(R.id.widget_clock, SystemClock.elapsedRealtime(), fixed(0), false);
             v.setViewVisibility(R.id.widget_start, View.GONE);
             v.setViewVisibility(R.id.widget_pause, View.GONE);
             v.setViewVisibility(R.id.widget_stop, View.GONE);
@@ -79,19 +80,22 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setViewVisibility(R.id.widget_chevron, canPick ? View.VISIBLE : View.GONE);
         v.setOnClickPendingIntent(R.id.widget_name_row, canPick ? PickProjectActivity.pending(context) : open);
 
-        // Steht während einer Pause (auch der automatischen nach 6 h)
-        v.setChronometer(R.id.widget_clock, SystemClock.elapsedRealtime() - s.netMs(now), null, running && !paused && !auto);
+        // Steht während einer Pause (auch der automatischen nach 6 h) – dann mit festem Text, sonst zählte die Uhr
+        // beim erneuten Anzeigen durch den Startbildschirm von selbst weiter
+        long net = s.netMs(now);
+        boolean ticking = running && !paused && !auto;
+        v.setChronometer(R.id.widget_clock, SystemClock.elapsedRealtime() - net, ticking ? null : fixed(net), ticking);
 
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
-        v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START, null));
+        v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START));
         v.setViewVisibility(R.id.widget_pause, running ? View.VISIBLE : View.GONE);
         v.setImageViewResource(R.id.widget_pause_icon, paused ? R.drawable.ic_widget_play : R.drawable.ic_widget_pause);
         v.setTextViewText(R.id.widget_pause_label, paused ? "Weiter" : "Pause");
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
-        v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE, null));
+        v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE));
         v.setViewVisibility(R.id.widget_stop, running ? View.VISIBLE : View.GONE);
-        v.setOnClickPendingIntent(R.id.widget_stop, WidgetActionReceiver.pending(context, WidgetActions.STOP, null));
+        v.setOnClickPendingIntent(R.id.widget_stop, WidgetActionReceiver.pending(context, WidgetActions.STOP));
         return v;
     }
 
@@ -106,8 +110,13 @@ public class TimeWidgetProvider extends AppWidgetProvider {
             am.cancel(pi);
             return;
         }
-        // Ungenauer Wecker genügt (keine Berechtigung nötig); bei ausgeschaltetem Bildschirm wartet Android
-        am.set(AlarmManager.RTC, next, pi);
+        // Ungenauer Wecker mit kurzem Zeitfenster (keine Berechtigung nötig); bei ausgeschaltetem Bildschirm wartet Android
+        am.setWindow(AlarmManager.RTC, next, 60_000, pi);
+    }
+
+    /** Angehaltene Uhr als fester Text (Format wie die laufende Uhr). */
+    private static String fixed(long ms) {
+        return DateUtils.formatElapsedTime(Math.max(0, ms) / 1000);
     }
 
     private static int parseColor(String color, int fallback) {

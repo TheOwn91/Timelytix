@@ -65,7 +65,8 @@ export function NumberField({ value, onChange, decimals = 0, minDecimals = 0, mi
       onBlur={() => {
         setFocused(false);
         const n = parseDecimal(text, negative);
-        const final = n === null ? 0 : clamp(n);
+        // Leer gelassen: 0 bzw. der kleinste erlaubte Wert
+        const final = clamp(n ?? 0);
         if (final !== value) onChange(final);
         setText(format(final, decimals, minDecimals));
       }}

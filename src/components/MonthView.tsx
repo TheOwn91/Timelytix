@@ -8,6 +8,7 @@ import type { DateKey } from '../lib/types';
 import { yearOverview } from '../lib/year';
 import { DayEditor } from './DayEditor';
 import { MonthExtras } from './MonthExtras';
+import { NoProject } from './NoProject';
 import { ProjectPicker } from './ProjectPicker';
 import { SurchargeList } from './SurchargeList';
 
@@ -43,7 +44,7 @@ export function MonthView() {
     () => project && { sum: monthSummary(state, project, ym.y, ym.m, minute), year: yearOverview(state, project, ym.y, minute) },
     [state, project, ym, minute],
   );
-  if (!project || !totals) return <div className="page"><p className="card muted">Bitte zuerst einen Arbeitgeber anlegen.</p></div>;
+  if (!project || !totals) return <NoProject />;
 
   const { sum, year } = totals;
   const today = dateKey(now);

@@ -80,8 +80,8 @@ final class RunningNotice {
             .setDeleteIntent(PendingIntent.getBroadcast(context, 0, dismissed, flags));
         // Knöpfe: Pause/Weiter und Beenden (wirken sofort, siehe WidgetActions)
         String toggle = paused ? WidgetActions.RESUME : WidgetActions.PAUSE;
-        b.addAction(0, paused ? "Weiter" : "Pause", WidgetActionReceiver.pending(context, toggle, null));
-        b.addAction(0, "Beenden", WidgetActionReceiver.pending(context, WidgetActions.STOP, null));
+        b.addAction(0, paused ? "Weiter" : "Pause", WidgetActionReceiver.pending(context, toggle));
+        b.addAction(0, "Beenden", WidgetActionReceiver.pending(context, WidgetActions.STOP));
         try {
             nm.notify(ID, b.build());
         } catch (SecurityException e) {
