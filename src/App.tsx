@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Home } from './components/Home';
+import { Icon, type IconName } from './components/Icon';
 import { MonthView } from './components/MonthView';
 import { Projects } from './components/Projects';
 import { SetupWizard } from './components/SetupWizard';
@@ -20,11 +21,11 @@ import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStat
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'home', label: 'Start', icon: '⏱' },
-  { id: 'month', label: 'Monat', icon: '📅' },
-  { id: 'year', label: 'Jahr', icon: '📊' },
-  { id: 'projects', label: 'Einstellungen', icon: '⚙️' },
+const TABS: { id: Tab; label: string; icon: IconName }[] = [
+  { id: 'home', label: 'Start', icon: 'timer' },
+  { id: 'month', label: 'Monat', icon: 'calendar' },
+  { id: 'year', label: 'Jahr', icon: 'chart' },
+  { id: 'projects', label: 'Einstellungen', icon: 'settings' },
 ];
 
 export function App() {
@@ -209,7 +210,9 @@ export function App() {
       <nav className="tabbar">
         {TABS.map((t) => (
           <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => setTab(t.id)}>
-            <span className="tab-icon">{t.icon}</span>
+            <span className="tab-icon">
+              <Icon name={t.icon} />
+            </span>
             {t.label}
           </button>
         ))}

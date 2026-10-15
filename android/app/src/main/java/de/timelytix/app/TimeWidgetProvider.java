@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -85,8 +86,10 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
         v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START, null));
         v.setViewVisibility(R.id.widget_pause, running ? View.VISIBLE : View.GONE);
-        v.setImageViewResource(R.id.widget_pause_icon, paused ? R.drawable.ic_widget_play : R.drawable.ic_widget_pause);
+        // In der Pause wird der Knopf zu „Weiter“ in der Farbe von „Start“ (Systemfarbe ab Android 12)
+        v.setImageViewResource(R.id.widget_pause_icon, paused ? R.drawable.ic_widget_play_on_primary : R.drawable.ic_widget_pause);
         v.setTextViewText(R.id.widget_pause_label, paused ? "Weiter" : "Pause");
+        setTextColorRes(context, v, R.id.widget_pause_label, paused ? R.color.widget_on_primary : R.color.widget_on_button);
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE, null));
@@ -108,6 +111,12 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         }
         // Ungenauer Wecker genügt (keine Berechtigung nötig); bei ausgeschaltetem Bildschirm wartet Android
         am.set(AlarmManager.RTC, next, pi);
+    }
+
+    /** Textfarbe als Ressource: ab Android 12 löst der Launcher sie auf (folgt Hell/Dunkel und Hintergrundbild). */
+    private static void setTextColorRes(Context context, RemoteViews v, int id, int colorRes) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) v.setColorStateList(id, "setTextColor", colorRes);
+        else v.setTextColor(id, context.getColor(colorRes));
     }
 
     private static int parseColor(String color, int fallback) {

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Farben des Widgets (hell), dunkel in values-night – angelehnt an die Tokens in src/styles.css -->
+<!-- Farben des Widgets (hell), dunkel in values-night – angelehnt an die Tokens in src/styles.css.
+     Ab Android 12 kommen Hintergrund, Text und Start-Knopf vom Hintergrundbild (values-v31, values-night-v31). -->
 <resources>
     <color name="widget_bg">#F2FFFFFF</color>
-    <color name="widget_border">#1F0F172A</color>
     <color name="widget_text">#0F172A</color>
     <color name="widget_muted">#64748B</color>
     <color name="widget_primary">#2563EB</color>
     <color name="widget_warning">#D97706</color>
     <color name="widget_danger">#DC2626</color>
     <color name="widget_on_button">#FFFFFF</color>
+    <color name="widget_on_primary">#FFFFFF</color>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: Farben vom Hintergrundbild (Material You); Pause und Beenden behalten Orange und Rot -->
+<resources>
+    <color name="widget_bg">@android:color/system_neutral1_50</color>
+    <color name="widget_text">@android:color/system_neutral1_900</color>
+    <color name="widget_muted">@android:color/system_neutral2_700</color>
+    <color name="widget_primary">@android:color/system_accent1_600</color>
+    <color name="widget_on_primary">@android:color/system_accent1_0</color>
+</resources>

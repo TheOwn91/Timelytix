@@ -8,7 +8,8 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/widget_root"
+        android:id="@android:id/background"
+        android:clipToOutline="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/widget_bg"
@@ -85,9 +86,12 @@
                 android:background="@drawable/widget_btn_primary"
                 android:contentDescription="Zeit starten">
 
-                <ImageView style="@style/WidgetButtonIcon" android:src="@drawable/ic_widget_play" />
+                <ImageView style="@style/WidgetButtonIcon" android:src="@drawable/ic_widget_play_on_primary" />
 
-                <TextView style="@style/WidgetButtonLabel" android:text="Start" />
+                <TextView
+                    style="@style/WidgetButtonLabel"
+                    android:text="Start"
+                    android:textColor="@color/widget_on_primary" />
             </LinearLayout>
 
             <LinearLayout
