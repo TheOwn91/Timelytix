@@ -1,14 +1,14 @@
 import { registerPlugin } from '@capacitor/core';
-import { buildIndex, daySummary, monthSummary } from './calc';
+import { buildIndex, daySummary } from './calc';
 import { NATIVE } from './native';
 import { sessionDay } from './shift';
 import { notifyEnabled } from './status';
-import { pad, uid } from './time';
+import { uid } from './time';
 import type { AppState } from './types';
 
 /**
  * Widget für den Startbildschirm und Knöpfe in der Benachrichtigung „Zeit läuft“ (nur Android-App).
- * Die App legt einen Auszug ab (Arbeitgeber, laufende Zeit, Monatssaldo). Widget und Benachrichtigung
+ * Die App legt einen Auszug ab (Arbeitgeber, laufende Zeit). Widget und Benachrichtigung
  * zeigen Änderungen sofort selbst an und merken sich jede Aktion mit Uhrzeit
  * (android/…/WidgetActions.java); die App übernimmt sie hier in ihre Daten.
  */
@@ -22,14 +22,11 @@ export interface WidgetAction {
 }
 
 export interface WidgetSnapshot {
-  /** Zeitpunkt des Auszugs; `balance` gilt bis hierhin. */
+  /** Zeitpunkt des Auszugs. */
   at: number;
-  /** Monat des Saldos (YYYY-MM) – in einem neuen Monat zeigt das Widget ihn erst nach dem Öffnen der App. */
-  month: string;
   notify: boolean;
-  decimal: boolean;
   selected: string | null;
-  projects: { id: string; name: string; color: string; balance: number; autoBreak: number }[];
+  projects: { id: string; name: string; color: string; autoBreak: number }[];
   running: {
     projectId: string;
     start: number;
@@ -50,7 +47,6 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   const run = state.sessions.find((s) => s.end === undefined);
   // Archivierte fehlen – außer die Zeit läuft gerade für einen archivierten Arbeitgeber
   const projects = state.projects.filter((p) => !p.archived || p.id === run?.projectId);
-  const d = new Date(now);
   const selected =
     run?.projectId ?? projects.find((p) => p.id === state.selectedProjectId)?.id ?? projects[0]?.id ?? null;
   let running: WidgetSnapshot['running'] = null;
@@ -71,15 +67,12 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   }
   return {
     at: now,
-    month: `${d.getFullYear()}-${pad(d.getMonth() + 1)}`,
     notify,
-    decimal: !!state.settings?.decimalHours,
     selected,
     projects: projects.map((p) => ({
       id: p.id,
       name: p.name,
       color: androidColor(p.color),
-      balance: monthSummary(state, p, d.getFullYear(), d.getMonth(), now).balance,
       autoBreak: p.autoBreak ? (p.autoBreakMinutes ?? 30) : 0,
     })),
     running,

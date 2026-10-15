@@ -99,7 +99,7 @@ export function App() {
     const pull = async () => {
       const actions = await takeWidgetActions();
       if (actions.length) updateState((d) => applyWidgetActions(d, actions));
-      // Saldo neu ablegen (z. B. nach Mitternacht oder Monatswechsel)
+      // Auszug neu ablegen (z. B. automatische Pause nach Mitternacht neu berechnet)
       else void syncWidget(stateRef.current);
     };
     void pull();

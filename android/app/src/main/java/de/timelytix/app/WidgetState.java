@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,7 +13,7 @@ import org.json.JSONObject;
 
 /**
  * Zustand für Widget und Benachrichtigungs-Knöpfe. Die Web-App legt einen Auszug ab (src/lib/widget.ts:
- * Arbeitgeber, laufende Zeit, Monatssaldo); Widget und Benachrichtigung ändern ihn sofort selbst und merken
+ * Arbeitgeber, laufende Zeit); Widget und Benachrichtigung ändern ihn sofort selbst und merken
  * sich jede Aktion mit Uhrzeit. Die App übernimmt die Aktionen beim nächsten Öffnen in ihre Daten.
  */
 final class WidgetState {
@@ -26,8 +25,6 @@ final class WidgetState {
         String id;
         String name;
         String color;
-        /** Monatssaldo zum Zeitpunkt `at` (Minuten, inkl. der laufenden Zeit bis dahin). */
-        double balance;
         /** Länge der automatischen Pause nach 6 h (Minuten), 0 = aus. */
         int autoBreak;
     }
@@ -43,9 +40,7 @@ final class WidgetState {
     }
 
     long at;
-    String month = "";
     boolean notify = true;
-    boolean decimal;
     String selected;
     List<Project> projects = new ArrayList<>();
     Running running;
@@ -159,46 +154,14 @@ final class WidgetState {
         return next;
     }
 
-    /** Monatssaldo eines Arbeitgebers jetzt (Minuten); NaN, wenn der Stand aus einem anderen Monat ist. */
-    double balanceNow(Project p, long now) {
-        if (!month.equals(new SimpleDateFormat("yyyy-MM", Locale.GERMANY).format(new Date(now)))) return Double.NaN;
-        double b = p.balance;
-        if (running != null && p.id.equals(running.projectId)) b += (netMs(now) - netMs(at)) / 60000.0;
-        return b;
-    }
-
-    /** Monat wie in der App: „+3:45“ bzw. dezimal „+3,75“, negativ mit „−“. */
-    String fmtHours(double minutes) {
-        long rounded = Math.round(minutes);
-        if (decimal) {
-            double h = Math.round(minutes / 0.6) / 100.0;
-            String sign = h < 0 ? "−" : h > 0 ? "+" : "";
-            return sign + String.format(Locale.GERMANY, "%.2f", Math.abs(h));
-        }
-        String sign = rounded < 0 ? "−" : rounded > 0 ? "+" : "";
-        long abs = Math.abs(rounded);
-        return String.format(Locale.GERMANY, "%s%d:%02d", sign, abs / 60, abs % 60);
-    }
-
     static String fmtTime(long ts) {
         return new SimpleDateFormat("HH:mm", Locale.GERMANY).format(new Date(ts));
-    }
-
-    static long startOfNextMinute(long t) {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(t);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        c.add(Calendar.MINUTE, 1);
-        return c.getTimeInMillis();
     }
 
     private static WidgetState parse(JSONObject o) throws JSONException {
         WidgetState s = new WidgetState();
         s.at = o.getLong("at");
-        s.month = o.optString("month", "");
         s.notify = o.optBoolean("notify", true);
-        s.decimal = o.optBoolean("decimal", false);
         s.selected = o.isNull("selected") ? null : o.optString("selected", null);
         JSONArray list = o.getJSONArray("projects");
         for (int i = 0; i < list.length(); i++) {
@@ -207,7 +170,6 @@ final class WidgetState {
             p.id = j.getString("id");
             p.name = j.optString("name", "");
             p.color = j.optString("color", "#2563eb");
-            p.balance = j.optDouble("balance", 0);
             p.autoBreak = j.optInt("autoBreak", 0);
             s.projects.add(p);
         }
@@ -233,9 +195,7 @@ final class WidgetState {
     private JSONObject toJson() throws JSONException {
         JSONObject o = new JSONObject()
             .put("at", at)
-            .put("month", month)
             .put("notify", notify)
-            .put("decimal", decimal)
             .put("selected", selected == null ? JSONObject.NULL : selected);
         JSONArray list = new JSONArray();
         for (Project p : projects) {
@@ -243,7 +203,6 @@ final class WidgetState {
                 .put("id", p.id)
                 .put("name", p.name)
                 .put("color", p.color)
-                .put("balance", p.balance)
                 .put("autoBreak", p.autoBreak));
         }
         o.put("projects", list);

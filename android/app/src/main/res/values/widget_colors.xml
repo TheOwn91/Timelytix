@@ -9,6 +9,4 @@
     <color name="widget_warning">#D97706</color>
     <color name="widget_danger">#DC2626</color>
     <color name="widget_on_button">#FFFFFF</color>
-    <color name="widget_positive">#15803D</color>
-    <color name="widget_negative">#B91C1C</color>
 </resources>

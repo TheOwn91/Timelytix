@@ -59,8 +59,6 @@ final class WidgetActions {
                 break;
             case STOP: {
                 if (s.running == null) return false;
-                WidgetState.Project p = s.project(s.running.projectId);
-                if (p != null) p.balance += (s.netMs(now) - s.netMs(s.at)) / 60000.0;
                 projectId = s.running.projectId;
                 s.running = null;
                 s.at = now;
@@ -101,7 +99,7 @@ final class WidgetActions {
         }
     }
 
-    /** App öffnen (Tipp auf Uhr oder Saldo, oder wenn das Widget noch keine Daten hat). */
+    /** App öffnen (Tipp auf die Uhr, oder wenn das Widget noch keine Daten hat). */
     static Intent openApp(Context context) {
         return new Intent(context, MainActivity.class)
             .setAction(Intent.ACTION_MAIN)

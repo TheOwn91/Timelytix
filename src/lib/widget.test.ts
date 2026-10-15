@@ -68,7 +68,6 @@ describe('Auszug fürs Widget', () => {
     expect(snap.projects.map((p) => p.id)).toEqual(['a', 'b']);
     expect(snap.selected).toBe('b');
     expect(snap.running).toBeNull();
-    expect(snap.month).toBe('2026-10');
   });
 
   it('beschreibt die laufende Zeit samt Pausen und automatischer Pause', () => {
