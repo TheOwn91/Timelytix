@@ -87,6 +87,7 @@ in einfachen Worten, Kleinigkeiten weglassen); mit jeder weiteren Änderung den 
 zu Korrekturen eine neue Funktion dazu, die Nummer entsprechend anheben (z. B. 1.1.1 → 1.2.0).
 Seit 1.0.0 (offizieller Start) gilt: neue Funktionen 1.x → 1.x+1, Korrekturen 1.x.y → 1.x.y+1;
 2.0.0 nur nach Absprache mit dem Nutzer.
-Nach einem Update zeigt die App diese Einträge einmalig beim Start (abschaltbar).
+Nach einem Update zeigt die Web-App diese Einträge einmalig beim Start (abschaltbar); die Android-App zeigt sie
+vor der Installation (Text der GitHub-Releases bzw. Betas, erzeugt aus `changelog.json`), beim Start nicht.
 Sobald die Version auf `main` ankommt, legt `.github/workflows/release.yml` Tag `vX.Y.Z` und
 GitHub-Release an (Versionen 0.x waren Pre-releases, ab 1.0.0 richtige Releases). Aus dieser Umgebung lassen sich keine Tags pushen.

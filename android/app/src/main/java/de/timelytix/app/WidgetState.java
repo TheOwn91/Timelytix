@@ -39,7 +39,6 @@ final class WidgetState {
         List<long[]> autoBreaks = new ArrayList<>();
     }
 
-    long at;
     boolean notify = true;
     String selected;
     List<Project> projects = new ArrayList<>();
@@ -62,9 +61,12 @@ final class WidgetState {
         }
     }
 
-    /** Auszug der App übernehmen – außer es warten noch Aktionen (die App holt sie gleich ab). */
+    /**
+     * Auszug der App übernehmen – außer es warten noch Aktionen (die App holt sie gleich ab). `true`, wenn sich
+     * etwas geändert hat (sonst muss das Widget nicht neu gezeichnet werden).
+     */
     static boolean saveFromApp(Context context, String json) {
-        if (hasActions(context)) return false;
+        if (hasActions(context) || json.equals(prefs(context).getString(SNAPSHOT, null))) return false;
         try {
             parse(new JSONObject(json));
         } catch (JSONException e) {
@@ -160,7 +162,6 @@ final class WidgetState {
 
     private static WidgetState parse(JSONObject o) throws JSONException {
         WidgetState s = new WidgetState();
-        s.at = o.getLong("at");
         s.notify = o.optBoolean("notify", true);
         s.selected = o.isNull("selected") ? null : o.optString("selected", null);
         JSONArray list = o.getJSONArray("projects");
@@ -194,7 +195,6 @@ final class WidgetState {
 
     private JSONObject toJson() throws JSONException {
         JSONObject o = new JSONObject()
-            .put("at", at)
             .put("notify", notify)
             .put("selected", selected == null ? JSONObject.NULL : selected);
         JSONArray list = new JSONArray();

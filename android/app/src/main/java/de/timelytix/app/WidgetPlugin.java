@@ -30,9 +30,11 @@ public class WidgetPlugin extends Plugin {
     @PluginMethod
     public void sync(PluginCall call) {
         String snapshot = call.getString("snapshot");
+        boolean changed = snapshot != null && WidgetState.saveFromApp(getContext(), snapshot);
+        // Nur neu zeichnen, wenn sich etwas geändert hat (die App legt den Auszug bei jeder Änderung ab)
+        if (changed) TimeWidgetProvider.updateAll(getContext());
         JSObject ret = new JSObject();
-        ret.put("saved", snapshot != null && WidgetState.saveFromApp(getContext(), snapshot));
-        TimeWidgetProvider.updateAll(getContext());
+        ret.put("changed", changed);
         call.resolve(ret);
     }
 

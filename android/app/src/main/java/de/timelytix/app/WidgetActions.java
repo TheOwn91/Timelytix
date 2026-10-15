@@ -42,7 +42,6 @@ final class WidgetActions {
                     }
                 }
                 s.running = r;
-                s.at = now;
                 projectId = shown.id;
                 break;
             }
@@ -61,7 +60,6 @@ final class WidgetActions {
                 if (s.running == null) return false;
                 projectId = s.running.projectId;
                 s.running = null;
-                s.at = now;
                 break;
             }
             case SELECT:

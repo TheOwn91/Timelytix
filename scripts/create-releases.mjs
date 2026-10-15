@@ -8,8 +8,12 @@ const releases = JSON.parse(readFileSync('src/lib/changelog.json', 'utf8'));
 const head = process.env.GITHUB_SHA;
 const gh = (...args) => execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
-const existing = new Set(
-  JSON.parse(gh('release', 'list', '--limit', '200', '--json', 'tagName')).map((r) => r.tagName),
+// Alle Releases samt Text auf einmal (seitenweise je 100, eine Zeile [Tag, Text] je Release) statt einzeln
+const existing = new Map(
+  gh('api', '--paginate', 'repos/{owner}/{repo}/releases?per_page=100', '--jq', '.[] | [.tag_name, (.body // "")]')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line)),
 );
 
 // Älteste zuerst, damit die Releases in der richtigen Reihenfolge entstehen
@@ -17,8 +21,7 @@ for (const [i, r] of [...releases].reverse().entries()) {
   const tag = `v${r.version}`;
   const notes = `**${r.date}**\n\n${r.changes.map((c) => `- ${c}`).join('\n')}`;
   if (existing.has(tag)) {
-    const body = JSON.parse(gh('release', 'view', tag, '--json', 'body')).body;
-    if (body.trim() === notes) {
+    if (existing.get(tag).trim() === notes) {
       console.log(`${tag}: gibt es schon`);
     } else {
       gh('release', 'edit', tag, '--notes', notes);

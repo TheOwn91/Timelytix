@@ -93,22 +93,21 @@ export function App() {
     void syncRunningStatus(state);
   }, [state]);
 
-  // Android-App: Aktionen aus Widget und Benachrichtigung übernehmen – beim Start, beim Zurückholen der App
-  // und sofort, wenn sie geöffnet ist (lib/widget.ts)
+  // Android-App: Aktionen aus Widget und Benachrichtigung übernehmen – beim Start, beim Zurückholen bzw.
+  // Verlassen der App und sofort, wenn sie geöffnet ist (lib/widget.ts)
   useEffect(() => {
     if (!NATIVE) return;
     const pull = async () => {
       const actions = await takeWidgetActions();
       if (actions.length) updateState((d) => applyWidgetActions(d, actions));
-      // Auszug neu ablegen (z. B. automatische Pause nach Mitternacht neu berechnet)
+      // Sonst den Auszug neu ablegen (z. B. Benachrichtigungen in den Einstellungen aus-/eingeschaltet)
       else void syncWidget(stateRef.current);
     };
     void pull();
-    const onVisible = () => document.visibilityState === 'visible' && void pull();
-    document.addEventListener('visibilitychange', onVisible);
+    document.addEventListener('visibilitychange', pull);
     const off = onWidgetActions(() => void pull());
     return () => {
-      document.removeEventListener('visibilitychange', onVisible);
+      document.removeEventListener('visibilitychange', pull);
       off();
     };
   }, [updateState]);

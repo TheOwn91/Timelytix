@@ -2,6 +2,7 @@
 <!--
   Widget 3×1 (TimeWidgetProvider.java): abgerundeter Kasten über die ganze Zeile.
   Oben Arbeitgeber und laufende Zeit (nimmt den freien Platz ein), darunter Start bzw. Pause/Weiter und Beenden.
+  Die Grundwerte (Name, nur „Start“) zeigt die Vorschau in der Widget-Auswahl; sonst setzt sie TimeWidgetProvider.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -40,10 +41,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:text="●"
+                    android:textColor="@color/widget_primary"
                     android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/widget_name"
+                    android:text="Timelytix"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -55,6 +58,7 @@
 
                 <TextView
                     android:id="@+id/widget_chevron"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="2dp"
@@ -97,6 +101,7 @@
             <LinearLayout
                 android:id="@+id/widget_pause"
                 style="@style/WidgetButton"
+                android:visibility="gone"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/widget_btn_warning"
                 android:contentDescription="Pause">
@@ -115,6 +120,7 @@
             <LinearLayout
                 android:id="@+id/widget_stop"
                 style="@style/WidgetButton"
+                android:visibility="gone"
                 android:background="@drawable/widget_btn_danger"
                 android:contentDescription="Zeit beenden">
 

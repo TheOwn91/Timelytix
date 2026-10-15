@@ -22,8 +22,6 @@ export interface WidgetAction {
 }
 
 export interface WidgetSnapshot {
-  /** Zeitpunkt des Auszugs. */
-  at: number;
   notify: boolean;
   selected: string | null;
   projects: { id: string; name: string; color: string; autoBreak: number }[];
@@ -57,16 +55,18 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
       (n, p) => (p.end === undefined ? n : n + Math.max(0, Math.min(p.end, now) - Math.max(p.start, run.start))),
       0,
     );
-    // Automatische Pausen des Tages als Zeitfenster (auch geplante, die noch kommen)
+    // Automatische Pausen des Tages als Zeitfenster – auch die noch kommenden: so gerechnet, als liefe die Zeit
+    // weiter (bis zu 16 h), damit das Widget ohne die App nach 6 h die Pause abzieht. Bei offener Pause ist offen,
+    // wann es weitergeht – dann nur die bisherigen.
+    const until = open ? now : now + 16 * 3600_000;
     const autoBreaks = project
-      ? daySummary(project, sessionDay(project, run, now), buildIndex(state, project.id), now).autoBreaks.map(
+      ? daySummary(project, sessionDay(project, run, now), buildIndex(state, project.id), until).autoBreaks.map(
           (b): [number, number] => [b.start, b.end],
         )
       : [];
     running = { projectId: run.projectId, start: run.start, closedPauseMs, pauseStart: open?.start ?? null, autoBreaks };
   }
   return {
-    at: now,
     notify,
     selected,
     projects: projects.map((p) => ({
@@ -137,14 +137,17 @@ export function applyWidgetActions(draft: AppState, actions: WidgetAction[]) {
 }
 
 interface WidgetPlugin {
-  sync(o: { snapshot: string }): Promise<{ saved: boolean }>;
+  sync(o: { snapshot: string }): Promise<{ changed: boolean }>;
   takeActions(): Promise<{ actions: string }>;
   addListener(event: 'actions', fn: () => void): Promise<{ remove: () => Promise<void> }>;
 }
 
 const Widget = NATIVE ? registerPlugin<WidgetPlugin>('TimelytixWidget') : undefined;
 
-/** Auszug fürs Widget ablegen (Android-App). Warten noch Aktionen, lehnt Android ab – sie kommen zuerst. */
+/**
+ * Auszug fürs Widget ablegen (Android-App). Android zeichnet das Widget nur bei Änderungen neu; warten noch
+ * Aktionen, lehnt es ab – die kommen zuerst.
+ */
 export async function syncWidget(state: AppState) {
   if (!Widget) return;
   await Widget.sync({ snapshot: JSON.stringify(widgetSnapshot(state, Date.now(), notifyEnabled())) }).catch(() => undefined);

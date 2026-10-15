@@ -81,6 +81,15 @@ describe('Auszug fürs Widget', () => {
     expect(snap.running!.autoBreaks).toEqual([[t('12:10'), t('12:30')]]);
   });
 
+  it('plant die gesetzlichen Pausen einer laufenden Zeit im Voraus (Widget rechnet ohne die App weiter)', () => {
+    const s = state({ sessions: [{ id: 'r', projectId: 'a', start: t('08:00'), pauses: [] }] });
+    // Nach 6 h Arbeit 30 min, nach 9 h der Rest bis 45 min
+    expect(widgetSnapshot(s, t('10:00')).running!.autoBreaks).toEqual([
+      [t('14:00'), t('14:30')],
+      [t('17:30'), t('17:45')],
+    ]);
+  });
+
   it('wandelt Farben für Android um', () => {
     expect(androidColor('#abc')).toBe('#aabbcc');
     expect(androidColor('#11223344')).toBe('#44112233');
