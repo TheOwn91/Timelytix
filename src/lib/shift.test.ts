@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildIndex, daySummary, monthSummary } from './calc';
-import { sessionDay, setShiftToNextDay, shiftsToNextDay, workDate } from './shift';
+import { sessionDay, setShiftToNextDay, shiftsToNextDay, workDate, suggestedStart } from './shift';
 import { combine } from './time';
 import type { AppState, Project } from './types';
 
@@ -138,5 +138,28 @@ describe('Nachtschicht dem Folgetag zuordnen', () => {
     const later = combine('2026-10-05', '12:00');
     expect(monthSummary(st, p, 2026, 8, later).worked).toBe(0);
     expect(monthSummary(st, p, 2026, 9, later).worked).toBe(510);
+  });
+});
+
+describe('„Zeit nachtragen“: Beginn der neuen Buchung', () => {
+  const plain = { shiftToNextDay: false };
+  const d = '2026-10-14';
+  const at = (hm: string, day = d) => combine(day, hm);
+
+  it('beginnt zur aktuellen Uhrzeit, wenn noch nichts erfasst ist', () => {
+    expect(suggestedStart(plain, d, [], 480, '08:15')).toBe(at('08:15'));
+  });
+  it('setzt eine weitere Buchung 30 min nach die letzte', () => {
+    expect(suggestedStart(plain, d, [{ start: at('06:00'), end: at('10:00') }], 240, '09:00')).toBe(at('10:30'));
+  });
+  it('stünde sie dann beim Folgetag, kommt sie vor die erste Buchung', () => {
+    // Spätschicht bis 23:47 – danach wäre schon der 15.10.
+    expect(suggestedStart(plain, d, [{ start: at('15:17'), end: at('23:47') }], 480, '15:17')).toBe(at('06:47'));
+  });
+  it('bleibt bei Nachtschichten (Folgetag) am angezeigten Tag', () => {
+    const night = { shiftToNextDay: true };
+    // Angezeigt am 14.10.: Schicht 13.10. 22:00 – 14.10. 06:00; die neue Buchung muss ebenfalls beim 14.10. stehen
+    const start = suggestedStart(night, d, [{ start: at('22:00', '2026-10-13'), end: at('06:00') }], 240, '07:00');
+    expect(sessionDay(night, { start, end: start + 240 * 60_000 })).toBe(d);
   });
 });

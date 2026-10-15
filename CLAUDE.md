@@ -22,6 +22,9 @@ Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Spr
   `:root:not([data-theme='light'])` und `:root[data-theme='dark']`. Neue Tokens in allen drei Blöcken setzen.
 - Textfarben (`--link`, `--danger`, `--success`, `--c-*`) sind im Dark Mode hellere Varianten;
   Button-Hintergründe haben eigene Tokens (`--primary`, `--danger-bg`, `--warning-bg`).
+- **Größen in rem, nicht px:** Die Anzeigegröße (`lib/uiScale.ts`, Einstellungen → Anzeige) skaliert die Grundschrift
+  (`--ui-scale` am `html`), alles in rem wächst mit. In der Android-App ist der Text-Zoom der WebView abgeschaltet
+  (MainActivity.java) – „Wie Handy“ übernimmt stattdessen die Schriftgröße von Android. Prüfen auch mit „Groß“.
 
 ## Demo
 

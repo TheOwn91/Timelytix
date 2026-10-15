@@ -66,6 +66,7 @@
 - **Benachrichtigung „Zeit läuft“** mit Knöpfen für Pause/Weiter und Beenden
 - **Erinnerungen**: samstags, wenn in der Woche Einträge fehlen, und wenn die Zeit ungewöhnlich lange läuft
 - **Hell und dunkel**, passend zur Einstellung des Handys
+- **Anzeigegröße** wie die Schriftgröße des Handys oder Klein / Normal / Groß – Schrift, Abstände und Knöpfe wachsen gleichmäßig
 - **Automatische Sicherung** in den Ordner „Dokumente/Timelytix“ – sie bleibt auch nach dem Deinstallieren erhalten
 - Updates direkt aus der App, mit Übersicht, was neu ist
 

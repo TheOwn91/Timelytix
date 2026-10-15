@@ -1,4 +1,4 @@
-import { addDays, dateKey, parseHM } from './time';
+import { MINUTE, addDays, combine, dateKey, parseHM } from './time';
 import type { DateKey, Project, Session, Weekday } from './types';
 
 /**
@@ -49,4 +49,32 @@ export function setShiftToNextDay(p: Project, on: boolean) {
   p.shiftToNextDay = on;
   p.workdays = shiftWeekdays(p.workdays, delta);
   if (p.terms) p.terms = p.terms.map((t) => ({ ...t, workdays: shiftWeekdays(t.workdays, delta) }));
+}
+
+/**
+ * Beginn für „Zeit nachtragen“ am Tag `date`: zur Uhrzeit `hm` (meist die aktuelle). Überschneidet das eine
+ * vorhandene Buchung, 30 min nach der letzten – stünde die neue Buchung dann aber beim Folgetag (spät endende
+ * Schicht), 30 min vor der ersten. `existing`: die Buchungen des Tages, nach Beginn sortiert.
+ */
+export function suggestedStart(
+  p: ShiftProject,
+  date: DateKey,
+  existing: Pick<Session, 'start' | 'end'>[],
+  durationMin: number,
+  hm: string,
+  now = Date.now(),
+): number {
+  const duration = durationMin * MINUTE;
+  let start = combine(date, hm);
+  // Ginge die Schicht über Mitternacht, stünde sie bei aktiver Option beim Folgetag – dann am Vortag beginnen
+  if (shiftsToNextDay(p) && crossesMidnight({ start, end: start + duration })) start = combine(addDays(date, -1), hm);
+  if (!existing.length) return start;
+  const fits = (s: number) =>
+    sessionDay(p, { start: s, end: s + duration }, now) === date &&
+    existing.every((e) => s + duration <= e.start || s >= (e.end ?? now));
+  if (fits(start)) return start;
+  const after = (existing[existing.length - 1].end ?? now) + 30 * MINUTE;
+  if (fits(after)) return after;
+  const before = existing[0].start - 30 * MINUTE - duration;
+  return fits(before) ? before : after;
 }

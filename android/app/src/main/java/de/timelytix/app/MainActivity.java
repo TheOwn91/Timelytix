@@ -8,6 +8,10 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RunningNoticePlugin.class);
         registerPlugin(WidgetPlugin.class);
+        registerPlugin(DisplayPlugin.class);
         super.onCreate(savedInstanceState);
+        // Die WebView vergrößert bei großer Systemschrift sonst nur den Text (Kästen und Abstände bleiben gleich –
+        // alles wirkt gequetscht). Stattdessen skaliert die App die ganze Oberfläche gleichmäßig (src/lib/uiScale.ts).
+        getBridge().getWebView().getSettings().setTextZoom(100);
     }
 }
