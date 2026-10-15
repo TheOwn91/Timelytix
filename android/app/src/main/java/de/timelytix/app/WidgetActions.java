@@ -89,7 +89,7 @@ final class WidgetActions {
         WidgetState.Project p = s.project(s.running.projectId);
         String name = p != null ? p.name : "Timelytix";
         if (s.paused()) {
-            RunningNotice.show(context, "❙❙ Pause – " + name,
+            RunningNotice.show(context, "‖ Pause – " + name,
                 "Pause seit " + WidgetState.fmtTime(s.running.pauseStart) + " · Arbeitsbeginn " + WidgetState.fmtTime(s.running.start),
                 true, true);
         } else {
