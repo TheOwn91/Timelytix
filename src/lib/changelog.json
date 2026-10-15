@@ -11,260 +11,214 @@
     "version": "1.0.1",
     "date": "14.10.2026",
     "changes": [
-      "Startseite stürzt nicht mehr ab, wenn „Erfassung ab“ in einem künftigen Jahr liegt",
-      "PDF-Monatsbericht funktioniert jetzt auch für Monate vor dem Jahr des Erfassungsbeginns",
-      "Tag bearbeiten: Beim Ändern des Beginns bleiben die Pausen an ihrer Stelle (sie lagen sonst außerhalb der Buchung)",
-      "„+ Pause hinzufügen“ legt die Pause immer innerhalb der Buchung an",
-      "Doppeltes Tippen auf „Zeit starten“ startet die Zeit nur einmal",
-      "Zahlenfelder speichern genau den angezeigten Wert (gerundet auf die Nachkommastellen)",
-      "Feiertage korrigiert: Reformationstag 2017 bundesweit, in Bremen, Hamburg, Niedersachsen und Schleswig-Holstein erst ab 2018; 8. Mai 2020 und 2025 in Berlin"
+      "Mehrere Fehler behoben (u. a. Absturz der Startseite, PDF-Bericht, Pausen im Tages-Editor, Feiertage)"
     ]
   },
   {
     "version": "1.0.0",
     "date": "13.10.2026",
     "changes": [
-      "Timelytix 1.0 – die erste offizielle Version 🎉",
-      "Danke fürs Testen! Alle bisherigen Funktionen und Daten bleiben unverändert"
+      "Timelytix 1.0 – die erste offizielle Version 🎉"
     ]
   },
   {
     "version": "0.25.0",
     "date": "13.10.2026",
     "changes": [
-      "Android-App: Neuer Schalter „Beta-Versionen testen“ (Einstellungen → App-Version & Updates) – damit bekommst du Testversionen schon vor der richtigen Version",
-      "Ohne den Schalter gibt es wie bisher nur die richtigen Versionen"
+      "Android-App: Schalter „Beta-Versionen testen“ für Testversionen vorab"
     ]
   },
   {
     "version": "0.24.1",
     "date": "13.10.2026",
     "changes": [
-      "Android-App: Das Symbol „Zeit läuft“ bleibt in der Statusleiste – auch nach dem Wegwischen erscheint die Anzeige wieder im normalen Bereich statt unter „Lautlos“ (ohne Ton)"
+      "Android-App: Das Symbol „Zeit läuft“ bleibt in der Statusleiste"
     ]
   },
   {
     "version": "0.24.0",
     "date": "13.10.2026",
     "changes": [
-      "Die Uhrzeit der Erinnerung am Samstag lässt sich einstellen (Einstellungen → Benachrichtigungen)",
-      "Android-App: Die Anzeige „Zeit läuft“ bleibt stehen, bis du die Zeit stoppst – weggewischt erscheint sie sofort wieder, auch nach einem Neustart des Handys"
+      "Uhrzeit der Samstags-Erinnerung einstellbar",
+      "Android-App: Die Anzeige „Zeit läuft“ bleibt stehen, bis die Zeit gestoppt ist"
     ]
   },
   {
     "version": "0.23.0",
     "date": "13.10.2026",
     "changes": [
-      "Neu: Erinnerung samstags um 10 Uhr, wenn in der Woche (Montag bis Freitag) noch Einträge fehlen",
-      "Neu: Erinnerung, wenn die Zeit länger als eingestellt läuft (Standard 10 Stunden) – vergessen abzustempeln?",
-      "Beides lässt sich unter Einstellungen → Benachrichtigungen ein- und ausschalten; die Android-App erinnert auch, wenn sie geschlossen ist",
-      "Android-App: Die Anzeige „Zeit läuft“ verschwindet beim Stoppen zuverlässig aus der Benachrichtigungsleiste"
+      "Neu: Erinnerungen bei fehlenden Einträgen (samstags) und wenn die Zeit sehr lange läuft"
     ]
   },
   {
     "version": "0.22.3",
     "date": "13.10.2026",
     "changes": [
-      "„Nachtschicht dem Folgetag zuordnen“: Eine Schicht wird nur noch verschoben, wenn sie über 0:00 Uhr geht – Spätschichten, die vor Mitternacht enden, bleiben an ihrem Tag",
-      "Eine laufende Zeit wechselt erst nach Mitternacht zum Folgetag"
+      "Nachtschicht dem Folgetag zuordnen: nur noch Schichten über Mitternacht"
     ]
   },
   {
     "version": "0.22.2",
     "date": "13.10.2026",
     "changes": [
-      "Android-App: Die Benachrichtigung „Zeit läuft“ meldet sich nur noch einmal beim Start der Zeit – nicht mehr bei jedem Öffnen der App",
-      "Beim Antippen bleibt sie in der Benachrichtigungsleiste, bis die Zeit gestoppt wird; Pausen ändern den Text still"
+      "Android-App: Die Anzeige „Zeit läuft“ meldet sich nur noch einmal beim Start"
     ]
   },
   {
     "version": "0.22.1",
     "date": "13.10.2026",
     "changes": [
-      "Android-App: Beim Start der Zeit fragt Android nicht mehr nach „Wecker und Erinnerungen“ – die Anzeige „Zeit läuft“ erscheint direkt",
-      "Android-App: Beim ersten Start fragt die App, ob die Anzeige „Zeit läuft“ in der Statusleiste erlaubt werden soll"
+      "Android-App: Anzeige „Zeit läuft“ ohne Abfrage „Wecker und Erinnerungen“"
     ]
   },
   {
     "version": "0.22.0",
     "date": "13.10.2026",
     "changes": [
-      "Timelytix gibt es jetzt auch als Android-App: Download unter theown91.github.io/Timelytix/android.html",
-      "In der Android-App bleiben die Daten in der App, die automatische Sicherung landet im Ordner „Dokumente/Timelytix“",
-      "Die Android-App sucht selbst nach Updates und installiert sie nach Bestätigung",
-      "Datenschutzerklärung unter …/datenschutz.html"
+      "Neu: Timelytix als Android-App"
     ]
   },
   {
     "version": "0.21.0",
     "date": "01.10.2026",
     "changes": [
-      "Jahresübersicht: Krankheitstage je Monat und gesamt",
-      "Startseite: Es erscheinen nur Zulagen, die im Monat schon angefallen sind – wie in der Monatsansicht"
+      "Jahresübersicht: Krankheitstage je Monat"
     ]
   },
   {
     "version": "0.20.0",
     "date": "29.09.2026",
     "changes": [
-      "Updates werden nur noch von Hand installiert: Die App zeigt „Update verfügbar“, installiert wird erst nach „Jetzt aktualisieren“ → „Jetzt installieren“",
-      "Der Schalter „Updates automatisch installieren“ entfällt",
-      "Schnellerer Start: Die App startet nicht mehr ein zweites Mal wegen eines Updates",
-      "Weniger Akkuverbrauch bei laufender Zeit, die Monatsansicht öffnet schneller"
+      "Updates nur noch von Hand – „Jetzt aktualisieren“ → „Jetzt installieren“",
+      "Schnellerer Start, weniger Akkuverbrauch"
     ]
   },
   {
     "version": "0.19.0",
     "date": "29.09.2026",
     "changes": [
-      "Automatische Sicherung: Die App legt regelmäßig eine Sicherungsdatei im Download-Ordner ab – dort bleibt sie auch, wenn Browserdaten gelöscht werden",
-      "Unter Einstellungen → Datensicherung ein- und ausschaltbar, Abstand wählbar (täglich bis monatlich, Standard wöchentlich); die letzte Sicherung wird angezeigt",
-      "Anzeige, ob der Browser die Daten dauerhaft speichert, mit „Erneut anfragen“"
+      "Neu: Automatische Sicherung in den Download-Ordner"
     ]
   },
   {
     "version": "0.18.0",
     "date": "29.09.2026",
     "changes": [
-      "Monatskalender: Bemerkungen zu Abwesenheiten und Buchungen stehen direkt beim Tag",
-      "Urlaub am 24.12. und 31.12. bekommt automatisch die Bemerkung „½ Tag Urlaub“ – auch im PDF"
+      "Bemerkungen direkt im Monatskalender"
     ]
   },
   {
     "version": "0.17.0",
     "date": "29.09.2026",
     "changes": [
-      "Gesetzliche Feiertage an Arbeitstagen ohne Buchung bekommen automatisch den Schlüssel „Feiertag“ – er zählt mit dem Tagessoll (bezahlt), der Saldo bleibt gleich",
-      "Wer am Feiertag arbeitet oder einen anderen Schlüssel wählt, behält das wie bisher; abschalten unter Einstellungen → Schlüssel",
-      "Urlaub am 24.12. und 31.12. zählt nur als halber Urlaubstag"
+      "Feiertage an Arbeitstagen werden automatisch mit dem Tagessoll gutgeschrieben",
+      "Urlaub am 24.12. und 31.12. zählt als halber Tag"
     ]
   },
   {
     "version": "0.16.0",
     "date": "29.09.2026",
     "changes": [
-      "Einstellungen → Arbeitgeber → „Schlüssel“: Abwesenheiten wie Kurzarbeit oder Sonstiges lassen sich ausblenden",
-      "Ausgeblendete Schlüssel erscheinen nicht mehr im Tages-Editor und bei „Ohne Zeiterfassung“ – bereits eingetragene Tage bleiben erhalten"
+      "Nicht benötigte Abwesenheiten (Schlüssel) lassen sich ausblenden"
     ]
   },
   {
     "version": "0.15.3",
     "date": "29.09.2026",
     "changes": [
-      "Die App rechnet deutlich schneller – vor allem bei laufender Zeit und vielen erfassten Monaten (spart Akku)",
-      "Updates sind rund 380 KB kleiner",
-      "Datensicherungen werden beim Einlesen genauer geprüft: Beschädigte Einträge werden übersprungen, statt die App abstürzen zu lassen"
+      "Deutlich schnellere Berechnung, kleinere Updates"
     ]
   },
   {
     "version": "0.15.2",
     "date": "29.09.2026",
     "changes": [
-      "Kurzarbeit: Am Monatsende steht das Stundenkonto bei 0",
-      "Bleiben im Monat Stunden übrig (inkl. Übertrag), gehen sie von der Kurzarbeit ab; fehlen Stunden – z. B. nach Überstundenausgleich –, kommen sie zur Kurzarbeit dazu",
-      "Monatsansicht und PDF zeigen Kurzarbeitstage, die fehlenden Stunden und die Kurzarbeit gesamt"
+      "Kurzarbeit: Stundenkonto steht am Monatsende bei 0"
     ]
   },
   {
     "version": "0.15.1",
     "date": "29.09.2026",
     "changes": [
-      "Kurzarbeit: In Monaten mit Kurzarbeit gibt es keinen Überstundenzuschlag mehr",
-      "Das Plus eines Monats geht immer zuerst von der Kurzarbeit ab – auch wenn das Stundenkonto aus dem Vormonat im Minus steht"
+      "Kurzarbeit: kein Überstundenzuschlag in Monaten mit Kurzarbeit"
     ]
   },
   {
     "version": "0.15.0",
     "date": "29.09.2026",
     "changes": [
-      "Kurzarbeit: Überstunden werden von der Kurzarbeit abgezogen – auch solche, die erst später im selben Monat entstehen",
-      "Das Stundenkonto geht dabei höchstens bis 0, nie ins Minus",
-      "Monatsansicht und PDF zeigen Kurzarbeit, die verrechneten Überstunden, die verbleibende Kurzarbeit und das Stundenkonto danach"
+      "Kurzarbeit: Überstunden werden verrechnet, das Konto geht nie ins Minus"
     ]
   },
   {
     "version": "0.14.4",
     "date": "29.09.2026",
     "changes": [
-      "Sind automatische Updates ausgeschaltet, installiert die App eine neue Version nicht mehr von selbst – auch nicht beim Schließen und neu Öffnen",
-      "Der Hinweis „Update verfügbar“ bleibt stehen, bis du auf „Jetzt aktualisieren“ tippst"
+      "Updates werden nicht mehr ungefragt installiert"
     ]
   },
   {
     "version": "0.14.3",
     "date": "28.09.2026",
     "changes": [
-      "Die App startet wieder ganz lokal aus dem Zwischenspeicher – schnell und auch ohne Netz",
-      "Nach neuen Versionen sucht die App nur noch höchstens alle 12 Stunden; „Auf Updates prüfen“ geht jederzeit"
+      "Die App startet wieder ganz offline aus dem eigenen Speicher"
     ]
   },
   {
     "version": "0.14.2",
     "date": "28.09.2026",
     "changes": [
-      "Weiße Seite behoben: Veraltete Kopien aus früheren Versionen werden automatisch entfernt, die App repariert sich beim nächsten Öffnen selbst",
-      "Die Startseite wird jetzt immer frisch geladen, ohne Netz aus dem eigenen Zwischenspeicher"
+      "Weiße Seite nach Updates behoben"
     ]
   },
   {
     "version": "0.14.1",
     "date": "28.09.2026",
     "changes": [
-      "Startet die App nicht, erscheint statt einer weißen Seite ein Hinweis mit „Neu laden“ und „Zwischenspeicher leeren“ – deine Daten bleiben erhalten",
-      "Offline-Speicher: Die App löscht beim Update nicht mehr den Speicher der alten App unter …/TimeTrack/ (und umgekehrt)"
+      "Hinweis mit „Neu laden“, falls die App einmal nicht startet"
     ]
   },
   {
     "version": "0.14.0",
     "date": "28.09.2026",
     "changes": [
-      "Neues App-Symbol: blauer Fortschrittsring mit Uhrzeigern",
-      "Zoomen in der App ist abgeschaltet – auch das automatische Hineinzoomen beim Antippen von Eingabefeldern auf dem iPhone"
+      "Neues App-Symbol"
     ]
   },
   {
     "version": "0.13.1",
     "date": "28.09.2026",
     "changes": [
-      "Automatische Pausen stehen jetzt als eigene Einträge in der Buchung (gekennzeichnet als „automatisch eingetragen“) und lassen sich ändern oder löschen",
-      "Eine gelöschte automatische Pause kommt nicht wieder",
-      "Monatsansicht: Zulagen mit Prozentsatz und „Summe Zulagen“ in € wie auf der Startseite"
+      "Automatische Pausen als eigene, änderbare Einträge"
     ]
   },
   {
     "version": "0.13.0",
     "date": "28.09.2026",
     "changes": [
-      "Die App heißt jetzt „Timelytix“ – deine Daten und Einstellungen bleiben erhalten",
-      "Gesetzliche Pause: Sind 6 Stunden gearbeitet, beginnt die Pause automatisch, danach läuft die Arbeitszeit weiter – auch im laufenden Timer",
-      "Die Länge dieser Pause ist in den Einstellungen des Arbeitgebers einstellbar (Standard 30 Minuten)",
-      "Nach 9 Stunden folgt bei Bedarf eine eigene zweite Pause, bis insgesamt 45 Minuten erreicht sind",
-      "Tages-Editor und PDF zeigen die Zeiten der automatischen Pausen; Zulagen zählen in dieser Zeit nicht"
+      "Neuer Name: Timelytix",
+      "Gesetzliche Pause nach 6 h automatisch, Länge einstellbar"
     ]
   },
   {
     "version": "0.12.3",
     "date": "27.09.2026",
     "changes": [
-      "Einstellungen: Arbeitgeber sind anfangs eingeklappt – antippen öffnet sie",
-      "„Zeit nachtragen“ beginnt mit der aktuellen Uhrzeit statt immer um 21:30 bzw. 08:00"
+      "„Zeit nachtragen“ beginnt mit der aktuellen Uhrzeit"
     ]
   },
   {
     "version": "0.12.2",
     "date": "27.09.2026",
     "changes": [
-      "Pause: Lange Lücken zwischen zwei Buchungen am selben Tag (über 2 Stunden) zählen nicht mehr als Pause, sondern erscheinen als „Unterbrechung“",
-      "Monatsansicht: Mehrere Zeiten eines Tages stehen untereinander statt versetzt nebeneinander"
+      "Lange Lücken zwischen Buchungen zählen als Unterbrechung, nicht als Pause"
     ]
   },
   {
     "version": "0.12.1",
     "date": "27.09.2026",
     "changes": [
-      "Beim ersten „Zeit starten“ fragt zuerst die App, ob die Statusleisten-Anzeige gewünscht ist – die Abfrage des Handys kommt nur nach „Erlauben“",
-      "Nach „Nicht jetzt“ fragt die App nicht bei jedem Start erneut (einschalten unter Einstellungen → Statusleiste)",
-      "Nach dem Erlauben erscheint die Anzeige sofort"
+      "Statusleisten-Anzeige: erst Rückfrage der App, dann die des Handys"
     ],
     "commit": "8fed10d0910beb99ab4f576608ddc1b1643ae4b9"
   },
@@ -272,10 +226,7 @@
     "version": "0.12.0",
     "date": "27.09.2026",
     "changes": [
-      "Manuelles Update: „Jetzt aktualisieren“ zeigt zuerst, was neu ist – installiert wird erst nach „Jetzt installieren“",
-      "Übersprungene Versionen erscheinen in der Vorschau mit (z. B. von 0.10.0 direkt auf 0.12.0)",
-      "Nach einem so bestätigten Update erscheint „Was ist neu?“ nicht noch einmal",
-      "Rückfragen (z. B. „Buchung wirklich löschen?“) erscheinen als eigenes Fenster der App – ohne „Auf … wird Folgendes angezeigt“"
+      "Vor einem Update zeigt die App, was neu ist"
     ],
     "commit": "4920077d2f975b2ea5b37d5ce1145dbb30363e70"
   },
@@ -283,9 +234,7 @@
     "version": "0.11.0",
     "date": "26.09.2026",
     "changes": [
-      "Kurzarbeit geht jetzt wie Überstundenausgleich vom Stundenkonto ab",
-      "Ist das Stundenkonto leer, entfällt an Kurzarbeitstagen das Soll – es entstehen keine Minusstunden",
-      "Monatsübersicht und PDF zeigen, wie viel Kurzarbeit vom Konto genommen wurde"
+      "Kurzarbeit geht vom Stundenkonto ab, ohne Minusstunden"
     ],
     "commit": "3d35b9a4911caad66ab95a5e8d0d353d638bad36"
   },
@@ -293,9 +242,7 @@
     "version": "0.10.0",
     "date": "26.09.2026",
     "changes": [
-      "„Nachtschicht dem Folgetag zuordnen“ gibt es jetzt für jeden Arbeitgeber (Einstellungen)",
-      "Die Option verschiebt nur Schichten, die ab 18 Uhr beginnen – Früh- und Tagesschichten bleiben an ihrem Tag",
-      "Tages-Editor: Ende und Pausen werden ab dem echten Schichtbeginn gerechnet"
+      "„Nachtschicht dem Folgetag zuordnen“ für jeden Arbeitgeber"
     ],
     "commit": "8aa6a70fbfde1b7997ac18c56e435450ebd9339e"
   },
@@ -303,9 +250,8 @@
     "version": "0.9.0",
     "date": "26.09.2026",
     "changes": [
-      "Summen (Monat, Jahr) wahlweise als Dezimalzahl, z. B. 156,73 h – unter „Einstellungen → Anzeige“",
-      "„Alle Daten löschen“ unter „Einstellungen → Datensicherung“",
-      "Kurzarbeit wird jetzt wie Urlaub mit dem Tagessoll gutgeschrieben"
+      "Summen wahlweise als Dezimalstunden",
+      "„Alle Daten löschen“"
     ],
     "commit": "d8a9e270448e83e1f9f5ebea52afb3e30a0a703c"
   },
@@ -313,8 +259,7 @@
     "version": "0.8.0",
     "date": "26.09.2026",
     "changes": [
-      "Für Hahn Automation: Nachtschicht dem Folgetag zuordnen (Anstempeln Sonntag → steht beim Montag); Zulagen weiter nach echter Uhrzeit",
-      "Monatsansicht und PDF kennzeichnen einen Schichtbeginn am Vortag mit „−1“"
+      "Nachtschicht dem Folgetag zuordnen"
     ],
     "commit": "f0c2c4ecf419d6f646d5b52606d733f8a4efa9d7"
   },
@@ -322,17 +267,14 @@
     "version": "0.7.1",
     "date": "26.09.2026",
     "changes": [
-      "Zulagen: Gelten mehrere gleichzeitig (z. B. Sonntag und Nacht), zählt jetzt nur die höchste",
-      "Einstellbar unter „Einstellungen → Zulagen“: nur die höchste oder alle addieren"
+      "Zulagen: nur die höchste oder alle addieren"
     ]
   },
   {
     "version": "0.7.0",
     "date": "26.09.2026",
     "changes": [
-      "Einrichtungs-Assistent beim ersten Start und für neue Arbeitgeber",
-      "Fragt Arbeitszeit, Lohn, Zulagen und Startwerte (Resturlaub, Überstunden) Schritt für Schritt ab",
-      "Hinweis zum Installieren auf dem Homescreen, solange die App noch nicht installiert ist"
+      "Neu: Einrichtungs-Assistent"
     ],
     "commit": "d896dca8db5d897485b59351630341d11e47e033"
   },
@@ -340,9 +282,7 @@
     "version": "0.6.0",
     "date": "26.09.2026",
     "changes": [
-      "Stundenlohn, Soll pro Tag, Arbeitstage und Zuschläge mit „gültig ab“ – vergangene Monate bleiben unverändert",
-      "Verlauf der Änderungen unter „Einstellungen → Lohn & Arbeitszeit“",
-      "PDF-Bericht nennt Änderungen innerhalb des Monats"
+      "Lohn, Soll und Zuschläge mit „gültig ab“"
     ],
     "commit": "5b8b3cf42f4bc06b3b1efc5e7f652c18049d480b"
   },
@@ -350,10 +290,7 @@
     "version": "0.5.0",
     "date": "26.09.2026",
     "changes": [
-      "„Arbeitgeber“ heißt jetzt „Einstellungen“",
-      "Automatische Updates lassen sich ein- und ausschalten",
-      "„Auf Updates prüfen“ und „Jetzt aktualisieren“ in den Einstellungen",
-      "Nach einem Update zeigt die App, was neu ist"
+      "Updates in den Einstellungen, „Was ist neu?“ nach Updates"
     ],
     "commit": "9ea42e1a5a3c2d556f9d6b52950343376d1cff35"
   },
@@ -361,11 +298,7 @@
     "version": "0.4.0",
     "date": "26.09.2026",
     "changes": [
-      "Neue Seite „Jahr“: Urlaub (Anspruch, Übertrag, genommen, geplant, Rest) und Überstundenkonto Monat für Monat",
-      "Resturlaub und Überstunden werden automatisch ins nächste Jahr übernommen",
-      "Zuschlag auf Überstunden – wird am Monatsende gutgeschrieben",
-      "Urlaubstage und Resturlaub in der Monatsübersicht",
-      "Diese Meldung nach Updates (abschaltbar)"
+      "Neu: Jahresübersicht mit Urlaub und Überstundenkonto"
     ],
     "commit": "a2cf88c127c3a8d56ef50a4bf9c442f3f690ceee"
   },
@@ -374,9 +307,7 @@
     "date": "26.09.2026",
     "commit": "e53c00d476e65fe16972ee4ffc4a85ab389b7798",
     "changes": [
-      "Symbol in der Statusleiste, solange die Zeit läuft",
-      "Zahlenfelder akzeptieren Komma („22,50“)",
-      "Besser lesbarer Dark Mode"
+      "Symbol in der Statusleiste, solange die Zeit läuft"
     ]
   },
   {
@@ -384,8 +315,7 @@
     "date": "26.09.2026",
     "commit": "2c054992a908527946670aecd598675d231cbee7",
     "changes": [
-      "Läuft offline als App auf dem Handy",
-      "PDF-Bericht und Datensicherung über das Teilen-Menü"
+      "Läuft offline als App auf dem Handy"
     ]
   },
   {
