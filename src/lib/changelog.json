@@ -3,10 +3,8 @@
     "version": "1.1.0",
     "date": "15.10.2026",
     "changes": [
-      "Android-App: Widget für den Startbildschirm – Arbeitgeber wählen, laufende Zeit, Start, Pause/Weiter und Beenden direkt vom Startbildschirm",
-      "Android-App: Knöpfe „Pause“/„Weiter“ und „Beenden“ in der Benachrichtigung „Zeit läuft“",
-      "Start, Pause, Weiter und Beenden mit eigenen Symbolen statt Zeichen, die manche Handys als buntes Emoji zeigten",
-      "Android-App: „Was ist neu?“ erscheint nach einem Update nicht mehr beim Start (die Änderungen stehen schon vor der Installation) – nachlesen jederzeit in den Einstellungen"
+      "Neu: Widget für den Startbildschirm – Zeit starten, pausieren und beenden",
+      "Neu: Pause und Beenden direkt in der Benachrichtigung „Zeit läuft“"
     ]
   },
   {

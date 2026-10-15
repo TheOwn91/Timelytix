@@ -78,8 +78,8 @@ Nie ungefragt mergen; bei „PR, aber nicht mergen“ nur den PR erstellen.
 **Neue Versionsnummer gleich mit der ersten Änderung nach einem Release** (nicht erst vor dem PR): Die Betas
 heißen nach der Version in `package.json`, solange es dazu noch kein Release gibt (sonst `x.y.z+1-beta.N`), und
 sollen schon die kommende Versionsnummer tragen. Also beim ersten Push `version` in `package.json` setzen und in
-`src/lib/changelog.json` oben einen Eintrag anlegen (Versionsnummer, Datum, alle für Nutzer sichtbaren Änderungen
-in einfachen Worten); mit jeder weiteren Änderung den Eintrag ergänzen, vor dem PR Datum und Text prüfen. Kommt
+`src/lib/changelog.json` oben einen Eintrag anlegen (Versionsnummer, Datum, nur die wichtigen Änderungen – kurz und
+in einfachen Worten, Kleinigkeiten weglassen); mit jeder weiteren Änderung den Eintrag ergänzen, vor dem PR Datum und Text prüfen. Kommt
 zu Korrekturen eine neue Funktion dazu, die Nummer entsprechend anheben (z. B. 1.1.1 → 1.2.0).
 Seit 1.0.0 (offizieller Start) gilt: neue Funktionen 1.x → 1.x+1, Korrekturen 1.x.y → 1.x.y+1;
 2.0.0 nur nach Absprache mit dem Nutzer.
