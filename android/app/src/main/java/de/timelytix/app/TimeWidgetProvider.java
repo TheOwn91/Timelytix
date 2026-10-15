@@ -85,7 +85,7 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
         v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START, null));
         v.setViewVisibility(R.id.widget_pause, running ? View.VISIBLE : View.GONE);
-        v.setTextViewText(R.id.widget_pause, paused ? "▶" : "⏸");
+        v.setImageViewResource(R.id.widget_pause, paused ? R.drawable.ic_widget_play : R.drawable.ic_widget_pause);
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE, null));

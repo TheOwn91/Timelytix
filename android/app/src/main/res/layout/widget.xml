@@ -72,25 +72,29 @@
             style="@style/WidgetButton"
             android:background="@drawable/widget_btn_primary"
             android:contentDescription="Zeit starten"
-            android:paddingStart="12dp"
+            android:drawableStart="@drawable/ic_widget_play"
+            android:drawablePadding="2dp"
+            android:paddingStart="8dp"
             android:paddingEnd="12dp"
-            android:text="▶ Start" />
+            android:text="Start" />
 
-        <TextView
+        <ImageView
             android:id="@+id/widget_pause"
-            style="@style/WidgetButton"
+            android:layout_width="40dp"
+            android:layout_height="34dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/widget_btn_warning"
             android:contentDescription="Pause"
-            android:minWidth="40dp"
-            android:text="⏸" />
+            android:scaleType="center"
+            android:src="@drawable/ic_widget_pause" />
 
-        <TextView
+        <ImageView
             android:id="@+id/widget_stop"
-            style="@style/WidgetButton"
+            android:layout_width="40dp"
+            android:layout_height="34dp"
             android:background="@drawable/widget_btn_danger"
             android:contentDescription="Zeit beenden"
-            android:minWidth="40dp"
-            android:text="■" />
+            android:scaleType="center"
+            android:src="@drawable/ic_widget_stop" />
     </LinearLayout>
 </FrameLayout>
