@@ -37,8 +37,6 @@ jobs:
       KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Tags und Verlauf für die Beta-Versionshinweise
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -130,10 +128,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Versionshinweise: Commits seit der letzten richtigen Version (ohne „Version …“ und Merges)
-          last=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --exclude '*-beta*' 2>/dev/null || true)
-          changes=$(git log --no-merges --format='- %s' ${last:+"$last..HEAD"} | { grep -v -E '^- Version [0-9]' || true; } | head -30)
-          notes=$(printf '**%s**\n\nBeta zum Testen – Änderungen seit %s:\n\n%s\n' "$(TZ=Europe/Berlin date +%d.%m.%Y)" "${last:-Beginn}" "$changes")
+          # Versionshinweise wie in „Was ist neu?“: der Eintrag der kommenden Version aus changelog.json (kurz);
+          # die App zeigt sie vor der Installation (Zeilen mit „- “, siehe lib/apk-update.ts)
+          notes=$(node -e '
+            const [beta, date] = process.argv.slice(1);
+            const r = require("./src/lib/changelog.json").find((x) => x.version === beta.split("-beta.")[0]);
+            const changes = r ? r.changes : ["Fehlerkorrekturen und Verbesserungen"];
+            console.log(`**${date}**\n\nBeta zum Testen.\n\n${changes.map((c) => `- ${c}`).join("\n")}`);
+          ' "$BETA_VERSION" "$(TZ=Europe/Berlin date +%d.%m.%Y)")
           gh release create "v$BETA_VERSION" "$RUNNER_TEMP/Timelytix-$BETA_VERSION.apk" --target "$GITHUB_SHA" \
             --title "Timelytix $BETA_VERSION (Beta)" --notes "$notes" --prerelease --latest=false
           # Nur die neueste Beta behalten
