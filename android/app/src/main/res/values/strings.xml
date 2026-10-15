@@ -4,4 +4,5 @@
     <string name="title_activity_main">Timelytix</string>
     <string name="package_name">de.timelytix.app</string>
     <string name="custom_url_scheme">de.timelytix.app</string>
+    <string name="widget_description">Zeit starten, pausieren und beenden – mit Saldo des Monats</string>
 </resources>

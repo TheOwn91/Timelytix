@@ -8,7 +8,8 @@ Die Android-App ist dieselbe Web-App, verpackt mit [Capacitor](https://capacitor
 | Daten | Speicher des Browsers | Speicher der App (Android-Sicherung über Google) |
 | Automatische Sicherung | Download-Ordner | `Dokumente/Timelytix` |
 | PDF / Sicherung teilen | Teilen-Menü des Browsers | Android-Teilen-Menü |
-| „Zeit läuft“ | Benachrichtigung über den Service Worker | dauerhafte Android-Benachrichtigung |
+| „Zeit läuft“ | Benachrichtigung über den Service Worker | dauerhafte Android-Benachrichtigung mit Knöpfen Pause/Weiter und Beenden |
+| Widget | – | Startbildschirm: Arbeitgeber wählen, Start/Pause/Beenden, Saldo des Monats |
 | Updates | „Jetzt aktualisieren“ in der App | Google Play Store |
 
 App-Kennung: `de.timelytix.app` (lässt sich nach dem ersten Hochladen in den Play Store nicht mehr ändern).

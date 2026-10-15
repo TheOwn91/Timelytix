@@ -13,7 +13,9 @@ import { DEMO, demoState } from './lib/demo';
 import { syncReminders } from './lib/reminders';
 import { refreshNotifySupport, requestNotifyPermission, setNotifyEnabled, shouldAskNotifyOnStart, syncRunningStatus } from './lib/status';
 import { ask } from './lib/confirm';
+import { NATIVE } from './lib/native';
 import { useStore } from './lib/store';
+import { applyWidgetActions, onWidgetActions, syncWidget, takeWidgetActions } from './lib/widget';
 import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStatus, onUpdateStatus, openUpdatePreview } from './lib/update';
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
@@ -38,7 +40,7 @@ export function App() {
     const releases = pendingReleaseNotes(consumeForcedReleaseNotes());
     return releases.length ? { releases, afterUpdate: true } : null;
   });
-  const { state, replace } = useStore();
+  const { state, update: updateState, replace } = useStore();
   // Einrichtungs-Assistent: beim ersten Start und für neue Arbeitgeber
   const [wizard, setWizard] = useState<{ firstRun: boolean; name?: string } | null>(() =>
     state.projects.length === 0 ? { firstRun: true } : null,
@@ -88,6 +90,31 @@ export function App() {
   // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {
     void syncRunningStatus(state);
+  }, [state]);
+
+  // Android-App: Aktionen aus Widget und Benachrichtigung übernehmen – beim Start, beim Zurückholen der App
+  // und sofort, wenn sie geöffnet ist (lib/widget.ts)
+  useEffect(() => {
+    if (!NATIVE) return;
+    const pull = async () => {
+      const actions = await takeWidgetActions();
+      if (actions.length) updateState((d) => applyWidgetActions(d, actions));
+      // Saldo neu ablegen (z. B. nach Mitternacht oder Monatswechsel)
+      else void syncWidget(stateRef.current);
+    };
+    void pull();
+    const onVisible = () => document.visibilityState === 'visible' && void pull();
+    document.addEventListener('visibilitychange', onVisible);
+    const off = onWidgetActions(() => void pull());
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      off();
+    };
+  }, [updateState]);
+
+  // Widget: Auszug nach jeder Änderung neu ablegen
+  useEffect(() => {
+    void syncWidget(state);
   }, [state]);
 
   // Erinnerungen (fehlende Tage, vergessen abzustempeln): bei Änderungen neu planen und jede Minute
