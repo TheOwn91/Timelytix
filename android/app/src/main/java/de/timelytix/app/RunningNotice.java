@@ -29,9 +29,10 @@ final class RunningNotice {
 
     private RunningNotice() {}
 
-    static void show(Context context, String title, String body, boolean quiet) {
-        prefs(context).edit().putString("title", title).putString("body", body).apply();
-        post(context, title, body, quiet);
+    /** `paused`: Knopf „Weiter“ statt „Pause“. */
+    static void show(Context context, String title, String body, boolean quiet, boolean paused) {
+        prefs(context).edit().putString("title", title).putString("body", body).putBoolean("paused", paused).apply();
+        post(context, title, body, quiet, paused);
     }
 
     static void hide(Context context) {
@@ -43,7 +44,7 @@ final class RunningNotice {
     static void restore(Context context) {
         SharedPreferences p = prefs(context);
         String title = p.getString("title", null);
-        if (title != null) post(context, title, p.getString("body", ""), true);
+        if (title != null) post(context, title, p.getString("body", ""), true, p.getBoolean("paused", false));
     }
 
     static boolean isShown(Context context) {
@@ -58,7 +59,7 @@ final class RunningNotice {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    private static void post(Context context, String title, String body, boolean quiet) {
+    private static void post(Context context, String title, String body, boolean quiet, boolean paused) {
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
         if (!nm.areNotificationsEnabled()) return;
         createChannels(context);
@@ -77,6 +78,10 @@ final class RunningNotice {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(PendingIntent.getActivity(context, 0, open, flags))
             .setDeleteIntent(PendingIntent.getBroadcast(context, 0, dismissed, flags));
+        // Knöpfe: Pause/Weiter und Beenden (wirken sofort, siehe WidgetActions)
+        String toggle = paused ? WidgetActions.RESUME : WidgetActions.PAUSE;
+        b.addAction(0, paused ? "Weiter" : "Pause", WidgetActionReceiver.pending(context, toggle));
+        b.addAction(0, "Beenden", WidgetActionReceiver.pending(context, WidgetActions.STOP));
         try {
             nm.notify(ID, b.build());
         } catch (SecurityException e) {

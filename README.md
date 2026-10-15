@@ -1,60 +1,157 @@
-# Timelytix – Arbeitszeiterfassung
+<p align="center">
+  <img src="public/icon-192.png" width="96" alt="Timelytix-Symbol" />
+</p>
 
-App zur Erfassung von Arbeitszeiten, die **lokal auf dem Handy** läuft (Android und iPhone). Sie wird einmal im Browser geöffnet und auf dem Homescreen installiert – danach startet sie wie eine normale App und funktioniert **komplett offline**. Alle Daten bleiben auf dem Gerät; über „Einstellungen → Datensicherung“ lassen sie sich als Datei sichern, wiederherstellen oder komplett löschen. Unter „Einstellungen → Anzeige“ lassen sich Monats- und Jahressummen dezimal anzeigen (156,73 h statt 156:44 h).
+<h1 align="center">Timelytix</h1>
 
-## Auf dem Handy installieren
+<p align="center">
+  <strong>Arbeitszeiterfassung für das Handy – einfach, offline und ohne Konto.</strong><br />
+  Stempeln, Pausen, Überstunden, Urlaub, Zulagen und PDF-Monatsbericht. Alle Daten bleiben auf deinem Gerät.
+</p>
 
-1. Die App einmal über ihre HTTPS-Adresse öffnen (z. B. GitHub Pages, siehe unten).
-2. **iPhone:** in Safari auf *Teilen* → *Zum Home-Bildschirm*.
-   **Android:** im Chrome-Menü (⋮) auf *App installieren*.
-3. Fertig – ab jetzt vom Homescreen starten, Internet wird nicht mehr benötigt.
+<p align="center">
+  <a href="https://theown91.github.io/Timelytix/android.html"><b>📲 Android-App herunterladen</b></a> ·
+  <a href="https://theown91.github.io/Timelytix/"><b>🌐 Web-App öffnen</b></a> ·
+  <a href="https://github.com/TheOwn91/Timelytix/releases"><b>📝 Versionen</b></a>
+</p>
 
-Updates werden automatisch geladen und beim Öffnen installiert. Unter „Einstellungen → App-Version & Updates“ lässt sich das abschalten; dann gibt es „Auf Updates prüfen“ und „Jetzt aktualisieren“. „Jetzt aktualisieren“ zeigt zuerst, was neu ist (auch übersprungene Versionen); installiert wird erst nach „Jetzt installieren“. Nach automatischen Updates zeigt die App beim nächsten Start, was neu ist.
-Der PDF-Monatsbericht und die Datensicherung öffnen auf dem Handy das Teilen-Menü (in Dateien speichern, per Mail/Messenger senden).
+<p align="center">
+  <img src="docs/images/start-light.png" width="200" alt="Startseite mit laufender Zeit" />
+  <img src="docs/images/monat-light.png" width="200" alt="Monatsansicht mit Zulagen" />
+  <img src="docs/images/jahr-light.png" width="200" alt="Jahresübersicht mit Urlaub und Überstunden" />
+  <img src="docs/images/start-dark.png" width="200" alt="Startseite im dunklen Design" />
+</p>
 
-> Hinweis: Wird die App bzw. werden die Website-Daten im Browser gelöscht, sind auch die Zeiten weg. Deshalb regelmäßig eine Sicherung exportieren.
+---
 
-### Veröffentlichen über GitHub Pages
+## Inhalt
 
-Der Workflow `.github/workflows/pages.yml` baut und veröffentlicht die App bei jedem Push auf `main`.
-Einmalig nötig: im Repository unter *Settings → Pages → Source* „GitHub Actions“ auswählen.
-(Bei privaten Repositories setzt GitHub Pages einen kostenpflichtigen Plan voraus – alternativ jeden anderen HTTPS-Webspace verwenden und dort den Inhalt von `dist/` hochladen.)
+- [Das kann Timelytix](#das-kann-timelytix)
+- [Installation](#installation)
+- [Bilder](#bilder)
+- [Abwesenheiten (Schlüssel)](#abwesenheiten-schlüssel)
+- [Datenschutz & Datensicherung](#datenschutz--datensicherung)
+- [Entwicklung](#entwicklung)
 
-## Funktionen
+## Das kann Timelytix
 
-- **Einrichtungs-Assistent** beim ersten Start und für neue Arbeitgeber (Arbeitszeit, Lohn, Zulagen, Startwerte; Installationshinweis nur, solange die App nicht installiert ist)
-- **Arbeitgeber / Projekte** anlegen mit Stundenlohn, Tagessoll, Arbeitstagen, Bundesland (Feiertage) und Zulagen-Regeln
-- **Start / Pause / Beenden** per Klick; die zuletzt gewählte Arbeit bleibt ausgewählt
-- **Pausen automatisch**: Pausen-Button, Lücken bis 2 h zwischen Buchungen eines Tages zählen als Pause (längere als Unterbrechung, z. B. bei geteiltem Dienst), optional beginnt nach 6 h Arbeit automatisch die gesetzliche Pause (§ 4 ArbZG, Länge einstellbar, Standard 30 min) und danach läuft die Zeit weiter; nach 9 h folgt bei Bedarf eine weitere Pause bis insgesamt 45 min. Nach dem Beenden stehen diese Pausen als eigene Einträge in der Buchung und lassen sich ändern oder löschen
-- **Startseite**: Arbeitsauswahl, Timer, Monatsstunden (Ist / Soll bis heute / Saldo), aktuelle Zulagen, vergangene Arbeitstage ohne Erfassung mit Schnellauswahl (Urlaub, Krank, Überstundenausgleich, Kurzarbeit, Frei)
-- **Jahresübersicht**: Urlaub (Anspruch, Übertrag aus dem Vorjahr, genommen, geplant, Rest) und Überstundenkonto Monat für Monat. Resturlaub und Überstunden werden automatisch ins nächste Jahr übernommen.
-- **„Gültig ab“ für Vertragswerte**: Stundenlohn, Soll pro Tag, Arbeitstage und Zuschläge lassen sich ab einem Datum ändern; vergangene Tage rechnen weiter mit den alten Werten (Verlauf unter „Einstellungen → Lohn & Arbeitszeit“)
-- **Zuschlag auf Überstunden** (z. B. 25 %): wird am Monatsende auf die positiven Überstunden des Monats gutgeschrieben
-- **Urlaubstage** des Monats und Resturlaub in der Monatsübersicht
-- **Monatsansicht** mit allen Tagen; Tippen auf einen Tag öffnet den Editor zum Nachtragen/Korrigieren von Zeiten, Pausen und Abwesenheits-Schlüsseln
-- **Zulagen** minutengenau: Uhrzeit-Fenster (auch über Mitternacht, optional nur an bestimmten Wochentagen), Wochentage (z. B. Sonntag) und Feiertage – in Stunden und € (bei hinterlegtem Stundenlohn)
-- **Nachtschicht dem Folgetag zuordnen** (optional pro Arbeitgeber): Schichten ab 18 Uhr Beginn stehen beim Folgetag (Sonntagabend → Montag); Früh- und Tagesschichten bleiben an ihrem Tag. Zulagen zählen weiter nach den echten Uhrzeiten.
-- **„Was ist neu?“** nach Updates beim ersten Start der neuen Version, dauerhaft abschaltbar
-- **PDF-Monatsbericht** mit Tagesliste, Zusammenfassung, Zulagen und Unterschriftsfeldern
-- **Statusleiste**: Solange die Zeit läuft, zeigt die App eine Benachrichtigung („Zeit läuft seit 07:02“ bzw. „Pause seit …“) und eine Markierung am App-Symbol. Android: sofort; iPhone: ab iOS 16.4 in der installierten App. Abschaltbar unter „Einstellungen → Statusleiste“.
+### ⏱ Zeiterfassung
+- **Start, Pause, Beenden** mit einem Tipp – die Uhr läuft weiter, auch wenn die App geschlossen ist
+- **Mehrere Arbeitgeber oder Projekte** mit eigener Farbe, eigenem Lohn und eigenen Regeln
+- **Zeiten nachtragen und korrigieren** im Tages-Editor, mehrere Buchungen pro Tag, Notizen
+- **Nachtschichten** über Mitternacht; auf Wunsch zählt die Schicht zum Folgetag (Anstempeln Sonntagabend → steht beim Montag)
+- **Fehlende Tage** auf einen Blick, mit Schnellauswahl für Urlaub, Krank, Überstundenausgleich, Kurzarbeit oder Frei
 
-### Abwesenheits-Schlüssel
+### ☕ Pausen
+- **Gesetzliche Pause automatisch** (§ 4 ArbZG): nach 6 Stunden beginnt die Pause, nach 9 Stunden folgt bei Bedarf der Rest bis 45 Minuten – Länge einstellbar
+- Selbst erfasste Pausen und kurze Lücken zwischen Buchungen zählen mit; lange Lücken (geteilter Dienst) gelten als Unterbrechung
+- Automatische Pausen stehen danach als eigene Einträge in der Buchung und lassen sich ändern oder löschen
+
+### 📊 Auswertung
+- **Monatsansicht** mit Ist, Soll und Saldo, allen Tagen, Feiertagen und Abwesenheiten
+- **Jahresübersicht** mit Urlaub (Anspruch, Übertrag, genommen, geplant, Rest), Krankheitstagen und Überstundenkonto Monat für Monat
+- **Resturlaub und Überstunden** gehen automatisch ins nächste Jahr
+- **PDF-Monatsbericht** mit Tagesliste, Zusammenfassung, Zulagen und Unterschriftsfeldern – zum Speichern oder Teilen
+- Summen wahlweise als Stunden und Minuten (156:44 h) oder dezimal (156,73 h)
+
+### 💶 Lohn & Zulagen
+- **Zulagen minutengenau**: Uhrzeiten (auch über Mitternacht), Wochentage (z. B. Sonntag) und Feiertage – in Stunden und Euro
+- Bei mehreren Zulagen zur selben Zeit zählt die höchste oder alle zusammen (einstellbar)
+- **Zuschlag auf Überstunden**, gutgeschrieben am Monatsende
+- **„Gültig ab“**: Stundenlohn, Sollzeit, Arbeitstage und Zuschläge ändern sich ab einem Datum – vergangene Monate bleiben unverändert
+- **Gesetzliche Feiertage** aller Bundesländer, automatisch mit dem Tagessoll gutgeschrieben
+
+### 📱 Android-App
+- **Widget für den Startbildschirm**: Arbeitgeber wählen, laufende Zeit, Start, Pause und Beenden direkt vom Startbildschirm
+- **Benachrichtigung „Zeit läuft“** mit Knöpfen für Pause/Weiter und Beenden
+- **Erinnerungen**: samstags, wenn in der Woche Einträge fehlen, und wenn die Zeit ungewöhnlich lange läuft
+- **Hell und dunkel**, passend zur Einstellung des Handys
+- **Anzeigegröße** wie die Schriftgröße des Handys oder Klein / Normal / Groß – Schrift, Abstände und Knöpfe wachsen gleichmäßig
+- **Automatische Sicherung** in den Ordner „Dokumente/Timelytix“ – sie bleibt auch nach dem Deinstallieren erhalten
+- Updates direkt aus der App, mit Übersicht, was neu ist
+
+### 🔒 Ohne Konto, ohne Cloud
+- Läuft **komplett offline**, alle Daten bleiben auf dem Gerät
+- Datensicherung als Datei exportieren und wieder einlesen, z. B. beim Handywechsel
+- Einrichtungs-Assistent beim ersten Start – in wenigen Schritten startklar
+
+## Installation
+
+### Android (empfohlen)
+
+1. Auf dem Handy die **[Download-Seite](https://theown91.github.io/Timelytix/android.html)** öffnen und die APK herunterladen.
+2. Die heruntergeladene Datei öffnen. Beim ersten Mal fragt Android, ob der Browser Apps installieren darf – **„Zulassen“** wählen und zurück zur Installation.
+3. **„Installieren“** tippen – fertig. Timelytix erscheint wie jede andere App.
+4. Beim ersten Start führt der Assistent durch die Einrichtung (Arbeitgeber, Arbeitszeit, Lohn, Startwerte). Danach einmal **Benachrichtigungen erlauben**, damit „Zeit läuft“ und die Erinnerungen erscheinen.
+
+**Widget hinzufügen:** Startbildschirm lange gedrückt halten → *Widgets* → *Timelytix* → Widget an die gewünschte Stelle ziehen.
+
+**Updates:** Die App sucht selbst nach neuen Versionen und zeigt „Update verfügbar“. Unter *Einstellungen → App-Version* geht das auch von Hand; dort lassen sich mit *Beta-Versionen testen* auch Testversionen vorab bekommen.
+
+### iPhone und andere Geräte (Web-App)
+
+1. Die **[Web-App](https://theown91.github.io/Timelytix/)** im Browser öffnen.
+2. Auf den Startbildschirm legen:
+   - **iPhone (Safari):** *Teilen* → *Zum Home-Bildschirm*
+   - **Android (Chrome):** Menü ⋮ → *App installieren*
+3. Ab jetzt über das Symbol starten – ein Internetzugang ist nicht mehr nötig.
+
+Auf dem iPhone zeigt die installierte Web-App ab iOS 16.4 die Benachrichtigung „Zeit läuft“. Updates erscheinen als „Update verfügbar“ und werden erst nach „Jetzt installieren“ eingespielt.
+
+> **Wichtig:** Die Web-App speichert im Browser. Werden die Website-Daten gelöscht, sind auch die Zeiten weg – deshalb regelmäßig unter *Einstellungen → Datensicherung* eine Sicherung exportieren.
+
+### Von der Web-App zur Android-App wechseln
+
+In der Web-App *Einstellungen → Datensicherung → Sicherung exportieren*, dann in der Android-App *Sicherung importieren*. Alle Zeiten, Arbeitgeber und Einstellungen sind übernommen.
+
+## Bilder
+
+<p align="center">
+  <img src="docs/images/start-light.png" width="240" alt="Startseite" />
+  <img src="docs/images/tag-light.png" width="240" alt="Tages-Editor" />
+  <img src="docs/images/einstellungen-light.png" width="240" alt="Einstellungen" />
+</p>
+<p align="center">
+  <img src="docs/images/monat-light.png" width="240" alt="Monatsansicht" />
+  <img src="docs/images/jahr-light.png" width="240" alt="Jahresübersicht" />
+  <img src="docs/images/monat-dark.png" width="240" alt="Monatsansicht dunkel" />
+</p>
+
+<sub>Bilder mit Beispieldaten aus der Demo.</sub>
+
+## Abwesenheiten (Schlüssel)
 
 | Schlüssel | Wirkung |
 |---|---|
-| Urlaub, Krank, Feiertag, Sonstiges (bezahlt) | Tagessoll wird gutgeschrieben |
-| Überstundenausgleich | Soll bleibt, wird vom Stundenkonto abgezogen |
-| Kurzarbeit | wie Überstundenausgleich, aber nur solange das Stundenkonto Plusstunden hat – ist es leer, entfällt das Soll (keine Minusstunden) |
-| Frei | Tag hat kein Soll |
+| Urlaub, Krank, Feiertag, Sonstiges (bezahlt) | Das Tagessoll wird gutgeschrieben |
+| Überstundenausgleich | Das Soll bleibt und wird vom Stundenkonto abgezogen |
+| Kurzarbeit | Wird mit Überstunden verrechnet; das Stundenkonto geht dabei nie ins Minus |
+| Frei / kein Arbeitstag | Der Tag hat kein Soll |
+
+Urlaub am 24.12. und 31.12. zählt als halber Tag. Nicht benötigte Schlüssel lassen sich in den Einstellungen ausblenden.
+
+## Datenschutz & Datensicherung
+
+- Timelytix hat **kein Konto und keinen Server** – es werden keine Daten hochgeladen. Details in der [Datenschutzerklärung](https://theown91.github.io/Timelytix/datenschutz.html).
+- **Automatische Sicherung** (einstellbar von täglich bis monatlich): in der Android-App unter „Dokumente/Timelytix“, in der Web-App im Download-Ordner.
+- **Sicherung exportieren / importieren** jederzeit unter *Einstellungen → Datensicherung*.
+
+## Feedback
+
+Fehler gefunden oder eine Idee? In der App unter *Einstellungen → Feedback* oder direkt per E-Mail an **timelytix@schiers.me**.
 
 ## Entwicklung
+
+React + TypeScript + Vite, als Android-App mit Capacitor.
 
 ```bash
 npm install
 npm run dev        # Entwicklungsserver
-npm test           # Unit-Tests (Berechnungen, Feiertage)
-npm run build      # Produktions-Build nach dist/
-npm run build:demo # Demo mit Beispieldaten als einzelne HTML-Datei (dist-demo/timetrack-demo.html)
+npm test           # Tests (Berechnungen, Feiertage, Zulagen …)
+npm run build      # Web-App nach dist/
+npm run build:demo # Demo mit Beispieldaten als einzelne HTML-Datei
 ```
 
-Der Build ist statisch (`base: './'`) und kann auf jedem Webserver bzw. GitHub Pages gehostet werden.
+- Die Web-App wird bei jedem Push auf `main` über GitHub Pages veröffentlicht (`.github/workflows/pages.yml`).
+- Die Android-App baut der Workflow „Android-App bauen“; Anleitung, Signaturschlüssel und Play Store in [docs/android.md](docs/android.md).
+- Neue Versionen und „Was ist neu?“ kommen aus [`src/lib/changelog.json`](src/lib/changelog.json).

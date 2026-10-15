@@ -3,15 +3,6 @@ import type { DateKey } from './types';
 export const pad = (n: number) => String(n).padStart(2, '0');
 
 export const WEEKDAYS_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-export const WEEKDAYS_LONG = [
-  'Sonntag',
-  'Montag',
-  'Dienstag',
-  'Mittwoch',
-  'Donnerstag',
-  'Freitag',
-  'Samstag',
-];
 export const MONTHS = [
   'Januar',
   'Februar',
@@ -43,10 +34,6 @@ export function addDays(key: DateKey, n: number): DateKey {
   const d = parseDateKey(key);
   d.setDate(d.getDate() + n);
   return dateKey(d);
-}
-
-export function weekdayOf(key: DateKey): number {
-  return parseDateKey(key).getDay();
 }
 
 /** Alle Tage eines Monats (month0 = 0 … 11). */

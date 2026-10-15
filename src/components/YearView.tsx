@@ -3,6 +3,7 @@ import { useHours, useNow, useStore } from '../lib/store';
 import { termsAt } from '../lib/terms';
 import { MONTHS, dateKey } from '../lib/time';
 import { yearOverview } from '../lib/year';
+import { NoProject } from './NoProject';
 import { ProjectPicker } from './ProjectPicker';
 
 const fmtDays = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 1 });
@@ -10,18 +11,14 @@ const fmtDays = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits
 export function YearView() {
   const { state, update } = useStore();
   const hours = useHours();
-  // Summen in Minuten: bei laufender Zeit reicht einmal pro Minute (spart Akku)
-  const now = useNow(true, 60_000);
+  // Summen in Minuten: bei laufender Zeit reicht einmal pro Minute (spart Akku). Auf die Minute gerundet,
+  // damit ein erneutes Öffnen die zwischengespeicherten Ergebnisse nutzt
+  const now = Math.floor(useNow(true, 60_000) / 60_000) * 60_000;
   const [year, setYear] = useState(() => new Date().getFullYear());
 
   const projects = state.projects.filter((p) => !p.archived);
   const project = projects.find((p) => p.id === state.selectedProjectId) ?? projects[0];
-  if (!project)
-    return (
-      <div className="page">
-        <p className="card muted">Bitte zuerst einen Arbeitgeber anlegen.</p>
-      </div>
-    );
+  if (!project) return <NoProject />;
 
   const y = yearOverview(state, project, year, now);
   const v = y.vacation;
@@ -61,7 +58,7 @@ export function YearView() {
             <h2>Urlaub {year}</h2>
             <div className="stats">
               <div className="stat">
-                <span className="muted">{y.firstYear ? 'Ab Erfassungsbeginn' : 'Anspruch'}</span>
+                <span className="muted">{y.firstYear ? 'Bei Beginn' : 'Anspruch'}</span>
                 <strong>{fmtDays(v.entitlement)}</strong>
               </div>
               <div className="stat">

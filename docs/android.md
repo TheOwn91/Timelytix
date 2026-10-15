@@ -8,7 +8,8 @@ Die Android-App ist dieselbe Web-App, verpackt mit [Capacitor](https://capacitor
 | Daten | Speicher des Browsers | Speicher der App (Android-Sicherung über Google) |
 | Automatische Sicherung | Download-Ordner | `Dokumente/Timelytix` |
 | PDF / Sicherung teilen | Teilen-Menü des Browsers | Android-Teilen-Menü |
-| „Zeit läuft“ | Benachrichtigung über den Service Worker | dauerhafte Android-Benachrichtigung |
+| „Zeit läuft“ | Benachrichtigung über den Service Worker | dauerhafte Android-Benachrichtigung mit Knöpfen Pause/Weiter und Beenden |
+| Widget | – | Startbildschirm (3×1): Arbeitgeber wählen, laufende Zeit, Start/Pause/Beenden |
 | Updates | „Jetzt aktualisieren“ in der App | Google Play Store |
 
 App-Kennung: `de.timelytix.app` (lässt sich nach dem ersten Hochladen in den Play Store nicht mehr ändern).
@@ -22,8 +23,8 @@ Version: kommt aus `package.json` (`0.21.0` → versionName `0.21.0`, versionCod
   „Update verfügbar“; „Jetzt installieren“ öffnet den Download im Browser, Android fragt dann „Diese App aktualisieren?“.
 - Updates funktionieren nur, wenn jede APK mit **demselben Schlüssel** signiert ist (Secrets unten).
 - **Betas:** Jeder Push auf einen `claude/…`-Branch veröffentlicht zusätzlich eine Beta als Pre-Release
-  `vX.Y.Z-beta.N` (X.Y.Z = nächste Version, N = Laufnummer des Workflows). Angeboten wird sie nur auf Geräten mit
-  „Einstellungen → App-Version & Updates → Beta-Versionen testen“. versionCode = der der richtigen Version − 1, damit
+  `vX.Y.Z-beta.N` (X.Y.Z = Version aus `package.json` bzw. die nächste, N zählt je Version ab 1). Angeboten wird sie nur auf Geräten mit
+  „Einstellungen → App-Version → Beta-Versionen testen“. versionCode = der der richtigen Version − 1, damit
   sich die richtige Version später darüber installieren lässt. Es bleibt immer nur die neueste Beta stehen; mit der
   richtigen Version auf `main` werden alle Betas entfernt. Die Download-Seite zeigt nie eine Beta.
 - Kommt später der Play Store dazu: Dort installierte Apps aktualisiert Google; die GitHub-Update-Suche sollte dann

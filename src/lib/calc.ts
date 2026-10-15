@@ -106,22 +106,33 @@ export function placeAutoBreaks(work: Interval[], firstMinutes = DEFAULT_AUTO_BR
   return { intervals, breaks };
 }
 
-function ruleMatches(rule: SurchargeRule, ts: number, state: string): boolean {
-  const d = new Date(ts);
+/** Zulagen-Regel mit vorab gelesenen Uhrzeiten (sie wird je Abschnitt geprüft – bei vielen Tagen sehr oft). */
+interface PreparedRule {
+  rule: SurchargeRule;
+  /** Minuten seit Mitternacht; -1 = keine Zeit-Regel bzw. Zeit fehlt */
+  from: number;
+  to: number;
+}
+
+function prepareRule(rule: SurchargeRule): PreparedRule {
+  const time = rule.kind === 'time' && !!rule.from && !!rule.to;
+  return { rule, from: time ? parseHM(rule.from!) : -1, to: time ? parseHM(rule.to!) : -1 };
+}
+
+/** Gilt die Regel im Abschnitt ab `d`? `isHoliday` wird nur bei Bedarf (Feiertags-Regel) ermittelt. */
+function ruleMatches({ rule, from, to }: PreparedRule, d: Date, isHoliday: () => boolean): boolean {
   const weekday = d.getDay();
   switch (rule.kind) {
     case 'time': {
-      if (!rule.from || !rule.to) return false;
+      if (from < 0) return false;
       if (rule.weekdays?.length && !rule.weekdays.includes(weekday as never)) return false;
       const m = d.getHours() * 60 + d.getMinutes();
-      const from = parseHM(rule.from);
-      const to = parseHM(rule.to);
       return from <= to ? m >= from && m < to : m >= from || m < to;
     }
     case 'weekday':
       return !!rule.weekdays?.includes(weekday as never);
     case 'holiday':
-      return !!holidayName(dateKey(d), state);
+      return isHoliday();
   }
 }
 
@@ -136,12 +147,12 @@ export function surchargeMinutes(
   state: string,
   mode: SurchargeMode = 'max',
 ): Record<string, number> {
-  const active = rules.filter((r) => r.enabled);
+  const active = rules.filter((r) => r.enabled).map(prepareRule);
   const result: Record<string, number> = {};
-  for (const r of active) result[r.id] = 0;
+  for (const p of active) result[p.rule.id] = 0;
   if (!active.length) return result;
   // Grenzen, an denen sich eine Zeit-Regel ändern kann (Minuten seit Mitternacht)
-  const marks = [...new Set(active.flatMap((r) => (r.kind === 'time' && r.from && r.to ? [parseHM(r.from), parseHM(r.to)] : [])))];
+  const marks = [...new Set(active.flatMap((p) => (p.from >= 0 ? [p.from, p.to] : [])))];
   for (const [start, end] of intervals) {
     let cur = start;
     // Abschnittsweise statt Minute für Minute: Innerhalb einer Stunde der Ortszeit ändert sich nur
@@ -156,7 +167,9 @@ export function surchargeMinutes(
         if (m >= hour && m < hour + 60 && at > cur && at < next) next = at;
       }
       const dur = (next - cur) / MINUTE;
-      const matching = active.filter((r) => ruleMatches(r, cur, state));
+      let holiday: boolean | undefined;
+      const isHoliday = () => (holiday ??= !!holidayName(dateKey(d), state));
+      const matching = active.filter((p) => ruleMatches(p, d, isHoliday)).map((p) => p.rule);
       if (mode === 'stack') {
         for (const r of matching) result[r.id] += dur;
       } else if (matching.length) {
@@ -403,6 +416,12 @@ export interface MonthSummary {
   endTerms: Project;
 }
 
+const monthCache = new WeakMap<AppState, WeakMap<Project, Map<string, MonthSummary>>>();
+
+/**
+ * Monatsübersicht. Ergebnisse werden je Zustand zwischengespeichert (Seitenwechsel innerhalb derselben Minute
+ * rechnen nicht neu) – die Ergebnisse deshalb nicht verändern.
+ */
 export function monthSummary(
   state: AppState,
   project: Project,
@@ -410,6 +429,26 @@ export function monthSummary(
   month0: number,
   now: number,
   /** Stundenkonto zu Monatsbeginn (Minuten); ohne Angabe wird es bei Kurzarbeit im Monat berechnet. */
+  accountAtStart?: number,
+): MonthSummary {
+  let perState = monthCache.get(state);
+  if (!perState) monthCache.set(state, (perState = new WeakMap()));
+  let perProject = perState.get(project);
+  if (!perProject) perState.set(project, (perProject = new Map()));
+  // Nur wenige Einträge behalten (bei laufender Zeit kommt jede Minute einer dazu)
+  if (perProject.size > 50) perProject.clear();
+  const key = `${year}-${month0}|${now}|${accountAtStart ?? ''}`;
+  let result = perProject.get(key);
+  if (!result) perProject.set(key, (result = computeMonth(state, project, year, month0, now, accountAtStart)));
+  return result;
+}
+
+function computeMonth(
+  state: AppState,
+  project: Project,
+  year: number,
+  month0: number,
+  now: number,
   accountAtStart?: number,
 ): MonthSummary {
   const index = buildIndex(state, project.id);

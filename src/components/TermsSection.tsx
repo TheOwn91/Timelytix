@@ -27,7 +27,6 @@ export function TermsSection({ project }: { project: Project }) {
 
   return (
     <>
-      <h3>Lohn &amp; Arbeitszeit</h3>
       <div className="field-list readonly">
         <div className="field-row">
           <span>Stundenlohn</span>
@@ -72,7 +71,10 @@ export function TermsSection({ project }: { project: Project }) {
                 {active && <span className="tag">gilt heute</span>}
                 {t.from > today && <span className="tag">geplant</span>}
               </span>
-              <span className="muted small">{describeChanges(prev, t, project).join(' · ') || 'keine Änderung'}</span>
+              {/* Nur ein Eintrag: Die Werte stehen schon oben in der Liste */}
+              {arr.length > 1 && (
+                <span className="muted small">{describeChanges(prev, t, project).join(' · ') || 'keine Änderung'}</span>
+              )}
             </button>
           );
         })}
@@ -180,7 +182,7 @@ function TermsEditor({ project, initial, isFirst, isNew, onClose, onSave, onDele
       </div>
       <div className="terms-workdays">
         <span>Arbeitstage</span>
-        <WeekdayToggle value={t.workdays} onChange={(v) => set({ workdays: v })} />
+        <WeekdayToggle value={t.workdays} onChange={(v) => set({ workdays: v })} label="Arbeitstage" />
       </div>
       <p className="muted small">
         Tage vor dem „gültig ab“ werden weiter mit den bisherigen Werten berechnet – vergangene Monate, Überstunden und

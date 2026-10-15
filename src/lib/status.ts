@@ -111,15 +111,16 @@ async function clearNotification() {
 }
 
 /** Text der Benachrichtigung für den aktuellen Zustand (ohne laufende Buchung: null). */
-export function runningNotice(state: AppState): { title: string; body: string; start: number; session: string } | null {
+export function runningNotice(state: AppState): { title: string; body: string; start: number; session: string; paused: boolean } | null {
   const s = state.sessions.find((x) => x.end === undefined);
   if (!s) return null;
   const project = state.projects.find((p) => p.id === s.projectId);
   const pause = s.pauses.find((p) => p.end === undefined);
   const name = project?.name ?? 'Timelytix';
+  // „‖“ statt „⏸“: das zeigen manche Handys (z. B. Samsung) als buntes Emoji
   return pause
-    ? { title: `⏸ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start, session: s.id }
-    : { title: `⏱ Zeit läuft – ${name}`, body: `Seit ${fmtTime(s.start)} · Tippen zum Öffnen`, start: s.start, session: s.id };
+    ? { title: `‖ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start, session: s.id, paused: true }
+    : { title: `⏱ Zeit läuft – ${name}`, body: `Seit ${fmtTime(s.start)} · Tippen zum Öffnen`, start: s.start, session: s.id, paused: false };
 }
 
 let last = '';
@@ -193,9 +194,11 @@ async function syncNative(notice: ReturnType<typeof runningNotice>) {
   }
   if (nativePermission !== 'granted') return;
   const key = `${notice.session}|${notice.title}|${notice.body}`;
-  if (shown === key && (await runningNativeDelivered().catch(() => false))) return;
-  // Dieselbe Buchung wurde schon gemeldet (Pause, App neu geöffnet, Anzeige angetippt) → still
-  await showRunningNative(notice, { quiet: !!shown?.startsWith(`${notice.session}|`) });
+  const delivered = await runningNativeDelivered().catch(() => false);
+  if (shown === key && delivered) return;
+  // Dieselbe Buchung wurde schon gemeldet (Pause, App neu geöffnet, Anzeige angetippt) oder die Anzeige steht
+  // schon (Zeit im Widget gestartet) → still
+  await showRunningNative(notice, { quiet: !!shown?.startsWith(`${notice.session}|`) || delivered });
   writeShown(key);
 }
 

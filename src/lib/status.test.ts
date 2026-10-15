@@ -23,7 +23,7 @@ describe('runningNotice', () => {
   it('zeigt die laufende Pause', () => {
     const p = combine('2026-09-25', '11:30');
     const n = runningNotice(base([{ id: 'a', projectId: 'p', start, pauses: [{ start: p }] }]));
-    expect(n?.title).toBe('⏸ Pause – Muster GmbH');
+    expect(n?.title).toBe('‖ Pause – Muster GmbH');
     expect(n?.body).toBe('Pause seit 11:30 · Arbeitsbeginn 07:02');
   });
 });

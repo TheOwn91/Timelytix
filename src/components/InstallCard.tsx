@@ -22,7 +22,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
-/** Hinweis bzw. Button, um die App auf dem Homescreen zu installieren. */
 /** Wurde die Installation angeboten (Android/Chrome), zeigt der Browser seinen eigenen Dialog. */
 function useInstallPrompt() {
   const [, rerender] = useState(0);
@@ -77,29 +76,17 @@ export function InstallCard() {
     return (
       <section className="card">
         <h2>Demo</h2>
-        <p className="muted small">
-          Das ist eine Demo mit Beispieldaten. Deine Eingaben bleiben nur in diesem Browser. Die richtige App wird auf dem
-          Handy über „Zum Home-Bildschirm“ installiert und läuft dann offline.
-        </p>
+        <p className="muted small">Beispieldaten – deine Eingaben bleiben nur in diesem Browser.</p>
       </section>
     );
   }
-
-  if (isStandalone()) {
-    return (
-      <section className="card">
-        <h2>App</h2>
-        <p className="muted small">✔ Timelytix ist installiert und funktioniert auch ohne Internet.</p>
-      </section>
-    );
-  }
+  // Schon installiert: nichts zu tun
+  if (isStandalone()) return null;
 
   return (
     <section className="card">
       <h2>Als App installieren</h2>
-      <p className="muted small">
-        Installiert startet Timelytix wie eine normale App vom Homescreen und funktioniert komplett offline.
-      </p>
+      <p className="muted small">Startet dann vom Homescreen und läuft offline.</p>
       <InstallHelp />
     </section>
   );

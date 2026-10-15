@@ -16,10 +16,12 @@
   --on-warning: #1f1300;
   --danger: #dc2626;
   --danger-bg: #dc2626;
+  --on-danger: #ffffff;
   --danger-soft: #fdecec;
   --holiday: #0e7490;
   --chip-on: #ffffff;
   --backdrop: rgb(15 23 42 / 0.45);
+  --shadow: rgb(0 0 0 / 0.25);
   --c-urlaub: #15803d;
   --c-krank: #dc2626;
   --c-ueberstunden: #7e22ce;
@@ -53,10 +55,12 @@
     --on-warning: #1f1300;
     --danger: #f87171;
     --danger-bg: #dc2626;
+    --on-danger: #ffffff;
     --danger-soft: #3a1619;
     --holiday: #22d3ee;
     --chip-on: #0b0e13;
     --backdrop: rgb(0 0 0 / 0.7);
+    --shadow: rgb(0 0 0 / 0.5);
     --c-urlaub: #4ade80;
     --c-krank: #f87171;
     --c-ueberstunden: #c084fc;
@@ -85,10 +89,12 @@
   --on-warning: #1f1300;
   --danger: #f87171;
   --danger-bg: #dc2626;
+  --on-danger: #ffffff;
   --danger-soft: #3a1619;
   --holiday: #22d3ee;
   --chip-on: #0b0e13;
   --backdrop: rgb(0 0 0 / 0.7);
+  --shadow: rgb(0 0 0 / 0.5);
   --c-urlaub: #4ade80;
   --c-krank: #f87171;
   --c-ueberstunden: #c084fc;
@@ -103,17 +109,36 @@
   box-sizing: border-box;
 }
 
+/* Anzeigegröße (lib/uiScale.ts): Alles in rem wächst mit – deshalb Größen in rem statt px angeben */
+html {
+  font-size: calc(var(--ui-scale, 1) * 100%);
+  /* Kein Doppeltipp-Zoom, kein Gummiband-Effekt der Seite in der installierten App */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+}
+
 /* Farbe und Schrift direkt am body setzen – eine einbettende Seite kann dort eigene Werte vorgeben */
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   -webkit-tap-highlight-color: transparent;
 }
 body.no-scroll {
   overflow: hidden;
+}
+
+/* Symbole (components/Icon.tsx): so groß und so farbig wie der Text daneben */
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
 }
 
 button {
@@ -153,10 +178,10 @@ h3 {
 }
 
 .app {
-  max-width: 640px;
+  max-width: 40rem;
   margin: 0 auto;
   min-height: 100vh;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
 }
 .app-header {
   /* Android-App reicht bis unter die Statusleiste (randlos): oben den Abstand der Leiste freihalten */
@@ -232,7 +257,7 @@ h3 {
 }
 .btn.danger {
   background: var(--danger-bg);
-  color: #fff;
+  color: var(--on-danger);
 }
 .btn.big {
   font-size: 1.15rem;
@@ -275,8 +300,8 @@ h3 {
 .project-picker .dot {
   position: absolute;
   left: 0.9rem;
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
   background: var(--accent);
   pointer-events: none;
@@ -343,6 +368,12 @@ h3 {
   gap: 0.75rem;
   margin-top: 0.4rem;
 }
+/* Symbol und Text in einer Zeile, auch bei 320 px */
+.timer-actions .btn {
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+  font-size: clamp(1rem, 4.8vw, 1.15rem);
+}
 
 /* Statistiken */
 .stats {
@@ -361,6 +392,9 @@ h3 {
 }
 .stat span {
   font-size: 0.78rem;
+  /* Lange Wörter wie „Erfassungsbeginn“ trennen statt abschneiden */
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 .stat strong {
   font-size: clamp(0.8rem, 4vw, 1.15rem);
@@ -399,7 +433,7 @@ h3 {
 .badge {
   display: inline-block;
   background: var(--danger-bg);
-  color: #fff;
+  color: var(--on-danger);
   border-radius: 999px;
   font-size: 0.75rem;
   padding: 0.05rem 0.5rem;
@@ -567,7 +601,7 @@ h3 {
   border: 1px solid var(--border);
   border-bottom: none;
   width: 100%;
-  max-width: 640px;
+  max-width: 40rem;
   max-height: 92vh;
   max-height: 92dvh;
   border-radius: 18px 18px 0 0;
@@ -662,9 +696,9 @@ h3 {
   padding: 0.15rem 0;
 }
 
-/* Arbeitgeber */
+/* Arbeitgeber: Zeilen in einer Karte, darin aufklappbare Gruppen (SettingsGroup) */
 .project-card {
-  padding: 0;
+  border-top: 1px solid var(--border);
 }
 .project-card.archived {
   opacity: 0.7;
@@ -676,22 +710,22 @@ h3 {
   width: 100%;
   background: none;
   border: none;
-  padding: 1rem;
+  padding: 0.8rem 0;
   text-align: left;
 }
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
   flex-shrink: 0;
 }
 .project-form {
-  padding: 0 1rem 1rem;
+  padding: 0 0 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.5rem;
 }
-.project-form > label,
+.settings-group-body > label,
 .grid-2 label {
   display: flex;
   flex-direction: column;
@@ -699,10 +733,19 @@ h3 {
   font-size: 0.85rem;
   color: var(--muted);
 }
-.project-form > label.checkbox {
+.settings-group-body > label.checkbox {
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
+  font-size: 0.95rem;
   color: var(--text);
+}
+.settings-group-body > label.checkbox input {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+/* Abstand regelt die Gruppe */
+.settings-group-body > .btn.full {
+  margin-top: 0;
 }
 .grid-2 {
   display: grid;
@@ -716,11 +759,13 @@ h3 {
 }
 .color-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 .color {
-  width: 28px;
-  height: 28px;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
   border: 3px solid transparent;
 }
@@ -748,21 +793,24 @@ h3 {
 .surcharge-edit {
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 0.6rem;
+}
+.surcharge-edit > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.75rem;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+.surcharge-edit-body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 0 0.75rem 0.75rem;
 }
 .surcharge-edit.disabled {
   opacity: 0.6;
-}
-.surcharge-edit .suffix {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.surcharge-edit .suffix input {
-  width: 4.5rem;
 }
 .checkbox input {
   width: 1.2rem;
@@ -772,6 +820,72 @@ h3 {
 .danger-zone {
   justify-content: flex-end;
   margin-top: 0.5rem;
+}
+
+.project-list > .btn.full {
+  margin-top: 0.25rem;
+}
+.settings-group {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.settings-group > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+  list-style: none;
+}
+.settings-group > summary::-webkit-details-marker,
+.surcharge-edit > summary::-webkit-details-marker {
+  display: none;
+}
+.settings-group > summary::after {
+  content: '▾';
+  content: '▾' / '';
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  color: var(--muted);
+}
+.settings-group[open] > summary::after {
+  content: '▴';
+  content: '▴' / '';
+}
+.surcharge-edit > summary > span {
+  margin-left: auto;
+}
+.surcharge-edit > summary::after {
+  content: '▾';
+  content: '▾' / '';
+  color: var(--muted);
+}
+.surcharge-edit[open] > summary::after {
+  content: '▴';
+  content: '▴' / '';
+}
+.settings-group-title {
+  font-weight: 600;
+}
+.settings-group-summary {
+  color: var(--muted);
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.settings-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0 0.8rem 0.9rem;
+}
+.settings-group-body > p,
+.settings-group-body .choice-field {
+  margin: 0;
+}
+/* Feiertage + Erfassung ab nebeneinander, auf schmalen Handys untereinander */
+.settings-group-body .grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
 }
 .onboarding form {
   display: flex;
@@ -793,7 +907,7 @@ h3 {
 }
 .tabbar button {
   flex: 1;
-  max-width: 213px;
+  max-width: 13.3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -815,22 +929,39 @@ h3 {
 .grid-2 select {
   width: 100%;
 }
-.surcharge-edit .row select,
-.surcharge-edit .row input[type='time'] {
+.surcharge-edit-body > select {
+  width: 100%;
+}
+.surcharge-edit .times input {
   flex: 1;
-  min-width: 7.5rem;
+}
+/* Alle sieben Wochentage in einer Reihe */
+.surcharge-edit .weekday-toggle {
+  flex: 1 1 100%;
+  flex-wrap: nowrap;
+}
+.surcharge-edit .weekday-toggle button {
+  flex: 1;
+  min-width: 0;
+  padding-inline: 0;
+}
+/* Feedback: Knöpfe sind Links (mailto:) */
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+.feedback-address {
+  margin-bottom: 0;
+  text-align: center;
+  user-select: text;
 }
 .install-steps {
   margin: 0.5rem 0 0;
   padding-left: 1.2rem;
   line-height: 1.6;
-}
-/* Kein Doppeltipp-Zoom, kein Gummiband-Effekt der Seite in der installierten App */
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  touch-action: manipulation;
-  overscroll-behavior-y: none;
 }
 .install-hint {
   display: flex;
@@ -871,16 +1002,16 @@ html {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(80px + env(safe-area-inset-bottom));
+  bottom: calc(5rem + env(safe-area-inset-bottom));
   transform: translateX(-50%);
-  width: min(560px, calc(100% - 32px));
+  width: min(35rem, calc(100% - 32px));
   background: var(--text);
   color: var(--card);
   padding: 0.75rem 1rem;
   border-radius: 12px;
   font-size: 0.9rem;
   z-index: 60;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.25);
+  box-shadow: 0 6px 24px var(--shadow);
 }
 .toggle-row {
   display: flex;
@@ -991,6 +1122,13 @@ html {
   color: var(--muted);
   font-size: 0.85rem;
 }
+/* Liste direkt in einer Karte: Luft zu Häkchen, Text und Knöpfen davor und danach */
+.card > .field-list {
+  margin-block: 0.6rem 0.9rem;
+}
+.card > .field-list:last-child {
+  margin-bottom: 0;
+}
 /* Zeile mit Auswahlfeld statt Zahl (z. B. Abstand der Sicherung) */
 .field-list label.select-row {
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1016,15 +1154,18 @@ html {
   line-height: 1.5;
 }
 /* Updates */
-.update-actions {
+/* Knöpfe nebeneinander; passt die Beschriftung nicht in eine Zeile, rutscht der Knopf darunter */
+.update-actions,
+.button-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0.75rem 0 0.25rem;
 }
-.update-actions .btn {
-  flex: 1;
-  min-width: 9rem;
+.update-actions .btn,
+.button-row .btn {
+  flex: 1 1 auto;
+  white-space: nowrap;
 }
 .btn:disabled {
   opacity: 0.55;
@@ -1084,6 +1225,23 @@ html {
     font-size: 0.88rem;
     gap: 0.4rem;
   }
+  .field-list label {
+    grid-template-columns: minmax(0, 1fr) 4.6rem 1.9rem;
+    gap: 0.45rem;
+    padding: 0.5rem 0.6rem;
+  }
+  .field-list label.select-row select {
+    min-width: 0;
+  }
+  .field-list label.select-row input[type='time'] {
+    width: 7rem;
+  }
+  .settings-group > summary {
+    padding: 0.65rem 0.6rem;
+  }
+  .settings-group-body {
+    padding: 0 0.6rem 0.8rem;
+  }
 }
 .surcharge-list li > :first-child {
   overflow-wrap: anywhere;
@@ -1105,6 +1263,7 @@ html {
 .field-list .field-row strong {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .field-list label.muted {
   color: var(--muted);
@@ -1235,14 +1394,6 @@ html {
   hyphens: auto;
   overflow-wrap: anywhere;
 }
-@media (max-width: 350px) {
-  .field-list label {
-    grid-template-columns: minmax(0, 1fr) 4.6rem 1.9rem;
-    gap: 0.45rem;
-    padding: 0.5rem 0.6rem;
-  }
-}
-
 /* Auswahl mit Erklärung (Radio-Buttons) */
 .choice-field {
   display: flex;
@@ -1281,15 +1432,6 @@ html {
   gap: 0.1rem;
 }
 
-/* Versteckte Option (nur bestimmte Arbeitgeber) */
-.shift-option {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.shift-option p {
-  margin: 0;
-}
 .delete-confirm {
   margin-top: 1rem;
 }
@@ -1312,9 +1454,9 @@ html {
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: 16px;
-  width: min(360px, 100%);
+  width: min(22.5rem, 100%);
   padding: 1.25rem 1rem 1rem;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 0.3);
+  box-shadow: 0 10px 40px var(--shadow);
 }
 .confirm-dialog p {
   margin: 0 0 1.25rem;
@@ -1333,14 +1475,6 @@ html {
   gap: 0.5rem;
 }
 
-.auto-break-option {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.auto-break-option p {
-  margin: 0;
-}
 
 /* Hinweis unter automatisch eingetragenen Pausen im Tages-Editor */
 .auto-note {

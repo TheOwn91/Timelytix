@@ -11,6 +11,7 @@ import { MONTHS, dateKey, fmtClock, fmtDate, fmtDuration, fmtTime, uid } from '.
 import type { AbsenceType, DateKey } from '../lib/types';
 import { yearOverview } from '../lib/year';
 import { DayEditor } from './DayEditor';
+import { Icon } from './Icon';
 import { MonthExtras } from './MonthExtras';
 import { ProjectPicker } from './ProjectPicker';
 import { SurchargeList } from './SurchargeList';
@@ -41,7 +42,8 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
     }
   };
 
-  const projects = state.projects.filter((p) => !p.archived);
+  // Archivierte fehlen in der Auswahl – außer der, für den gerade die Zeit läuft (sonst zeigt sie den falschen)
+  const projects = state.projects.filter((p) => !p.archived || p.id === active?.projectId);
   const project =
     state.projects.find((p) => p.id === active?.projectId) ??
     projects.find((p) => p.id === state.selectedProjectId) ??
@@ -59,6 +61,18 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
   }, [state, project, minute]);
 
   if (!project || !totals) {
+    // Arbeitgeber vorhanden, aber alle archiviert
+    if (state.projects.length)
+      return (
+        <div className="page">
+          <div className="card onboarding">
+            <p>Alle Arbeitgeber sind archiviert.</p>
+            <button className="btn primary full" onClick={onOpenProjects}>
+              Zu den Einstellungen
+            </button>
+          </div>
+        </div>
+      );
     return (
       <div className="page">
         <div className="card onboarding">
@@ -156,11 +170,17 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
         {active && stats ? (
           <>
             <div className="timer-status">
-              {openPause
-                ? `⏸ Pause seit ${fmtTime(openPause.start)}`
-                : autoPause
-                  ? `⏸ Pause (automatisch) bis ${fmtTime(autoPause.end)}`
-                  : `● Läuft seit ${fmtTime(active.start)}`}
+              {openPause ? (
+                <>
+                  <Icon name="pause" /> Pause seit {fmtTime(openPause.start)}
+                </>
+              ) : autoPause ? (
+                <>
+                  <Icon name="pause" /> Pause (automatisch) bis {fmtTime(autoPause.end)}
+                </>
+              ) : (
+                `● Läuft seit ${fmtTime(active.start)}`
+              )}
             </div>
             <div className="clock">{fmtClock(stats.net * 60_000)}</div>
             <div className="muted center">
@@ -168,10 +188,18 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
             </div>
             <div className="timer-actions">
               <button className={`btn big ${openPause ? 'primary' : 'warning'}`} onClick={togglePause}>
-                {openPause ? '▶ Weiter' : '⏸ Pause'}
+                {openPause ? (
+                  <>
+                    <Icon name="play" /> Weiter
+                  </>
+                ) : (
+                  <>
+                    <Icon name="pause" /> Pause
+                  </>
+                )}
               </button>
               <button className="btn big danger" onClick={stop}>
-                ■ Beenden
+                <Icon name="stop" /> Beenden
               </button>
             </div>
           </>
@@ -181,7 +209,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
               <div className="muted center">Heute bereits erfasst: {fmtDuration(today.worked)} h</div>
             )}
             <button className="btn big primary start" onClick={start}>
-              ▶ Zeit starten
+              <Icon name="play" /> Zeit starten
             </button>
           </>
         )}

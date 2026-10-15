@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { ABSENCE_ORDER, ABSENCE_TYPES, visibleAbsences } from '../lib/absences';
 import { buildIndex, daySummary } from '../lib/calc';
 import { ask } from '../lib/confirm';
-import { crossesMidnight, shiftsToNextDay, workDate } from '../lib/shift';
+import { shiftsToNextDay, suggestedStart, workDate } from '../lib/shift';
 import { projectAt } from '../lib/terms';
 import { useNow, useStore } from '../lib/store';
 import { MINUTE, addDays, combine, dateKey, fmtDate, fmtDuration, fmtTime, uid } from '../lib/time';
@@ -43,20 +43,12 @@ export function DayEditor({ project, date, onClose }: Props) {
     });
 
   const addSession = () => {
-    const last = day.sessions[day.sessions.length - 1];
-    // Beginn: aktuelle Uhrzeit am angezeigten Tag. Würde das eine vorhandene Buchung überschneiden,
-    // 30 min nach deren Ende.
-    const startHm = fmtTime(Date.now());
+    // Erste Buchung des Tages: Tagessoll mit 30 min Pause; jede weitere ohne Pause
     const workMin = Math.round(terms.dailyTargetHours * 60);
-    const withPause = !last && workMin > 360;
+    const withPause = day.sessions.length === 0 && workMin > 360;
     const durationMin = workMin + (withPause ? 30 : 0);
-    let startTs = combine(date, startHm);
-    // „Nachtschicht dem Folgetag zuordnen“: Ginge die Schicht über Mitternacht, stünde sie beim Folgetag –
-    // dann am Vortag beginnen, damit sie bei diesem Tag steht
-    if (shiftsToNextDay(project) && crossesMidnight({ start: startTs, end: startTs + durationMin * MINUTE })) {
-      startTs = combine(addDays(date, -1), startHm);
-    }
-    if (last && startTs < (last.end ?? now)) startTs = (last.end ?? now) + 30 * MINUTE;
+    // Zur aktuellen Uhrzeit, ohne vorhandene Buchungen zu überschneiden und immer bei diesem Tag
+    const startTs = suggestedStart(project, date, day.sessions, durationMin, fmtTime(Date.now()), now);
     const pauses = withPause ? [{ start: startTs + 240 * MINUTE, end: startTs + 270 * MINUTE }] : [];
     const endTs = startTs + durationMin * MINUTE;
     update((d) => {

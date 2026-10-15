@@ -23,12 +23,15 @@ function statusText(s: UpdateStatus): string | null {
   }
 }
 
-/** App-Version, Updates (immer von Hand) und „Was ist neu?“. */
+/**
+ * App-Version, Updates und „Was ist neu?“. Updates kommen nur von Hand („Jetzt aktualisieren“ zeigt vorher die
+ * Änderungen); gesucht wird höchstens alle 12 Stunden (lib/update.ts).
+ */
 export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) {
   const [status, setStatus] = useState(getUpdateStatus);
   useEffect(() => onUpdateStatus(setStatus), []);
   const supported = updateSupported();
-  const text = supported ? statusText(status) : 'In der Demo gibt es keine Updates – nur in der installierten App.';
+  const text = supported ? statusText(status) : 'In der Demo gibt es keine Updates.';
   const busy = status.state === 'checking' || status.state === 'installing';
   const [beta, setBeta] = useState(betaUpdatesEnabled);
 
@@ -40,18 +43,11 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
 
   return (
     <section className="card">
-      <h2>App-Version &amp; Updates</h2>
+      <h2>App-Version</h2>
       <p className="muted small">
         Timelytix {BUILD_VERSION}
         {IS_BETA ? ' · Beta' : IN_DEVELOPMENT && ' · in Entwicklung'}
       </p>
-
-      <p className="muted small">
-        Neue Versionen werden nur installiert, wenn du auf „Jetzt aktualisieren“ tippst – vorher siehst du, was neu
-        ist. Die App schaut höchstens alle 12 Stunden nach, ob es eine neue Version gibt
-        {NATIVE ? ' (auf GitHub; die neue Version wird heruntergeladen und von Android installiert).' : '.'}
-      </p>
-
       <div className="update-actions">
         <button className="btn secondary" disabled={!supported || busy} onClick={() => void checkForUpdates()}>
           Auf Updates prüfen
@@ -61,30 +57,21 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
             Jetzt aktualisieren
           </button>
         )}
+        <button className="btn secondary" onClick={onShowWhatsNew}>
+          Was ist neu?
+        </button>
       </div>
       {text && (
         <p className={`small update-status ${status.state === 'available' ? 'highlight' : 'muted'}`} role="status">
           {text}
         </p>
       )}
-
       {NATIVE && (
-        <>
-          <label className="checkbox toggle-row">
-            <input id="beta-updates" type="checkbox" checked={beta} disabled={busy} onChange={(e) => toggleBeta(e.target.checked)} />
-            Beta-Versionen testen
-          </label>
-          <p className="muted small">
-            {beta
-              ? 'Du bekommst auch Testversionen mit den neuesten Änderungen – sie können noch Fehler enthalten. Ausgeschaltet bleibt die Beta installiert, bis die nächste richtige Version erscheint.'
-              : 'Nur für Tester: Testversionen mit den neuesten Änderungen, noch vor der richtigen Version.'}
-          </p>
-        </>
+        <label className="checkbox toggle-row">
+          <input id="beta-updates" type="checkbox" checked={beta} disabled={busy} onChange={(e) => toggleBeta(e.target.checked)} />
+          Beta-Versionen testen{beta && <span className="muted small"> – können noch Fehler enthalten</span>}
+        </label>
       )}
-
-      <button className="btn secondary full" onClick={onShowWhatsNew}>
-        Was ist neu?
-      </button>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { releasesForUpdate, releasesSince, type Release } from './changelog';
+import { releasesForUpdate, releasesSince, updateNotesEnabled, type Release } from './changelog';
 
 const log: Release[] = [
   { version: '1.2.0', date: '', changes: ['c'] },
@@ -27,4 +27,11 @@ describe('releasesForUpdate', () => {
     expect(releasesForUpdate(latest, '0.12.0-beta.5').map((x) => x.version)).toEqual(['0.12.0']));
   it('ältere version.json ohne Verlauf: nur die neueste', () =>
     expect(releasesForUpdate(r('0.12.0'), '0.11.1').map((x) => x.version)).toEqual(['0.12.0']));
+});
+
+describe('„Was ist neu?“ beim Start', () => {
+  it('ist in der Web-App an und in der Android-App standardmäßig aus', () => {
+    expect(updateNotesEnabled(false)).toBe(true);
+    expect(updateNotesEnabled(true)).toBe(false);
+  });
 });

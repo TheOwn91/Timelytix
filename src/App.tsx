@@ -13,7 +13,9 @@ import { DEMO, demoState } from './lib/demo';
 import { syncReminders } from './lib/reminders';
 import { refreshNotifySupport, requestNotifyPermission, setNotifyEnabled, shouldAskNotifyOnStart, syncRunningStatus } from './lib/status';
 import { ask } from './lib/confirm';
+import { NATIVE } from './lib/native';
 import { useStore } from './lib/store';
+import { ackWidgetActions, applyWidgetActions, onWidgetActions, readWidgetActions, syncWidget } from './lib/widget';
 import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStatus, onUpdateStatus, openUpdatePreview } from './lib/update';
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
@@ -38,7 +40,7 @@ export function App() {
     const releases = pendingReleaseNotes(consumeForcedReleaseNotes());
     return releases.length ? { releases, afterUpdate: true } : null;
   });
-  const { state, replace } = useStore();
+  const { state, update: updateState, replace } = useStore();
   // Einrichtungs-Assistent: beim ersten Start und für neue Arbeitgeber
   const [wizard, setWizard] = useState<{ firstRun: boolean; name?: string } | null>(() =>
     state.projects.length === 0 ? { firstRun: true } : null,
@@ -67,8 +69,8 @@ export function App() {
     };
   }, []);
 
-  // Android-App: nach der Installation einmal nach der Anzeige „Zeit läuft“ fragen
-  // (erst nach dem Einrichtungs-Assistenten – der bietet sie selbst an)
+  // Android-App: nach der Installation einmal nach den Benachrichtigungen fragen – erst nach dem
+  // Einrichtungs-Assistenten (der fragt in der Android-App nicht selbst)
   useEffect(() => {
     if (wizard) return;
     const t = setTimeout(async () => {
@@ -85,10 +87,53 @@ export function App() {
     return () => clearTimeout(t);
   }, [wizard]);
 
+  // Android-App: Aktionen aus Widget und Benachrichtigung übernehmen – beim Start, beim Zurückholen bzw.
+  // Verlassen der App und sofort, wenn sie geöffnet ist (lib/widget.ts). Bis die ersten übernommen sind,
+  // bleiben Widget und Benachrichtigung beim Stand von Android (sonst zeigten sie kurz den alten Stand der App).
+  const [widgetReady, setWidgetReady] = useState(!NATIVE);
+  // Übernommene Aktionen, die Android löschen darf, sobald der neue Zustand gespeichert ist
+  const ackUpTo = useRef<number | null>(null);
+  useEffect(() => {
+    if (!NATIVE) return;
+    const pull = async () => {
+      const actions = await readWidgetActions();
+      if (actions.length) {
+        ackUpTo.current = Math.max(ackUpTo.current ?? 0, ...actions.map((a) => a.seq ?? 0));
+        updateState((d) => applyWidgetActions(d, actions));
+      } else {
+        // Sonst den Auszug neu ablegen (z. B. Benachrichtigungen in den Einstellungen aus-/eingeschaltet)
+        void syncWidget(stateRef.current);
+      }
+      setWidgetReady(true);
+    };
+    void pull();
+    document.addEventListener('visibilitychange', pull);
+    const off = onWidgetActions(() => void pull());
+    return () => {
+      document.removeEventListener('visibilitychange', pull);
+      off();
+    };
+  }, [updateState]);
+
   // Benachrichtigung und Badge folgen dem Timer (auch nach Neustart der App)
   useEffect(() => {
-    void syncRunningStatus(state);
-  }, [state]);
+    if (widgetReady) void syncRunningStatus(state);
+  }, [state, widgetReady]);
+
+  // Widget: nach jeder Änderung übernommene Aktionen bestätigen und den Auszug neu ablegen – erst nach dem
+  // Speichern des Zustands (StoreProvider speichert im selben Durchlauf, deshalb ein Takt später)
+  useEffect(() => {
+    if (!widgetReady) return;
+    const t = setTimeout(async () => {
+      const upTo = ackUpTo.current;
+      if (upTo !== null) {
+        await ackWidgetActions(upTo);
+        if (ackUpTo.current === upTo) ackUpTo.current = null;
+      }
+      void syncWidget(state);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [state, widgetReady]);
 
   // Erinnerungen (fehlende Tage, vergessen abzustempeln): bei Änderungen neu planen und jede Minute
   // prüfen – die Web-App kann sie nur zeigen, solange sie geöffnet ist
