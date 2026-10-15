@@ -117,9 +117,9 @@ export function runningNotice(state: AppState): { title: string; body: string; s
   const project = state.projects.find((p) => p.id === s.projectId);
   const pause = s.pauses.find((p) => p.end === undefined);
   const name = project?.name ?? 'Timelytix';
-  // „❚❚“ statt „⏸“: das zeigen manche Handys (z. B. Samsung) als buntes Emoji
+  // „❙❙“ statt „⏸“: das zeigen manche Handys (z. B. Samsung) als buntes Emoji
   return pause
-    ? { title: `❚❚ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start, session: s.id, paused: true }
+    ? { title: `❙❙ Pause – ${name}`, body: `Pause seit ${fmtTime(pause.start)} · Arbeitsbeginn ${fmtTime(s.start)}`, start: pause.start, session: s.id, paused: true }
     : { title: `⏱ Zeit läuft – ${name}`, body: `Seit ${fmtTime(s.start)} · Tippen zum Öffnen`, start: s.start, session: s.id, paused: false };
 }
 
