@@ -58,7 +58,7 @@ Repository und nicht in den Changelog.
 - Widget (`TimeWidgetProvider.java`) und die Knöpfe der Benachrichtigung ändern nichts an den Daten: Sie zeigen
   den neuen Stand sofort selbst an und merken sich jede Aktion mit Uhrzeit (`WidgetActions.java`, SharedPreferences);
   die App übernimmt sie beim Öffnen bzw. sofort (`lib/widget.ts`) und legt nach jeder Änderung einen Auszug fürs
-  Widget ab. „Beenden“ fragt in einem kleinen Fenster nach (`ConfirmStopActivity`).
+  Widget ab. Alle Knöpfe wirken sofort (keine Rückfrage).
 - App-Symbole: Quellen in `assets/`, erzeugen mit `npx @capacitor/assets generate --android --assetPath assets`.
 
 ## Berechnung / Daten

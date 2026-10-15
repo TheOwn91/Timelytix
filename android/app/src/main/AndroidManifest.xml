@@ -37,18 +37,11 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/timelytix_widget_info" />
         </receiver>
-        <!-- Start, Pause, Weiter aus Widget und Benachrichtigung -->
+        <!-- Start, Pause, Weiter, Beenden aus Widget und Benachrichtigung -->
         <receiver android:name=".WidgetActionReceiver" android:exported="false" />
-        <!-- Kleine Fenster über dem Startbildschirm: Arbeitgeber wählen, „Zeit beenden?“ -->
+        <!-- Kleines Fenster über dem Startbildschirm: Arbeitgeber wählen -->
         <activity
             android:name=".PickProjectActivity"
-            android:theme="@style/WidgetDialog"
-            android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:noHistory="true"
-            android:exported="false" />
-        <activity
-            android:name=".ConfirmStopActivity"
             android:theme="@style/WidgetDialog"
             android:excludeFromRecents="true"
             android:taskAffinity=""

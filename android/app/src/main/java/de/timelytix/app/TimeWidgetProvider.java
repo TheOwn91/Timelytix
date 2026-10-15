@@ -90,7 +90,7 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE, null));
         v.setViewVisibility(R.id.widget_stop, running ? View.VISIBLE : View.GONE);
-        v.setOnClickPendingIntent(R.id.widget_stop, ConfirmStopActivity.pending(context));
+        v.setOnClickPendingIntent(R.id.widget_stop, WidgetActionReceiver.pending(context, WidgetActions.STOP, null));
         return v;
     }
 

@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/** Knöpfe in Widget und Benachrichtigung, die ohne Rückfrage wirken (Start, Pause, Weiter). */
+/** Knöpfe in Widget und Benachrichtigung: Start, Pause, Weiter, Beenden. */
 public class WidgetActionReceiver extends BroadcastReceiver {
     static final String ACTION = "de.timelytix.app.WIDGET_ACTION";
     private static final String EXTRA_TYPE = "type";
@@ -22,7 +22,7 @@ public class WidgetActionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String type = intent.getStringExtra(EXTRA_TYPE);
-        if (type == null || WidgetActions.STOP.equals(type)) return;
+        if (type == null) return;
         WidgetActions.perform(context, type, intent.getStringExtra(EXTRA_PROJECT));
     }
 }

@@ -1,5 +1,6 @@
 import { compareVersions } from './apk-update';
 import { DEMO } from './demo';
+import { NATIVE } from './native';
 import releases from './changelog.json';
 
 export interface Release {
@@ -47,8 +48,13 @@ function write(key: string, value: string) {
   }
 }
 
-export function updateNotesEnabled(): boolean {
-  return read(OFF_KEY) !== 'off';
+/**
+ * „Was ist neu?“ nach einem Update beim Start zeigen? Android-App standardmäßig nicht: Dort wird von Hand
+ * aktualisiert, und die Änderungen stehen schon in der Vorschau vor der Installation.
+ */
+export function updateNotesEnabled(native = NATIVE): boolean {
+  const v = read(OFF_KEY);
+  return v === null ? !native : v !== 'off';
 }
 
 export function setUpdateNotesEnabled(on: boolean) {

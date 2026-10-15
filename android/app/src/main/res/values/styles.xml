@@ -16,7 +16,7 @@
     </style>
 
 
-    <!-- Kleine Fenster des Widgets (Arbeitgeber wählen, „Zeit beenden?“): nur der Dialog, durchsichtiger Hintergrund -->
+    <!-- Kleines Fenster des Widgets (Arbeitgeber wählen): nur der Dialog, durchsichtiger Hintergrund -->
     <style name="WidgetDialog" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
