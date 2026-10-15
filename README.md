@@ -86,7 +86,7 @@
 
 **Widget hinzufügen:** Startbildschirm lange gedrückt halten → *Widgets* → *Timelytix* → Widget an die gewünschte Stelle ziehen.
 
-**Updates:** Die App sucht selbst nach neuen Versionen und zeigt „Update verfügbar“. Unter *Einstellungen → App-Version & Updates* geht das auch von Hand; dort lassen sich mit *Beta-Versionen testen* auch Testversionen vorab bekommen.
+**Updates:** Die App sucht selbst nach neuen Versionen und zeigt „Update verfügbar“. Unter *Einstellungen → App-Version* geht das auch von Hand; dort lassen sich mit *Beta-Versionen testen* auch Testversionen vorab bekommen.
 
 ### iPhone und andere Geräte (Web-App)
 

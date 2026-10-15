@@ -27,7 +27,6 @@ export function TermsSection({ project }: { project: Project }) {
 
   return (
     <>
-      <h3>Lohn &amp; Arbeitszeit</h3>
       <div className="field-list readonly">
         <div className="field-row">
           <span>Stundenlohn</span>
@@ -72,7 +71,10 @@ export function TermsSection({ project }: { project: Project }) {
                 {active && <span className="tag">gilt heute</span>}
                 {t.from > today && <span className="tag">geplant</span>}
               </span>
-              <span className="muted small">{describeChanges(prev, t, project).join(' · ') || 'keine Änderung'}</span>
+              {/* Nur ein Eintrag: Die Werte stehen schon oben in der Liste */}
+              {arr.length > 1 && (
+                <span className="muted small">{describeChanges(prev, t, project).join(' · ') || 'keine Änderung'}</span>
+              )}
             </button>
           );
         })}

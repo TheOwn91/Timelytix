@@ -11,13 +11,15 @@ import {
 } from '../lib/status';
 import { useStore } from '../lib/store';
 
+/** Hinweis nur, wenn etwas fehlt (bei „erlaubt“ keiner). */
 const HINTS = {
-  ok: 'Erlaubt.',
-  ask: 'Beim ersten Start fragt das Handy, ob Timelytix Benachrichtigungen zeigen darf.',
-  denied:
-    'Benachrichtigungen sind blockiert. Erlaube sie in den Handy-Einstellungen unter Apps → Timelytix (bzw. im Browser unter Website-Einstellungen).',
-  install: 'Auf dem iPhone gibt es Benachrichtigungen erst, wenn Timelytix auf dem Home-Bildschirm installiert ist (ab iOS 16.4).',
-  unsupported: 'Hier nicht verfügbar – in der installierten App auf dem Handy funktioniert es.',
+  ok: '',
+  ask: '',
+  denied: NATIVE
+    ? 'Blockiert – in den Handy-Einstellungen unter Apps → Timelytix erlauben.'
+    : 'Blockiert – in den Website-Einstellungen des Browsers erlauben.',
+  install: 'Auf dem iPhone erst nach „Zum Home-Bildschirm“ (ab iOS 16.4).',
+  unsupported: 'Hier nicht verfügbar.',
 } as const;
 
 /** Einstellung: Anzeige „Zeit läuft“ in der Statusleiste und Erinnerungen. */
@@ -57,7 +59,7 @@ export function NotifyCard() {
       <h2>Benachrichtigungen</h2>
       <label className="checkbox toggle-row">
         <input id="notify-running" type="checkbox" checked={enabled} disabled={off} onChange={(e) => void toggle(e.target.checked)} />
-        Anzeige in der Statusleiste, solange die Zeit läuft
+        „Zeit läuft“ in der Statusleiste
       </label>
       <label className="checkbox toggle-row">
         <input
@@ -67,7 +69,7 @@ export function NotifyCard() {
           disabled={off}
           onChange={(e) => void setReminders({ weekReminder: e.target.checked })}
         />
-        Samstags erinnern, wenn in der Woche Einträge fehlen
+        Samstags an fehlende Einträge erinnern
       </label>
       <div className="field-list">
         {week && (
@@ -83,7 +85,7 @@ export function NotifyCard() {
           </label>
         )}
         <label className="select-row">
-          <span>Erinnern</span>
+          <span>Abstempeln vergessen?</span>
           <select
             id="notify-forgot"
             value={forgot}
@@ -98,15 +100,9 @@ export function NotifyCard() {
           </select>
         </label>
       </div>
-      <p className="muted small">
-        „Erinnern“: Läuft die Zeit länger als eingestellt, fragt Timelytix nach, ob du vergessen hast abzustempeln.
-        {NATIVE && ' Die Anzeige „Zeit läuft“ bleibt stehen, bis du die Zeit stoppst – weggewischt erscheint sie gleich wieder.'}{' '}
-        {HINTS[support]}
-        {support === 'ok' &&
-          (NATIVE
-            ? ' Erinnerungen kommen auch, wenn die App geschlossen ist.'
-            : ' Erinnerungen kann der Browser nur zeigen, solange Timelytix geöffnet ist (oder beim nächsten Öffnen).')}
-      </p>
+      {(HINTS[support] || (support === 'ok' && !NATIVE)) && (
+        <p className="muted small">{HINTS[support] || 'Erinnerungen nur, solange Timelytix geöffnet ist.'}</p>
+      )}
       {support === 'ask' && (
         <button className="btn secondary full" onClick={() => void allow().then((s) => syncReminders(state, s === 'ok'))}>
           Benachrichtigungen erlauben

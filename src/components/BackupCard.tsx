@@ -59,19 +59,18 @@ export function BackupCard() {
     }
   };
 
+  // Auf dem iPhone kann die Web-App nicht von selbst speichern
+  const autoPossible = NATIVE || !isIOS();
   return (
     <section className="card">
       <h2>Datensicherung</h2>
-      <p className="muted small">
-        Alle Daten werden nur lokal auf diesem Gerät gespeichert – nichts wird hochgeladen. Eine Sicherung außerhalb der
-        App schützt vor Datenverlust (z. B. beim Löschen der Browserdaten oder bei einem neuen Handy).
-      </p>
+      <p className="muted small">Alle Daten liegen nur auf diesem Gerät.</p>
 
       <label className="checkbox toggle-row">
         <input id="auto-backup" type="checkbox" checked={auto} onChange={(e) => setSettings({ autoBackup: e.target.checked })} />
         Automatisch sichern ({NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download-Ordner'})
       </label>
-      {auto && (
+      {auto && autoPossible && (
         <div className="field-list">
           <label className="select-row">
             <span>Abstand</span>
@@ -86,16 +85,9 @@ export function BackupCard() {
         </div>
       )}
       <p className="muted small">
-        {auto
-          ? NATIVE
-            ? `Beim Öffnen der App wird die Sicherung abgelegt, sobald sie fällig ist (Ordner „Dokumente/${NATIVE_BACKUP_FOLDER}“). Dort bleibt sie auch, wenn die App gelöscht wird.`
-            : isIOS()
-            ? 'Auf dem iPhone sind automatische Downloads nicht möglich – bitte „Sicherung exportieren“ nutzen.'
-            : 'Beim Öffnen der App wird die Sicherung abgelegt, sobald sie fällig ist (Datei „timelytix-backup-Datum.json“). Tipp: Den Download-Ordner mit Google Drive sichern.'
-          : 'Ohne automatische Sicherung bitte regelmäßig „Sicherung exportieren“ nutzen.'}
-        {' '}
-        Letzte Sicherung: {last ? fmtDate(last) : 'noch keine'}.
-        {auto && (NATIVE || !isIOS()) && <> Nächste automatische Sicherung: {fmtDate(nextAutoBackup(state))}.</>}
+        {auto && !autoPossible && 'Auf dem iPhone nicht möglich – bitte von Hand exportieren. '}
+        Letzte Sicherung: {last ? fmtDate(last) : 'noch keine'}
+        {auto && autoPossible && <> · nächste: {fmtDate(nextAutoBackup(state))}</>}
       </p>
 
       <div className="row">
@@ -118,22 +110,13 @@ export function BackupCard() {
         />
       </div>
 
-      {persisted !== undefined && (
+      {/* Nur wenn der Browser die Daten bei Platzmangel löschen dürfte */}
+      {persisted === false && (
         <p className="muted small storage-state">
-          {persisted ? (
-            '✓ Dauerhafter Speicher: Der Browser löscht die Daten nicht von selbst, auch nicht bei wenig Speicherplatz.'
-          ) : (
-            <>
-              Dauerhafter Speicher noch nicht freigegeben – bei sehr wenig Speicherplatz dürfte der Browser die Daten
-              löschen. Das klappt meist, sobald die App auf dem Homescreen installiert ist.{' '}
-              <button
-                className="link"
-                onClick={() => void requestPersistentStorage().then(() => storagePersisted().then(setPersisted))}
-              >
-                Erneut anfragen
-              </button>
-            </>
-          )}
+          Der Browser darf die Daten bei Platzmangel löschen.{' '}
+          <button className="link" onClick={() => void requestPersistentStorage().then(() => storagePersisted().then(setPersisted))}>
+            Dauerhaft speichern
+          </button>
         </p>
       )}
 

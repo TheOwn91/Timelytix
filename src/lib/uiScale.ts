@@ -11,15 +11,11 @@ import { NATIVE } from './native';
 
 export type UiScaleChoice = 'auto' | 'small' | 'normal' | 'large';
 
-export const UI_SCALE_OPTIONS: { value: UiScaleChoice; label: string; hint: string }[] = [
-  {
-    value: 'auto',
-    label: NATIVE ? 'Wie Handy' : 'Automatisch',
-    hint: NATIVE ? 'folgt der Schriftgröße in den Android-Einstellungen' : '100 %, Zoom des Browsers',
-  },
-  { value: 'small', label: 'Klein', hint: '90 % – mehr passt auf den Bildschirm' },
-  { value: 'normal', label: 'Normal', hint: '100 %' },
-  { value: 'large', label: 'Groß', hint: '115 %' },
+export const UI_SCALE_OPTIONS: { value: UiScaleChoice; label: string }[] = [
+  { value: 'auto', label: NATIVE ? 'Wie Handy' : 'Automatisch' },
+  { value: 'small', label: 'Klein (90 %)' },
+  { value: 'normal', label: 'Normal (100 %)' },
+  { value: 'large', label: 'Groß (115 %)' },
 ];
 
 const FACTORS: Record<Exclude<UiScaleChoice, 'auto'>, number> = { small: 0.9, normal: 1, large: 1.15 };
