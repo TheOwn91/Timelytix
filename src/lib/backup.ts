@@ -11,6 +11,8 @@ import type { AppState } from './types';
 
 /** Zuletzt gesichert (Datum, nur auf diesem Gerät). */
 const LAST_KEY = 'timetrack.lastBackup';
+/** Seit wann gezählt wird, solange es noch keine Sicherung gibt (die erste kommt erst nach dem Abstand). */
+const START_KEY = 'timetrack.backupStart';
 
 export const BACKUP_INTERVALS: { days: number; label: string }[] = [
   { days: 1, label: 'täglich' },
@@ -20,7 +22,7 @@ export const BACKUP_INTERVALS: { days: number; label: string }[] = [
   { days: 30, label: 'monatlich' },
 ];
 
-export const DEFAULT_BACKUP_DAYS = 7;
+export const DEFAULT_BACKUP_DAYS = 30;
 
 export function autoBackupEnabled(state: AppState): boolean {
   return state.settings?.autoBackup !== false;
@@ -46,6 +48,27 @@ export function lastBackup(): string | undefined {
   }
 }
 
+function backupStart(): string | undefined {
+  try {
+    return localStorage.getItem(START_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Noch nie gesichert: ab heute zählen – die erste automatische Sicherung kommt nach dem Abstand, nicht gleich
+ * nach der Einrichtung (Aufruf beim Abschluss des Assistenten und, für ältere Daten, vor jeder Prüfung).
+ */
+export function startBackupClock(today = dateKey(new Date())) {
+  if (lastBackup() || backupStart()) return;
+  try {
+    localStorage.setItem(START_KEY, today);
+  } catch {
+    /* ignorieren */
+  }
+}
+
 /** Nach jeder Sicherung (auch „Sicherung exportieren“) – der Abstand zählt ab hier. */
 export function markBackedUp(date = new Date()) {
   try {
@@ -55,16 +78,27 @@ export function markBackedUp(date = new Date()) {
   }
 }
 
-/** Ist eine automatische Sicherung fällig? (Nur mit Daten; beim ersten Mal sofort.) */
-export function autoBackupDue(state: AppState, today = dateKey(new Date()), last = lastBackup()): boolean {
+/**
+ * Ist eine automatische Sicherung fällig? Nur mit Daten, und erst nach dem eingestellten Abstand – gezählt ab der
+ * letzten Sicherung bzw. ohne Sicherung ab Beginn der Zählung (`start`, gesetzt nach der Einrichtung).
+ */
+export function autoBackupDue(state: AppState, today = dateKey(new Date()), last = lastBackup(), start = backupStart()): boolean {
   if (!autoBackupEnabled(state) || state.projects.length === 0) return false;
-  return !last || addDays(last, backupIntervalDays(state)) <= today;
+  const from = last ?? start;
+  return !!from && addDays(from, backupIntervalDays(state)) <= today;
+}
+
+/** Tag der nächsten automatischen Sicherung (für die Anzeige in den Einstellungen). */
+export function nextAutoBackup(state: AppState, today = dateKey(new Date()), last = lastBackup(), start = backupStart()): string {
+  return addDays(last ?? start ?? today, backupIntervalDays(state));
 }
 
 /** Beim Start und beim Zurückholen der App aufrufen. */
 export async function runAutoBackup(state: AppState) {
   // Demo ohne Downloads; auf dem iPhone würde ein Download die App mit einer Vorschau unterbrechen
-  if (DEMO || (isIOS() && !NATIVE) || saving || !autoBackupDue(state)) return;
+  if (DEMO || (isIOS() && !NATIVE) || saving) return;
+  if (state.projects.length > 0) startBackupClock();
+  if (!autoBackupDue(state)) return;
   saving = true;
   try {
     const where = await saveBackupFile(backupBlob(state), backupFileName());

@@ -7,6 +7,7 @@ import {
   backupIntervalDays,
   lastBackup,
   markBackedUp,
+  nextAutoBackup,
 } from '../lib/backup';
 import { ask } from '../lib/confirm';
 import { notify } from '../lib/demo';
@@ -94,6 +95,7 @@ export function BackupCard() {
           : 'Ohne automatische Sicherung bitte regelmäßig „Sicherung exportieren“ nutzen.'}
         {' '}
         Letzte Sicherung: {last ? fmtDate(last) : 'noch keine'}.
+        {auto && (NATIVE || !isIOS()) && <> Nächste automatische Sicherung: {fmtDate(nextAutoBackup(state))}.</>}
       </p>
 
       <div className="row">

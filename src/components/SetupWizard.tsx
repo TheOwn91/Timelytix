@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { startBackupClock } from '../lib/backup';
 import { DEMO } from '../lib/demo';
 import { isStandalone } from '../lib/device';
+import { NATIVE } from '../lib/native';
 import { STATES } from '../lib/holidays';
 import { notifySupport, requestNotifyPermission, setNotifyEnabled } from '../lib/status';
 import { newProject, useStore } from '../lib/store';
@@ -31,7 +33,8 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
   // „App einrichten“ nur, wenn es dort etwas zu tun gibt
   const showInstall = !DEMO && !isStandalone();
   const [notify, setNotify] = useState(notifySupport);
-  const showNotify = notify === 'ask' || notify === 'install';
+  // Android-App: erst die Einrichtung, danach fragt die App selbst nach den Benachrichtigungen (App.tsx)
+  const showNotify = !NATIVE && (notify === 'ask' || notify === 'install');
   const showAppStep = firstRun && (showInstall || showNotify);
   const steps: Step[] = ['employer', 'time', 'pay', 'start', ...(showAppStep ? (['app'] as Step[]) : []), 'summary'];
   const [i, setI] = useState(0);
@@ -43,6 +46,8 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
       d.projects.push(project);
       d.selectedProjectId = project.id;
     });
+    // Automatische Sicherung: erste nach dem eingestellten Abstand (Standard ein Monat), gezählt ab heute
+    startBackupClock();
     onClose();
   };
   const cancel = () => {

@@ -69,8 +69,8 @@ export function App() {
     };
   }, []);
 
-  // Android-App: nach der Installation einmal nach der Anzeige „Zeit läuft“ fragen
-  // (erst nach dem Einrichtungs-Assistenten – der bietet sie selbst an)
+  // Android-App: nach der Installation einmal nach den Benachrichtigungen fragen – erst nach dem
+  // Einrichtungs-Assistenten (der fragt in der Android-App nicht selbst)
   useEffect(() => {
     if (wizard) return;
     const t = setTimeout(async () => {
