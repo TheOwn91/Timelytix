@@ -13,6 +13,7 @@ public class RunningNoticePlugin extends Plugin {
     public void show(PluginCall call) {
         String title = call.getString("title", "Timelytix");
         String body = call.getString("body", "");
+        RunningNotice.rememberWatch(getContext(), Boolean.TRUE.equals(call.getBoolean("watch", false)));
         RunningNotice.show(
             getContext(),
             title,

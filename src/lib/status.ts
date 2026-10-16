@@ -226,7 +226,7 @@ async function syncNative(notice: ReturnType<typeof runningNotice>) {
   if (shown === key && delivered) return;
   // Dieselbe Buchung wurde schon gemeldet (Pause, App neu geöffnet, Anzeige angetippt) oder die Anzeige steht
   // schon (Zeit im Widget gestartet) → still
-  await showRunningNative(notice, { quiet: !!shown?.startsWith(`${notice.session}|`) || delivered });
+  await showRunningNative(notice, { quiet: !!shown?.startsWith(`${notice.session}|`) || delivered, watch: notifyOnWatch() });
   writeShown(key);
 }
 

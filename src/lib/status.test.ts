@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runningNotice } from './status';
+import { notifyOnWatch, runningNotice, setNotifyOnWatch } from './status';
 import { combine } from './time';
 import type { AppState } from './types';
 
@@ -25,5 +25,18 @@ describe('runningNotice', () => {
     const n = runningNotice(base([{ id: 'a', projectId: 'p', start, pauses: [{ start: p }] }]));
     expect(n?.title).toBe('‖ Pause – Muster GmbH');
     expect(n?.body).toBe('Pause seit 11:30 · Arbeitsbeginn 07:02');
+  });
+});
+
+describe('„Zeit läuft“ auch auf der Uhr', () => {
+  it('ist standardmäßig aus und merkt sich die Wahl', async () => {
+    const store = new Map<string, string>();
+    const ls = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
+    Object.defineProperty(globalThis, 'localStorage', { value: ls, configurable: true });
+    expect(notifyOnWatch()).toBe(false);
+    await setNotifyOnWatch(true);
+    expect(notifyOnWatch()).toBe(true);
+    await setNotifyOnWatch(false);
+    expect(notifyOnWatch()).toBe(false);
   });
 });

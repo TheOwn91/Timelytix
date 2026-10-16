@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NATIVE } from '../lib/native';
 import { useStore } from '../lib/store';
+import type { AppSettings } from '../lib/types';
 import { UI_SCALE_OPTIONS, setUiScaleChoice, uiScaleChoice, type UiScaleChoice } from '../lib/uiScale';
 
 /** Anzeige-Einstellungen der App. */
@@ -13,6 +14,10 @@ export function DisplayCard() {
     setUiScaleChoice(c);
     setScale(c);
   };
+  const setSetting = (patch: Partial<AppSettings>) =>
+    update((d) => {
+      d.settings = { ...d.settings, ...patch };
+    });
   return (
     <section className="card">
       <h2>Anzeige</h2>
@@ -32,49 +37,41 @@ export function DisplayCard() {
           <select
             id="decimal-hours"
             value={decimal ? 'decimal' : 'hm'}
-            onChange={(e) =>
-              update((d) => {
-                d.settings = { ...d.settings, decimalHours: e.target.value === 'decimal' };
-              })
-            }
+            onChange={(e) => setSetting({ decimalHours: e.target.value === 'decimal' })}
           >
             <option value="hm">156:44 h</option>
             <option value="decimal">156,73 h</option>
           </select>
         </label>
-        <label className="select-row">
-          <span>Uhrzeit oben</span>
-          <select
-            id="header-clock"
-            value={state.settings?.showClock ? 'on' : 'off'}
-            onChange={(e) =>
-              update((d) => {
-                d.settings = { ...d.settings, showClock: e.target.value === 'on' || undefined };
-              })
-            }
-          >
-            <option value="on">anzeigen</option>
-            <option value="off">ausblenden</option>
-          </select>
-        </label>
+        <OnOffRow
+          id="header-clock"
+          label="Uhr oben"
+          on={!!state.settings?.showClock}
+          onChange={(on) => setSetting({ showClock: on || undefined })}
+        />
+        {/* Das Widget gibt es nur in der Android-App */}
         {NATIVE && (
-          <label className="select-row">
-            <span>Uhrzeit im Widget</span>
-            <select
-              id="widget-clock"
-              value={state.settings?.showWidgetClock ? 'on' : 'off'}
-              onChange={(e) =>
-                update((d) => {
-                  d.settings = { ...d.settings, showWidgetClock: e.target.value === 'on' || undefined };
-                })
-              }
-            >
-              <option value="on">anzeigen</option>
-              <option value="off">ausblenden</option>
-            </select>
-          </label>
+          <OnOffRow
+            id="widget-clock"
+            label="Uhr im Widget"
+            on={!!state.settings?.showWidgetClock}
+            onChange={(on) => setSetting({ showWidgetClock: on || undefined })}
+          />
         )}
       </div>
     </section>
+  );
+}
+
+/** Zeile „anzeigen / ausblenden“ in der Liste. */
+function OnOffRow({ id, label, on, onChange }: { id: string; label: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <label className="select-row">
+      <span>{label}</span>
+      <select id={id} value={on ? 'on' : 'off'} onChange={(e) => onChange(e.target.value === 'on')}>
+        <option value="on">anzeigen</option>
+        <option value="off">ausblenden</option>
+      </select>
+    </label>
   );
 }

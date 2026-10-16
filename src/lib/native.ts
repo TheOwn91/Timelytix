@@ -91,7 +91,7 @@ function ensureChannels() {
 
 /** Eigene Android-Erweiterung (android/…/RunningNotice.java): Anzeige „Zeit läuft“, die nach Wegwischen wiederkommt. */
 interface RunningNoticePlugin {
-  show(o: { title: string; body: string; quiet?: boolean; paused?: boolean }): Promise<void>;
+  show(o: { title: string; body: string; quiet?: boolean; paused?: boolean; watch?: boolean }): Promise<void>;
   hide(): Promise<void>;
   isShown(): Promise<{ shown: boolean }>;
   setWatch(o: { on: boolean }): Promise<void>;
@@ -113,7 +113,10 @@ export async function runningNativeDelivered(): Promise<boolean> {
  * sie sofort still wieder, bis die Zeit gestoppt ist.
  * `quiet`: still aktualisieren/wiederherstellen, ohne sich erneut zu melden.
  */
-export async function showRunningNative(notice: { title: string; body: string; paused?: boolean } | null, opts: { quiet?: boolean } = {}) {
+export async function showRunningNative(
+  notice: { title: string; body: string; paused?: boolean } | null,
+  opts: { quiet?: boolean; watch?: boolean } = {},
+) {
   if (!notice) {
     await RunningNotice.hide();
     // Frühere Versionen zeigten sie über das Benachrichtigungs-Plugin (gleiche ID) – Reste entfernen
@@ -121,7 +124,8 @@ export async function showRunningNative(notice: { title: string; body: string; p
     return;
   }
   // `paused`: Knopf „Weiter“ statt „Pause“ in der Benachrichtigung
-  await RunningNotice.show({ title: notice.title, body: notice.body, paused: !!notice.paused, quiet: !!opts.quiet });
+  // `watch`: auch auf der Uhr (Einstellung der App; Android merkt sie sich für Widget und Neustart)
+  await RunningNotice.show({ title: notice.title, body: notice.body, paused: !!notice.paused, quiet: !!opts.quiet, watch: !!opts.watch });
 }
 
 /** Probe-Benachrichtigung aus den Einstellungen (lässt sich wegwischen). */

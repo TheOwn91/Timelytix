@@ -195,5 +195,5 @@ export async function ackWidgetActions(upTo: number) {
 export function onWidgetActions(fn: () => void): () => void {
   if (!Widget) return () => undefined;
   const handle = Widget.addListener('actions', fn).catch(() => undefined);
-  return () => void handle.then((h) => h?.remove());
+  return () => void handle.then((h) => h?.remove()).catch(() => undefined);
 }

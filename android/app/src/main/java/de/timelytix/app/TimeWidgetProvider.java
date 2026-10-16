@@ -90,6 +90,7 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setViewVisibility(R.id.widget_clock, s.clock && !running ? View.GONE : View.VISIBLE);
         v.setViewVisibility(R.id.widget_now_small, s.clock && running ? View.VISIBLE : View.GONE);
         v.setOnClickPendingIntent(R.id.widget_now_big, open);
+        v.setOnClickPendingIntent(R.id.widget_now_small, open);
 
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
         v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START));

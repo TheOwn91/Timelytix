@@ -52,13 +52,18 @@ final class RunningNotice {
      * eine normale (still wiederkehrende) Benachrichtigung; die Knöpfe Pause/Beenden gehen auch auf der Uhr.
      */
     static void setWatch(Context context, boolean on) {
-        prefs(context).edit().putBoolean("watch", on).apply();
+        rememberWatch(context, on);
         SharedPreferences p = prefs(context);
         String title = p.getString("title", null);
         if (title == null) return;
         // Neu anlegen statt ändern, damit die Uhr sie bekommt bzw. wieder abgibt
         NotificationManagerCompat.from(context).cancel(ID);
         post(context, title, p.getString("body", ""), true, p.getBoolean("paused", false));
+    }
+
+    /** Einstellung der App merken (gilt auch für Widget, Wiederherstellen und Neustart des Handys). */
+    static void rememberWatch(Context context, boolean on) {
+        prefs(context).edit().putBoolean("watch", on).apply();
     }
 
     static boolean isShown(Context context) {

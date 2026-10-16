@@ -84,7 +84,7 @@ export function NotifyCard() {
               void setNotifyOnWatch(e.target.checked);
             }}
           />
-          „Zeit läuft“ auch auf der Uhr (mit Pause/Beenden)
+          „Zeit läuft“ auch auf der Uhr
         </label>
       )}
       <label className="checkbox toggle-row">
