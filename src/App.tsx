@@ -7,6 +7,7 @@ import { WhatsNew } from './components/WhatsNew';
 import { YearView } from './components/YearView';
 import { CHANGELOG, markVersionSeen, pendingReleaseNotes, type Release } from './lib/changelog';
 import { ConfirmHost } from './components/ConfirmHost';
+import { HeaderClock } from './components/HeaderClock';
 import { UpdatePreview } from './components/UpdatePreview';
 import { runAutoBackup } from './lib/backup';
 import { DEMO, demoState } from './lib/demo';
@@ -168,6 +169,7 @@ export function App() {
     <div className="app">
       <header className="app-header">
         <h1>Timelytix</h1>
+        <HeaderClock />
         {DEMO && (
           <div className="demo-bar">
             <span>

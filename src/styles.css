@@ -992,7 +992,16 @@ a.btn {
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+.header-clock {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+/* Demo: Hinweis unter Titel und Uhr */
 .demo-bar {
+  order: 3;
+  flex-basis: 100%;
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
