@@ -94,8 +94,14 @@ interface RunningNoticePlugin {
   show(o: { title: string; body: string; quiet?: boolean; paused?: boolean }): Promise<void>;
   hide(): Promise<void>;
   isShown(): Promise<{ shown: boolean }>;
+  setWatch(o: { on: boolean }): Promise<void>;
 }
 const RunningNotice = registerPlugin<RunningNoticePlugin>('RunningNotice');
+
+/** „Zeit läuft“ auch auf der Uhr (Android leitet nur nicht dauerhafte Benachrichtigungen weiter). */
+export async function setRunningOnWatch(on: boolean) {
+  await RunningNotice.setWatch({ on }).catch(() => undefined);
+}
 
 /** Ist die Anzeige „Zeit läuft“ gerade in der Benachrichtigungsleiste? */
 export async function runningNativeDelivered(): Promise<boolean> {

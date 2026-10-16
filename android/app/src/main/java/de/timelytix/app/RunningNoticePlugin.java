@@ -30,6 +30,12 @@ public class RunningNoticePlugin extends Plugin {
     }
 
     @PluginMethod
+    public void setWatch(PluginCall call) {
+        RunningNotice.setWatch(getContext(), Boolean.TRUE.equals(call.getBoolean("on", false)));
+        call.resolve();
+    }
+
+    @PluginMethod
     public void isShown(PluginCall call) {
         JSObject ret = new JSObject();
         ret.put("shown", RunningNotice.isShown(getContext()));

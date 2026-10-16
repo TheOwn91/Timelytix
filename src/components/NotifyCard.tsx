@@ -3,10 +3,12 @@ import { NATIVE } from '../lib/native';
 import { FORGOT_OPTIONS, forgotStopHours, syncReminders, weekReminderEnabled, weekReminderTime } from '../lib/reminders';
 import {
   notifyEnabled,
+  notifyOnWatch,
   notifySupport,
   refreshNotifySupport,
   requestNotifyPermission,
   setNotifyEnabled,
+  setNotifyOnWatch,
   showTestNotification,
   syncRunningStatus,
 } from '../lib/status';
@@ -27,6 +29,7 @@ const HINTS = {
 export function NotifyCard() {
   const { state, update } = useStore();
   const [enabled, setEnabled] = useState(notifyEnabled);
+  const [watch, setWatch] = useState(notifyOnWatch);
   const [support, setSupport] = useState(notifySupport);
   const week = weekReminderEnabled(state);
   const weekTime = weekReminderTime(state);
@@ -69,6 +72,21 @@ export function NotifyCard() {
         <input id="notify-running" type="checkbox" checked={enabled} disabled={off} onChange={(e) => void toggle(e.target.checked)} />
         „Zeit läuft“ in der Statusleiste
       </label>
+      {NATIVE && (
+        <label className="checkbox toggle-row">
+          <input
+            id="notify-watch"
+            type="checkbox"
+            checked={watch}
+            disabled={off || !enabled}
+            onChange={(e) => {
+              setWatch(e.target.checked);
+              void setNotifyOnWatch(e.target.checked);
+            }}
+          />
+          „Zeit läuft“ auch auf der Uhr (mit Pause/Beenden)
+        </label>
+      )}
       <label className="checkbox toggle-row">
         <input
           id="notify-week"

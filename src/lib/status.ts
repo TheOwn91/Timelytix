@@ -1,5 +1,13 @@
 import { DEMO } from './demo';
-import { NATIVE, nativeNotifyPermission, runningNativeDelivered, showRunningNative, showTestNative, type NativePermission } from './native';
+import {
+  NATIVE,
+  nativeNotifyPermission,
+  runningNativeDelivered,
+  setRunningOnWatch,
+  showRunningNative,
+  showTestNative,
+  type NativePermission,
+} from './native';
 import { fmtTime } from './time';
 import type { AppState } from './types';
 
@@ -24,6 +32,26 @@ export function notifyEnabled(): boolean {
   } catch {
     return true;
   }
+}
+
+const WATCH_KEY = 'timetrack.notifyWatch';
+
+/** Android-App: „Zeit läuft“ auch auf der Uhr anzeigen (Standard: aus). */
+export function notifyOnWatch(): boolean {
+  try {
+    return localStorage.getItem(WATCH_KEY) === 'on';
+  } catch {
+    return false;
+  }
+}
+
+export async function setNotifyOnWatch(on: boolean) {
+  try {
+    localStorage.setItem(WATCH_KEY, on ? 'on' : 'off');
+  } catch {
+    /* ignorieren */
+  }
+  if (NATIVE) await setRunningOnWatch(on);
 }
 
 export function setNotifyEnabled(on: boolean) {

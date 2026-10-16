@@ -4,7 +4,8 @@
     "date": "16.10.2026",
     "changes": [
       "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (einschaltbar unter Einstellungen → Anzeige)",
-      "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)"
+      "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)",
+      "Neu: „Zeit läuft“ auch auf der Uhr – mit Pause und Beenden (einschaltbar unter Benachrichtigungen)"
     ]
   },
   {
