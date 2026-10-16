@@ -46,10 +46,10 @@ export function DisplayCard() {
           <span>Uhrzeit oben</span>
           <select
             id="header-clock"
-            value={state.settings?.hideClock ? 'off' : 'on'}
+            value={state.settings?.showClock ? 'on' : 'off'}
             onChange={(e) =>
               update((d) => {
-                d.settings = { ...d.settings, hideClock: e.target.value === 'off' || undefined };
+                d.settings = { ...d.settings, showClock: e.target.value === 'on' || undefined };
               })
             }
           >
@@ -62,10 +62,10 @@ export function DisplayCard() {
             <span>Uhrzeit im Widget</span>
             <select
               id="widget-clock"
-              value={state.settings?.hideWidgetClock ? 'off' : 'on'}
+              value={state.settings?.showWidgetClock ? 'on' : 'off'}
               onChange={(e) =>
                 update((d) => {
-                  d.settings = { ...d.settings, hideWidgetClock: e.target.value === 'off' || undefined };
+                  d.settings = { ...d.settings, showWidgetClock: e.target.value === 'on' || undefined };
                 })
               }
             >

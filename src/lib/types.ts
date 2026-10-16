@@ -119,10 +119,10 @@ export interface Absence {
 export interface AppSettings {
   /** Summen (Monat, Jahr) als Dezimalstunden anzeigen, z. B. 156,73 h statt 156:44 h. */
   decimalHours?: boolean;
-  /** Uhrzeit oben neben dem App-Namen ausblenden (Standard: angezeigt). */
-  hideClock?: boolean;
-  /** Uhrzeit im Widget ausblenden – dann steht dort „00:00“, solange keine Zeit läuft (Standard: angezeigt). */
-  hideWidgetClock?: boolean;
+  /** Uhrzeit oben neben dem App-Namen anzeigen (Standard: aus). */
+  showClock?: boolean;
+  /** Uhrzeit im Widget anzeigen – sonst steht dort „00:00“, solange keine Zeit läuft (Standard: aus). */
+  showWidgetClock?: boolean;
   /** Automatische Sicherung in den Download-Ordner (Standard: an), siehe lib/backup.ts. */
   autoBackup?: boolean;
   /** Abstand der automatischen Sicherung in Tagen (Standard 7). */

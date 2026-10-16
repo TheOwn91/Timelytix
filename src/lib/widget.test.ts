@@ -137,8 +137,8 @@ describe('Auszug fürs Widget', () => {
   });
 
   it('Uhrzeit im Widget folgt der Einstellung', () => {
-    expect(widgetSnapshot(state(), t('10:00')).clock).toBe(true);
-    expect(widgetSnapshot(state({ settings: { hideWidgetClock: true } }), t('10:00')).clock).toBe(false);
+    expect(widgetSnapshot(state(), t('10:00')).clock).toBe(false);
+    expect(widgetSnapshot(state({ settings: { showWidgetClock: true } }), t('10:00')).clock).toBe(true);
   });
 
   it('wandelt Farben für Android um', () => {

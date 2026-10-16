@@ -83,7 +83,7 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   }
   return {
     notify,
-    clock: !state.settings?.hideWidgetClock,
+    clock: !!state.settings?.showWidgetClock,
     selected,
     projects: projects.map((p) => ({
       id: p.id,
