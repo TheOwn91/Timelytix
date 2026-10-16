@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { NATIVE } from '../lib/native';
 import { useStore } from '../lib/store';
 import { UI_SCALE_OPTIONS, setUiScaleChoice, uiScaleChoice, type UiScaleChoice } from '../lib/uiScale';
 
@@ -56,6 +57,23 @@ export function DisplayCard() {
             <option value="off">ausblenden</option>
           </select>
         </label>
+        {NATIVE && (
+          <label className="select-row">
+            <span>Uhrzeit im Widget</span>
+            <select
+              id="widget-clock"
+              value={state.settings?.hideWidgetClock ? 'off' : 'on'}
+              onChange={(e) =>
+                update((d) => {
+                  d.settings = { ...d.settings, hideWidgetClock: e.target.value === 'off' || undefined };
+                })
+              }
+            >
+              <option value="on">anzeigen</option>
+              <option value="off">ausblenden</option>
+            </select>
+          </label>
+        )}
       </div>
     </section>
   );

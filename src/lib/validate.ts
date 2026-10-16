@@ -129,6 +129,7 @@ export function validateState(data: unknown): AppState {
       ? {
           decimalHours: data.settings.decimalHours === true,
           hideClock: data.settings.hideClock === true ? true : undefined,
+          hideWidgetClock: data.settings.hideWidgetClock === true ? true : undefined,
           autoBackup: typeof data.settings.autoBackup === 'boolean' ? data.settings.autoBackup : undefined,
           backupIntervalDays: optNum(data.settings.backupIntervalDays),
           weekReminder: typeof data.settings.weekReminder === 'boolean' ? data.settings.weekReminder : undefined,

@@ -136,6 +136,11 @@ describe('Auszug fürs Widget', () => {
     expect(snap.dayEnd - snap.dayStart).toBe(24 * 3600_000);
   });
 
+  it('Uhrzeit im Widget folgt der Einstellung', () => {
+    expect(widgetSnapshot(state(), t('10:00')).clock).toBe(true);
+    expect(widgetSnapshot(state({ settings: { hideWidgetClock: true } }), t('10:00')).clock).toBe(false);
+  });
+
   it('wandelt Farben für Android um', () => {
     expect(androidColor('#abc')).toBe('#aabbcc');
     expect(androidColor('#11223344')).toBe('#44112233');

@@ -67,15 +67,49 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
-            <Chronometer
-                android:id="@+id/widget_clock"
+            <!-- Rechts: Uhrzeit (TextClock zählt von selbst) bzw. Arbeitszeit, beim Arbeiten die Uhrzeit klein darüber -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:textColor="@color/widget_text"
-                android:textSize="26sp" />
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextClock
+                    android:id="@+id/widget_now_small"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:format12Hour="HH:mm:ss"
+                    android:format24Hour="HH:mm:ss"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_muted"
+                    android:textSize="13sp" />
+
+                <Chronometer
+                    android:id="@+id/widget_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_text"
+                    android:textSize="26sp" />
+
+                <TextClock
+                    android:id="@+id/widget_now_big"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:format12Hour="HH:mm:ss"
+                    android:format24Hour="HH:mm:ss"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_text"
+                    android:textSize="26sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

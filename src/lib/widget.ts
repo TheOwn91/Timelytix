@@ -27,6 +27,8 @@ type Span = [number, number];
 
 export interface WidgetSnapshot {
   notify: boolean;
+  /** Uhrzeit im Widget: groß, solange keine Zeit läuft, sonst klein über der Arbeitszeit. */
+  clock: boolean;
   selected: string | null;
   /**
    * `autoBreak`: Länge der gesetzlichen Pause nach 6 h (0 = aus). `today`: übrige Arbeit des heutigen Tages
@@ -81,6 +83,7 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   }
   return {
     notify,
+    clock: !state.settings?.hideWidgetClock,
     selected,
     projects: projects.map((p) => ({
       id: p.id,

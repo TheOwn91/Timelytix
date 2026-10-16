@@ -121,6 +121,8 @@ export interface AppSettings {
   decimalHours?: boolean;
   /** Uhrzeit oben neben dem App-Namen ausblenden (Standard: angezeigt). */
   hideClock?: boolean;
+  /** Uhrzeit im Widget ausblenden – dann steht dort „00:00“, solange keine Zeit läuft (Standard: angezeigt). */
+  hideWidgetClock?: boolean;
   /** Automatische Sicherung in den Download-Ordner (Standard: an), siehe lib/backup.ts. */
   autoBackup?: boolean;
   /** Abstand der automatischen Sicherung in Tagen (Standard 7). */

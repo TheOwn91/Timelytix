@@ -46,6 +46,8 @@ final class WidgetState {
     }
 
     boolean notify = true;
+    /** Uhrzeit im Widget (Einstellungen → Anzeige). */
+    boolean clock = true;
     String selected;
     List<Project> projects = new ArrayList<>();
     /** Grenzen des Tages, für den `Project.today` gilt. */
@@ -344,6 +346,7 @@ final class WidgetState {
     private static WidgetState parse(JSONObject o) throws JSONException {
         WidgetState s = new WidgetState();
         s.notify = o.optBoolean("notify", true);
+        s.clock = o.optBoolean("clock", true);
         s.selected = o.isNull("selected") ? null : o.optString("selected", null);
         s.dayStart = o.optLong("dayStart", 0);
         s.dayEnd = o.optLong("dayEnd", 0);
@@ -382,6 +385,7 @@ final class WidgetState {
     private JSONObject toJson() throws JSONException {
         JSONObject o = new JSONObject()
             .put("notify", notify)
+            .put("clock", clock)
             .put("selected", selected == null ? JSONObject.NULL : selected)
             .put("dayStart", dayStart)
             .put("dayEnd", dayEnd);
