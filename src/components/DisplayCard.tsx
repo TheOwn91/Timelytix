@@ -41,6 +41,21 @@ export function DisplayCard() {
             <option value="decimal">156,73 h</option>
           </select>
         </label>
+        <label className="select-row">
+          <span>Uhrzeit oben</span>
+          <select
+            id="header-clock"
+            value={state.settings?.hideClock ? 'off' : 'on'}
+            onChange={(e) =>
+              update((d) => {
+                d.settings = { ...d.settings, hideClock: e.target.value === 'off' || undefined };
+              })
+            }
+          >
+            <option value="on">anzeigen</option>
+            <option value="off">ausblenden</option>
+          </select>
+        </label>
       </div>
     </section>
   );

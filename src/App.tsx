@@ -169,7 +169,7 @@ export function App() {
     <div className="app">
       <header className="app-header">
         <h1>Timelytix</h1>
-        <HeaderClock />
+        {!state.settings?.hideClock && <HeaderClock />}
         {DEMO && (
           <div className="demo-bar">
             <span>
