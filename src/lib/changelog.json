@@ -3,7 +3,8 @@
     "version": "1.2.0",
     "date": "16.10.2026",
     "changes": [
-      "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (abschaltbar unter Einstellungen → Anzeige)"
+      "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (abschaltbar unter Einstellungen → Anzeige)",
+      "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (abschaltbar)"
     ]
   },
   {
