@@ -1,6 +1,6 @@
 import { buildIndex, daySummary } from './calc';
 import { DEMO } from './demo';
-import { NATIVE, cancelNative, scheduleReminderNative } from './native';
+import { NATIVE, cancelNative, cancelWidgetForgotNative, scheduleReminderNative } from './native';
 import { WEEKDAYS_SHORT, addDays, combine, dateKey, fmtTime, parseDateKey } from './time';
 import type { AppState, DateKey } from './types';
 
@@ -95,6 +95,12 @@ function weekReminder(state: AppState, sat: number): Reminder | null {
   };
 }
 
+/**
+ * Kennung der Erinnerung „Abstempeln vergessen?“ – auch in android/…/ForgotReminder.java: Start und Beenden im Widget
+ * planen bzw. löschen sie dort, solange die App nicht läuft.
+ */
+const FORGOT_ID = 4;
+
 function forgotReminder(state: AppState): Reminder | null {
   const hours = forgotStopHours(state);
   const s = state.sessions.find((x) => x.end === undefined);
@@ -102,8 +108,7 @@ function forgotReminder(state: AppState): Reminder | null {
   const at = s.start + hours * 3600e3;
   const name = state.projects.find((p) => p.id === s.projectId)?.name ?? 'Timelytix';
   return {
-    // Kennung 4: auch in android/…/WidgetActions.java (FORGOT_REMINDER_ID) – Beenden im Widget löscht sie dort
-    id: 4,
+    id: FORGOT_ID,
     key: `${s.id}|${at}`,
     title: `⏰ Seit ${hours} Stunden eingestempelt – ${name}`,
     body: `Zeit läuft seit ${fmtTime(s.start)}. Vergessen abzustempeln?`,
@@ -164,7 +169,7 @@ export async function applyReminders(state: AppState, now: number, driver: Remin
   const store = readStore();
   const r = reminders(state, now);
   const wanted = new Map<number, Reminder | null>([
-    [4, allowed ? r.forgot : null],
+    [FORGOT_ID, allowed ? r.forgot : null],
     [r.nextId, allowed ? r.next : null],
   ]);
   // Laufendes Wochenende: nur nachholen, wenn noch nichts gemeldet wurde, und entfernen, wenn alles eingetragen ist
@@ -186,9 +191,14 @@ export async function applyReminders(state: AppState, now: number, driver: Remin
 const nativeDriver: ReminderDriver = {
   async show(r) {
     await scheduleReminderNative(r);
+    // Die App erinnert jetzt selbst – die vom Widget geplante Erinnerung entfällt
+    if (r.id === FORGOT_ID) await cancelWidgetForgotNative();
     return true;
   },
-  remove: (id) => cancelNative([id]),
+  async remove(id) {
+    if (id === FORGOT_ID) await cancelWidgetForgotNative();
+    await cancelNative([id]);
+  },
 };
 
 function webDriver(): ReminderDriver {

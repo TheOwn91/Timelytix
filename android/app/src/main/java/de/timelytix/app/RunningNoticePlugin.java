@@ -36,6 +36,13 @@ public class RunningNoticePlugin extends Plugin {
         call.resolve();
     }
 
+    /** Die App hat ihre Erinnerung „Abstempeln vergessen?“ geplant bzw. gelöscht: die des Widgets aufheben. */
+    @PluginMethod
+    public void cancelForgot(PluginCall call) {
+        ForgotReminder.cancelOwn(getContext());
+        call.resolve();
+    }
+
     @PluginMethod
     public void isShown(PluginCall call) {
         JSObject ret = new JSObject();

@@ -102,6 +102,8 @@ Repository und nicht in den Changelog.
   überspringen. Danach legt die App einen Auszug fürs Widget ab. Alle Knöpfe wirken sofort (keine Rückfrage).
   Die gesetzlichen Pausen rechnet das Widget selbst (`WidgetState.placeBreaks` = `placeAutoBreaks` in calc.ts –
   bei Änderungen beide anpassen). Alle Zugriffe auf Auszug und Aktionen nur unter der Sperre `WidgetState.class`.
+  Die Erinnerung „Abstempeln vergessen?“ (Kennung 4) planen Start/Beenden im Widget selbst (`ForgotReminder.java`),
+  bis die App übernimmt (`reminders.ts` hebt die des Widgets dann auf).
 - App-Symbole: Quellen in `assets/`, erzeugen mit `npx @capacitor/assets generate --android --assetPath assets`.
 
 ## Berechnung / Daten

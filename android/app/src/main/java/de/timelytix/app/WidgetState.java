@@ -48,6 +48,8 @@ final class WidgetState {
     boolean notify = true;
     /** Uhrzeit im Widget (Einstellungen → Anzeige). */
     boolean clock;
+    /** Erinnerung „Abstempeln vergessen?“ nach so vielen Stunden (0 = aus). */
+    int forgotHours;
     String selected;
     List<Project> projects = new ArrayList<>();
     /** Grenzen des Tages, für den `Project.today` gilt. */
@@ -347,6 +349,7 @@ final class WidgetState {
         WidgetState s = new WidgetState();
         s.notify = o.optBoolean("notify", true);
         s.clock = o.optBoolean("clock", false);
+        s.forgotHours = o.optInt("forgotHours", 0);
         s.selected = o.isNull("selected") ? null : o.optString("selected", null);
         s.dayStart = o.optLong("dayStart", 0);
         s.dayEnd = o.optLong("dayEnd", 0);
@@ -386,6 +389,7 @@ final class WidgetState {
         JSONObject o = new JSONObject()
             .put("notify", notify)
             .put("clock", clock)
+            .put("forgotHours", forgotHours)
             .put("selected", selected == null ? JSONObject.NULL : selected)
             .put("dayStart", dayStart)
             .put("dayEnd", dayEnd);

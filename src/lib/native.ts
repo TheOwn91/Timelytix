@@ -95,6 +95,7 @@ interface RunningNoticePlugin {
   hide(): Promise<void>;
   isShown(): Promise<{ shown: boolean }>;
   setWatch(o: { on: boolean }): Promise<void>;
+  cancelForgot(): Promise<void>;
 }
 const RunningNotice = registerPlugin<RunningNoticePlugin>('RunningNotice');
 
@@ -142,6 +143,11 @@ export async function cancelNative(ids: number[]) {
   const { LocalNotifications } = await import('@capacitor/local-notifications');
   await LocalNotifications.cancel({ notifications: ids.map((id) => ({ id })) });
   await LocalNotifications.removeDeliveredNotificationsById({ ids });
+}
+
+/** Die App plant bzw. löscht „Abstempeln vergessen?“ selbst – die vom Widget geplante Erinnerung entfällt. */
+export async function cancelWidgetForgotNative() {
+  await RunningNotice.cancelForgot().catch(() => undefined);
 }
 
 /** Erinnerung zum Zeitpunkt `at` planen (liegt er nicht in der Zukunft: sofort zeigen). */

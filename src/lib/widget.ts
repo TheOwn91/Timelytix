@@ -2,6 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 import { DEFAULT_AUTO_BREAK_MINUTES, buildIndex, workIntervals } from './calc';
 import { NATIVE } from './native';
 import { sessionDay } from './shift';
+import { forgotStopHours } from './reminders';
 import { notifyEnabled } from './status';
 import { addDays, combine, dateKey, uid } from './time';
 import type { AppState } from './types';
@@ -29,6 +30,8 @@ export interface WidgetSnapshot {
   notify: boolean;
   /** Uhrzeit im Widget: groß, solange keine Zeit läuft, sonst klein über der Arbeitszeit. */
   clock: boolean;
+  /** Erinnerung „Abstempeln vergessen?“ nach so vielen Stunden (0 = aus) – für eine im Widget gestartete Zeit. */
+  forgotHours: number;
   selected: string | null;
   /**
    * `autoBreak`: Länge der gesetzlichen Pause nach 6 h (0 = aus). `today`: übrige Arbeit des heutigen Tages
@@ -84,6 +87,7 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   return {
     notify,
     clock: !!state.settings?.showWidgetClock,
+    forgotHours: forgotStopHours(state),
     selected,
     projects: projects.map((p) => ({
       id: p.id,

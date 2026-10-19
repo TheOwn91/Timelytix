@@ -11,8 +11,17 @@ public class RunningNoticeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        if (ForgotReminder.ACTION.equals(action)) {
+            ForgotReminder.onAlarm(context, intent);
+            return;
+        }
         if (ACTION_DISMISSED.equals(action) || Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
             RunningNotice.restore(context);
+        }
+        // Neustart bzw. Update: Wecker sind weg – Erinnerung einer im Widget gestarteten Zeit neu einplanen
+        // (hat die App übernommen, stellt das Plugin seine eigene wieder her und diese bleibt still)
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+            ForgotReminder.schedule(context, WidgetState.load(context));
         }
     }
 }
