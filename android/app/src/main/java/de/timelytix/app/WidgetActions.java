@@ -1,7 +1,11 @@
 package de.timelytix.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import androidx.core.app.NotificationManagerCompat;
 
 /**
  * Start, Pause, Weiter, Beenden und Arbeitgeber wählen aus Widget und Benachrichtigung: sofort anzeigen,
@@ -13,6 +17,12 @@ final class WidgetActions {
     static final String RESUME = "resume";
     static final String STOP = "stop";
     static final String SELECT = "select";
+
+    /** Kennung der Erinnerung „Abstempeln vergessen?“ – wie in src/lib/reminders.ts (forgotReminder, id 4). */
+    static final int FORGOT_REMINDER_ID = 4;
+    /** Empfänger und Speicher der geplanten Erinnerungen im Plugin @capacitor/local-notifications. */
+    private static final String REMINDER_PUBLISHER = "com.capacitorjs.plugins.localnotifications.TimedNotificationPublisher";
+    private static final String REMINDER_STORE = "NOTIFICATION_STORE";
 
     private WidgetActions() {}
 
@@ -58,9 +68,33 @@ final class WidgetActions {
             s.save(context);
         }
         updateNotice(context, s, type);
+        if (STOP.equals(type)) cancelForgotReminder(context);
         TimeWidgetProvider.updateAll(context);
         WidgetPlugin.onNativeAction();
         return true;
+    }
+
+    /**
+     * Beendet im Widget oder in der Benachrichtigung: Die App hat beim Start die Erinnerung „Abstempeln vergessen?“
+     * eingeplant und löscht sie erst, wenn sie das Beenden übernimmt – bei geschlossener App wäre das zu spät. Deshalb
+     * hier denselben Wecker wie das Plugin aufheben (gleiche Kennung und gleicher Empfänger), den Eintrag fürs
+     * Wiederherstellen nach einem Neustart löschen und eine schon gezeigte Erinnerung entfernen.
+     */
+    static void cancelForgotReminder(Context context) {
+        Intent intent = new Intent().setClassName(context, REMINDER_PUBLISHER);
+        int flags = PendingIntent.FLAG_NO_CREATE;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) flags |= PendingIntent.FLAG_MUTABLE;
+        PendingIntent pi = PendingIntent.getBroadcast(context, FORGOT_REMINDER_ID, intent, flags);
+        if (pi != null) {
+            AlarmManager am = context.getSystemService(AlarmManager.class);
+            if (am != null) am.cancel(pi);
+            pi.cancel();
+        }
+        context.getSharedPreferences(REMINDER_STORE, Context.MODE_PRIVATE)
+            .edit()
+            .remove(String.valueOf(FORGOT_REMINDER_ID))
+            .apply();
+        NotificationManagerCompat.from(context).cancel(FORGOT_REMINDER_ID);
     }
 
     /** Anzeige „Zeit läuft“ wie in der App (src/lib/status.ts: runningNotice). */

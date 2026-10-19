@@ -102,6 +102,7 @@ function forgotReminder(state: AppState): Reminder | null {
   const at = s.start + hours * 3600e3;
   const name = state.projects.find((p) => p.id === s.projectId)?.name ?? 'Timelytix';
   return {
+    // Kennung 4: auch in android/…/WidgetActions.java (FORGOT_REMINDER_ID) – Beenden im Widget löscht sie dort
     id: 4,
     key: `${s.id}|${at}`,
     title: `⏰ Seit ${hours} Stunden eingestempelt – ${name}`,
