@@ -1,6 +1,43 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Timelytix – Hinweise für Claude
 
-Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Sprache: Deutsch.
+Offline-fähige PWA zur Arbeitszeiterfassung (React 19 + TypeScript + Vite), zugleich Android-App (Capacitor).
+UI-Sprache und Code-Kommentare: Deutsch.
+
+## Befehle
+
+- `npm run dev` – Entwicklungsserver; `npm run build` – Typprüfung (`tsc -b`) und Web-App nach `dist/`
+- `TZ=Europe/Berlin npm test` – alle Tests (vitest, reine Logik in `src/**/*.test.ts`, kein DOM). Die App rechnet
+  in Ortszeit (Sommer-/Winterzeit, Mitternacht); mit `TZ=Europe/Berlin` laufen die Tests wie bei den Nutzern.
+- Einzelner Test: `TZ=Europe/Berlin npx vitest run src/lib/calc.test.ts` bzw. zusätzlich `-t "Teil des Testnamens"`
+- `npm run build:demo -- <ziel.html>` – Demo als einzelne HTML-Datei (siehe „Demo“)
+- Kein Linter/Formatter im Repo. Stil: einfache Anführungszeichen, Zeilen bis ca. 130 Zeichen. Nie
+  `npx prettier --write` mit Standardeinstellungen laufen lassen (formatiert ganze Dateien um).
+
+## Aufbau
+
+- **Zustand:** Alle Daten stecken in einem `AppState` (`lib/types.ts`: Arbeitgeber `projects`, Buchungen `sessions`
+  mit Pausen, Abwesenheiten `absences`, `settings`), gespeichert als JSON in localStorage (`lib/store.tsx`,
+  Schlüssel `timetrack.v1`). Eine laufende Zeit ist eine Buchung ohne `end`, eine laufende Pause eine Pause ohne
+  `end`. Einstellungen, die nur das Gerät betreffen (Anzeigegröße, Benachrichtigungen, Beta-Updates …), liegen
+  als eigene `timetrack.*`-Schlüssel außerhalb des Zustands und nicht in der Datensicherung.
+- **Rechnen** (`lib/calc.ts` → `lib/year.ts`): `buildIndex` ordnet Buchungen den Tagen zu → `daySummary`
+  (Ist, Soll, Pausen, gesetzliche Pause `placeAutoBreaks`, Zulagen `surchargeMinutes`) → `monthSummary` →
+  `yearOverview` (Urlaub und Überstundenkonto mit Übertrag ins Folgejahr). Werte mit „gültig ab“ (Lohn, Soll,
+  Arbeitstage, Zuschläge) kommen aus `lib/terms.ts` (`termsAt`/`projectAt`); Nachtschichten, die zum Folgetag
+  zählen, aus `lib/shift.ts` (`sessionDay`). Für beendete Tage trägt `materializeAutoBreaks` (`lib/autobreak.ts`)
+  die gesetzlichen Pausen als echte Pausen ein (passiert in `update()`/`replace()`).
+- **Oberfläche:** `App.tsx` mit vier Reitern ohne Router (Start `Home`, `MonthView`, `YearView`, Einstellungen
+  `Projects` mit den Karten `*Card.tsx`), Fenster über `Modal`, Rückfragen über `ask()` (`lib/confirm.ts`).
+- **Web und Android:** `NATIVE` (`lib/native.ts`) trennt die Wege; `lib/native.ts` kapselt Capacitor-Plugins und
+  die eigenen Java-Erweiterungen in `android/app/src/main/java/de/timelytix/app/` (`RunningNotice*`, `Widget*`,
+  `TimeWidgetProvider`, `DisplayPlugin`). Updates: Web über `sw.js`/`version.json` (`lib/update.ts`), Android über
+  APKs aus den GitHub-Releases (`lib/apk-update.ts`).
+- **`src/lib/changelog.json`** ist die einzige Quelle für Versionstexte: „Was ist neu?“ in der App, `version.json`,
+  GitHub-Releases (`scripts/create-releases.mjs`) und Beta-Texte (`.github/workflows/android.yml`).
 
 ## Prüfen vor jedem Push / jeder Veröffentlichung
 
@@ -70,7 +107,9 @@ Repository und nicht in den Changelog.
 ## Berechnung / Daten
 
 - Den Zustand (`AppState`) nie direkt verändern, nur über `update()`/`replace()` im Store (legt eine Kopie an).
-  `buildIndex` (calc.ts) und `yearOverview` (year.ts) speichern Ergebnisse je Zustand zwischen.
+  `buildIndex`, `monthSummary` (calc.ts) und `yearOverview` (year.ts) speichern Ergebnisse je Zustand zwischen –
+  zurückgegebene Ergebnisse deshalb nie verändern, und `now` beim Aufruf auf die Minute runden (sonst greift der
+  Zwischenspeicher nicht).
 - Gespeicherte Daten und Datensicherungen laufen durch `validateState` (validate.ts); neue Felder dort ergänzen.
 - Zulagen werden abschnittsweise berechnet (`surchargeMinutes`); `surcharge.test.ts` vergleicht mit der
   Minute-für-Minute-Rechnung.
