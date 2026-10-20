@@ -953,6 +953,9 @@ a.btn {
   text-align: center;
   text-decoration: none;
 }
+.exact-hint {
+  margin-bottom: 0;
+}
 .feedback-address {
   margin-bottom: 0;
   text-align: center;

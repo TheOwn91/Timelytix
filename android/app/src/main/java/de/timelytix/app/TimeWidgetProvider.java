@@ -116,8 +116,9 @@ public class TimeWidgetProvider extends AppWidgetProvider {
             am.cancel(pi);
             return;
         }
-        // Ungenauer Wecker mit kurzem Zeitfenster (keine Berechtigung nötig); bei ausgeschaltetem Bildschirm wartet Android
-        am.setWindow(AlarmManager.RTC, next, 60_000, pi);
+        // Genau, wenn „Wecker und Erinnerungen“ erlaubt ist (sonst bis zu ~10 min später); bei ausgeschaltetem
+        // Bildschirm wartet Android, bis das Handy wieder wach ist
+        Alarms.redraw(context, next, pi);
     }
 
     /** Angehaltene Uhr als fester Text (Format wie die laufende Uhr). */

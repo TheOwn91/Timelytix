@@ -162,8 +162,8 @@ export async function scheduleReminderNative(r: { id: number; title: string; bod
         body: r.body,
         channelId: REMINDER_CHANNEL,
         autoCancel: true,
-        // Ungenauer Wecker reicht (wenige Minuten Verzögerung) – keine Berechtigung „Wecker und Erinnerungen“ nötig
-        isExactNotification: false,
+        // Genau, wenn „Wecker und Erinnerungen“ erlaubt ist – sonst nimmt das Plugin einen ungenauen Wecker
+        isExactNotification: true,
         schedule: r.at > Date.now() ? { at: new Date(r.at), allowWhileIdle: true } : undefined,
       },
     ],

@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NATIVE } from '../lib/native';
-import { FORGOT_OPTIONS, forgotStopHours, syncReminders, weekReminderEnabled, weekReminderTime } from '../lib/reminders';
+import {
+  FORGOT_OPTIONS,
+  forgotStopHours,
+  replanForgotReminder,
+  syncReminders,
+  weekReminderEnabled,
+  weekReminderTime,
+} from '../lib/reminders';
 import {
   notifyEnabled,
   notifyOnWatch,
@@ -13,6 +20,7 @@ import {
   syncRunningStatus,
 } from '../lib/status';
 import { useStore } from '../lib/store';
+import { exactAlarmAllowed, openExactAlarmSettings } from '../lib/widget';
 
 /** Hinweis nur, wenn etwas fehlt (bei „erlaubt“ keiner). */
 const HINTS = {
@@ -31,16 +39,31 @@ export function NotifyCard() {
   const [enabled, setEnabled] = useState(notifyEnabled);
   const [watch, setWatch] = useState(notifyOnWatch);
   const [support, setSupport] = useState(notifySupport);
+  // Android: genaue Wecker erlaubt? (null = Web-App bzw. noch unbekannt)
+  const [exact, setExact] = useState<boolean | null>(null);
   const week = weekReminderEnabled(state);
   const weekTime = weekReminderTime(state);
   const forgot = forgotStopHours(state);
   const off = support === 'unsupported' || support === 'install';
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // Zurück aus den Handy-Einstellungen (dort erlaubt oder blockiert): Stand neu lesen
   useEffect(() => {
-    const refresh = () => void refreshNotifySupport().then(setSupport);
-    document.addEventListener('visibilitychange', refresh);
-    return () => document.removeEventListener('visibilitychange', refresh);
+    let wasExact: boolean | null = null;
+    const refresh = async () => {
+      const s = await refreshNotifySupport();
+      setSupport(s);
+      const now = await exactAlarmAllowed();
+      setExact(now);
+      // Gerade in den Einstellungen erlaubt: die laufende Erinnerung genau neu planen
+      if (wasExact === false && now === true) void replanForgotReminder(stateRef.current, s === 'ok');
+      wasExact = now;
+    };
+    const onVisible = () => void refresh();
+    onVisible();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
 
   const allow = async () => {
@@ -128,6 +151,14 @@ export function NotifyCard() {
       </div>
       {(HINTS[support] || (support === 'ok' && !NATIVE)) && (
         <p className="muted small">{HINTS[support] || 'Erinnerungen nur, solange Timelytix geöffnet ist.'}</p>
+      )}
+      {exact === false && support === 'ok' && (
+        <>
+          <p className="muted small exact-hint">Widget-Uhr und Erinnerungen minutengenau:</p>
+          <button className="btn secondary full" onClick={() => void openExactAlarmSettings()}>
+            Genaue Wecker erlauben
+          </button>
+        </>
       )}
       {support === 'ask' && (
         <button

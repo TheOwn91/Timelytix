@@ -53,9 +53,12 @@ final class ForgotReminder {
             .putExtra("start", s.running.start)
             .putExtra("title", "⏰ Seit " + s.forgotHours + " Stunden eingestempelt – " + (p != null ? p.name : "Timelytix"))
             .putExtra("body", "Zeit läuft seit " + WidgetState.fmtTime(s.running.start) + ". Vergessen abzustempeln?");
-        AlarmManager am = context.getSystemService(AlarmManager.class);
-        // Ungenauer Wecker wie in der App (keine Berechtigung „Wecker und Erinnerungen“ nötig)
-        if (am != null) am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, own(context, extras, PendingIntent.FLAG_UPDATE_CURRENT));
+        Alarms.remind(context, at, own(context, extras, PendingIntent.FLAG_UPDATE_CURRENT));
+    }
+
+    /** „Wecker und Erinnerungen“ erlaubt: eine schon geplante eigene Erinnerung genau neu stellen. */
+    static void reschedule(Context context) {
+        if (own(context, null, PendingIntent.FLAG_NO_CREATE) != null) schedule(context, WidgetState.load(context));
     }
 
     /** Nur den eigenen Wecker aufheben (die App hat übernommen). */

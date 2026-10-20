@@ -27,6 +27,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 
@@ -64,6 +65,7 @@
     <!-- Sicherung in „Dokumente/Timelytix“: nur bis Android 10 braucht es dafür eine Berechtigung -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
-    <!-- Die Anzeige „Zeit läuft“ erscheint sofort, ohne Wecker – genaue Alarme werden nicht gebraucht -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <!-- Genaue Wecker (Alarms.java): Widget-Uhr zur gesetzlichen Pause und pünktliche Erinnerungen. Ab Android 14
+         schaltet der Nutzer das selbst ein (Einstellungen → Benachrichtigungen); ohne bleibt es ungenau. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 </manifest>

@@ -169,6 +169,8 @@ interface WidgetPlugin {
   sync(o: { snapshot: string }): Promise<{ changed: boolean }>;
   actions(): Promise<{ actions: string }>;
   ack(o: { upTo: number }): Promise<void>;
+  exactAlarm(): Promise<{ allowed: boolean; settings: boolean }>;
+  openExactAlarmSettings(): Promise<void>;
   addListener(event: 'actions', fn: () => void): Promise<{ remove: () => Promise<void> }>;
 }
 
@@ -193,6 +195,20 @@ export async function readWidgetActions(): Promise<WidgetAction[]> {
 /** Übernommene und gespeicherte Aktionen in Android löschen (alle bis einschließlich Nummer `upTo`). */
 export async function ackWidgetActions(upTo: number) {
   await Widget?.ack({ upTo }).catch(() => undefined);
+}
+
+/**
+ * Genaue Wecker (Android 12+: „Wecker und Erinnerungen“): Widget-Uhr zur gesetzlichen Pause und Erinnerungen auf die
+ * Minute. `true`, wenn erlaubt; `false`, wenn der Nutzer es in den Einstellungen erlauben kann; `null` in der Web-App.
+ */
+export async function exactAlarmAllowed(): Promise<boolean | null> {
+  if (!Widget) return null;
+  const res = await Widget.exactAlarm().catch(() => null);
+  return res && (res.allowed || !res.settings);
+}
+
+export async function openExactAlarmSettings() {
+  await Widget?.openExactAlarmSettings().catch(() => undefined);
 }
 
 /** Aktion aus Widget oder Benachrichtigung, während die App geöffnet ist. */

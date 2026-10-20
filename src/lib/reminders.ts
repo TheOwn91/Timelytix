@@ -227,6 +227,14 @@ function webDriver(): ReminderDriver {
 let running: Promise<void> = Promise.resolve();
 
 /** Erinnerungen an den Zustand anpassen (nacheinander, damit sich Aufrufe nicht überholen). */
+/** „Wecker und Erinnerungen“ wurde erlaubt: „Abstempeln vergessen?“ neu (jetzt genau) planen. */
+export function replanForgotReminder(state: AppState, allowed: boolean) {
+  const store = readStore();
+  delete store[FORGOT_ID];
+  writeStore(store);
+  return syncReminders(state, allowed);
+}
+
 export function syncReminders(state: AppState, allowed: boolean) {
   if (DEMO) return running;
   running = running.then(() => applyReminders(state, Date.now(), NATIVE ? nativeDriver : webDriver(), allowed)).catch(() => undefined);
