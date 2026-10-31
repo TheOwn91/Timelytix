@@ -20,6 +20,7 @@ import { SurchargeModeField } from './SurchargeModeField';
 import { TermsSection } from './TermsSection';
 import { VersionCard } from './VersionCard';
 import { WeekdayToggle } from './WeekdayToggle';
+import { Icon } from './Icon';
 
 /** Kurzbeschreibung einer Zulage, z. B. „18:00–22:00 · 10 %“ (`percent`: heute gültiger Satz). */
 function ruleSummary(rule: SurchargeRule, percent: number): string {
@@ -74,7 +75,7 @@ function SurchargeEditor({
             onChange={(e) => set({ name: e.target.value })}
           />
           <button className="icon-btn" onClick={onRemove} aria-label="Zulage entfernen">
-            ✕
+            <Icon name="close" />
           </button>
         </div>
         <select

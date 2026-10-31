@@ -144,10 +144,10 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
       {!hideInstall && (
         <div className="install-hint">
           <button className="grow" onClick={onOpenProjects}>
-            📲 Timelytix als App auf dem Homescreen installieren – funktioniert dann offline
+            Timelytix als App auf dem Homescreen installieren – funktioniert dann offline
           </button>
           <button className="icon-btn" onClick={dismissInstall} aria-label="Hinweis ausblenden">
-            ✕
+            <Icon name="close" />
           </button>
         </div>
       )}
@@ -160,7 +160,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
             onChange={(id) => update((s) => void (s.selectedProjectId = id))}
           />
           <button className="icon-btn" onClick={onOpenProjects} aria-label="Einstellungen" title="Einstellungen">
-            ⚙
+            <Icon name="gear" />
           </button>
         </div>
         {active && <p className="muted small center">Während die Zeit läuft, kann die Arbeit nicht gewechselt werden.</p>}

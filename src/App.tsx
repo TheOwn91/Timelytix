@@ -8,6 +8,7 @@ import { YearView } from './components/YearView';
 import { CHANGELOG, markVersionSeen, pendingReleaseNotes, type Release } from './lib/changelog';
 import { ConfirmHost } from './components/ConfirmHost';
 import { HeaderClock } from './components/HeaderClock';
+import { Icon, type IconName } from './components/Icon';
 import { UpdatePreview } from './components/UpdatePreview';
 import { runAutoBackup } from './lib/backup';
 import { DEMO, demoState } from './lib/demo';
@@ -21,11 +22,12 @@ import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStat
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'home', label: 'Start', icon: '⏱' },
-  { id: 'month', label: 'Monat', icon: '📅' },
-  { id: 'year', label: 'Jahr', icon: '📊' },
-  { id: 'projects', label: 'Einstellungen', icon: '⚙️' },
+// Reiter mit gefüllten Symbolen in einer Bildsprache (statt Emojis, die jedes Handy anders zeichnet)
+const TABS: { id: Tab; label: string; icon: IconName }[] = [
+  { id: 'home', label: 'Start', icon: 'clock' },
+  { id: 'month', label: 'Monat', icon: 'calendar' },
+  { id: 'year', label: 'Jahr', icon: 'chart' },
+  { id: 'projects', label: 'Einstellungen', icon: 'gear' },
 ];
 
 export function App() {
@@ -168,7 +170,8 @@ export function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Timelytix</h1>
+        {/* Großer Titel des Reiters (wie iOS); der App-Name steht ohnehin auf dem Startbildschirm */}
+        <h1>{TABS.find((t) => t.id === tab)?.label}</h1>
         {state.settings?.showClock && <HeaderClock />}
         {DEMO && (
           <div className="demo-bar">
@@ -226,13 +229,23 @@ export function App() {
           {notice}
         </div>
       )}
+      {/* Schwebende Leiste über dem Inhalt (Glas), Inhalt scheint durch */}
       <nav className="tabbar">
-        {TABS.map((t) => (
-          <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => setTab(t.id)}>
-            <span className="tab-icon">{t.icon}</span>
-            {t.label}
-          </button>
-        ))}
+        <div className="tabbar-inner">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              className={tab === t.id ? 'active' : ''}
+              aria-current={tab === t.id ? 'page' : undefined}
+              onClick={() => setTab(t.id)}
+            >
+              <span className="tab-icon">
+                <Icon name={t.icon} />
+              </span>
+              {t.label}
+            </button>
+          ))}
+        </div>
       </nav>
     </div>
   );

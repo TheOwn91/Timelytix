@@ -59,6 +59,9 @@ UI-Sprache und Code-Kommentare: Deutsch.
   `:root:not([data-theme='light'])` und `:root[data-theme='dark']`. Neue Tokens in allen drei Blöcken setzen.
 - Textfarben (`--link`, `--danger`, `--success`, `--c-*`) sind im Dark Mode hellere Varianten;
   Button-Hintergründe haben eigene Tokens (`--primary`, `--danger-bg`, `--warning-bg`).
+- **Gestaltung nach Apples Richtlinien (HIG)** auf diesem Branch: iOS-Farben (mit Kontrast ≥ 4,5:1 für Text), Schrift
+  17 pt, große Titel je Reiter, schwebende Tab-Leiste aus Glas (`backdrop-filter`, ohne bei „Transparenz reduzieren“/
+  „Kontrast erhöhen“), alle Ein/Aus-Kästchen als Schalter, Symbole nur aus `Icon.tsx` (keine Emojis als Bedienelement).
 - **Größen in rem, nicht px:** Die Anzeigegröße (`lib/uiScale.ts`, Einstellungen → Anzeige) skaliert die Grundschrift
   (`--ui-scale` am `html`), alles in rem wächst mit. In der Android-App ist der Text-Zoom der WebView abgeschaltet
   (MainActivity.java) – „Wie Handy“ übernimmt stattdessen die Schriftgröße von Android. Prüfen auch mit „Groß“.

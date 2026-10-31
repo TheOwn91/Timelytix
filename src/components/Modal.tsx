@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { Icon } from './Icon';
 
 /** Anzahl offener Fenster – der Hintergrund bleibt gesperrt, bis das letzte geschlossen ist. */
 let openCount = 0;
@@ -24,8 +25,8 @@ export function Modal({ title, onClose, children }: { title: ReactNode; onClose:
       <div className="modal" role="dialog" aria-modal onClick={(e) => e.stopPropagation()}>
         <header className="modal-header">
           <h2>{title}</h2>
-          <button className="icon-btn" onClick={onClose} aria-label="Schließen">
-            ✕
+          <button className="icon-btn close-btn" onClick={onClose} aria-label="Schließen">
+            <Icon name="close" />
           </button>
         </header>
         <div className="modal-body">{children}</div>

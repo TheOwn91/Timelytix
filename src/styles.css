@@ -1,107 +1,125 @@
 :root {
-  --bg: #f3f4f7;
+  --bg: #f2f2f7;
   --card: #ffffff;
   --raised: #ffffff;
-  --text: #111827;
-  --muted: #5b6472;
-  --border: #dde1e7;
-  --off: #eef1f5;
-  --primary: #2563eb;
+  --text: #000000;
+  --muted: #6c6c70;
+  --border: #c6c6c8;
+  --off: #f2f2f7;
+  --primary: #0064d2;
   --on-primary: #ffffff;
-  --link: #1d4ed8;
-  --primary-soft: #dbeafe;
-  --success: #15803d;
-  --warning: #b45309;
-  --warning-bg: #f59e0b;
-  --on-warning: #1f1300;
-  --danger: #dc2626;
-  --danger-bg: #dc2626;
+  --link: #0064d2;
+  --primary-soft: #e5f0ff;
+  --success: #1d7a34;
+  --warning: #c93400;
+  --warning-bg: #ff9500;
+  --on-warning: #000000;
+  --danger: #d70015;
+  --danger-bg: #d70015;
   --on-danger: #ffffff;
-  --danger-soft: #fdecec;
-  --holiday: #0e7490;
+  --danger-soft: #ffe8e8;
+  --holiday: #0071a4;
   --chip-on: #ffffff;
-  --backdrop: rgb(15 23 42 / 0.45);
-  --shadow: rgb(0 0 0 / 0.25);
-  --c-urlaub: #15803d;
-  --c-krank: #dc2626;
-  --c-ueberstunden: #7e22ce;
-  --c-kurzarbeit: #c2410c;
-  --c-feiertag: #0e7490;
-  --c-frei: #475569;
-  --c-sonstiges: #a16207;
-  --radius: 14px;
+  --backdrop: rgb(0 0 0 / 0.35);
+  --shadow: rgb(0 0 0 / 0.16);
+  --glass: rgb(250 250 252 / 0.8);
+  --glass-solid: #f9f9fb;
+  --glass-border: rgb(0 0 0 / 0.08);
+  --glass-active: rgb(0 0 0 / 0.07);
+  --switch-off: #e3e3e8;
+  --knob: #ffffff;
+  --c-urlaub: #1d7a34;
+  --c-krank: #d70015;
+  --c-ueberstunden: #8944ab;
+  --c-kurzarbeit: #c93400;
+  --c-feiertag: #0071a4;
+  --c-frei: #6c6c70;
+  --c-sonstiges: #7f6545;
+  --radius: 20px;
   color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--bg);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0b0e13;
-    --card: #161a21;
-    --raised: #1f242d;
-    --text: #eef1f5;
-    --muted: #a3acb9;
-    --border: #363d4a;
-    --off: #0f1218;
-    --primary: #3b82f6;
+    --bg: #000000;
+    --card: #1c1c1e;
+    --raised: #2c2c2e;
+    --text: #ffffff;
+    --muted: #98989f;
+    --border: #38383a;
+    --off: #2c2c2e;
+    --primary: #0068d9;
     --on-primary: #ffffff;
-    --link: #7ab4ff;
-    --primary-soft: #1b2b47;
-    --success: #4ade80;
-    --warning: #fbbf24;
-    --warning-bg: #f59e0b;
-    --on-warning: #1f1300;
-    --danger: #f87171;
-    --danger-bg: #dc2626;
+    --link: #409cff;
+    --primary-soft: #0f2a46;
+    --success: #30d158;
+    --warning: #ff9f0a;
+    --warning-bg: #ff9f0a;
+    --on-warning: #000000;
+    --danger: #ff6961;
+    --danger-bg: #d70015;
     --on-danger: #ffffff;
-    --danger-soft: #3a1619;
-    --holiday: #22d3ee;
-    --chip-on: #0b0e13;
-    --backdrop: rgb(0 0 0 / 0.7);
+    --danger-soft: #3a1513;
+    --holiday: #70d7ff;
+    --chip-on: #000000;
+    --backdrop: rgb(0 0 0 / 0.6);
     --shadow: rgb(0 0 0 / 0.5);
-    --c-urlaub: #4ade80;
-    --c-krank: #f87171;
-    --c-ueberstunden: #c084fc;
-    --c-kurzarbeit: #fb923c;
-    --c-feiertag: #22d3ee;
-    --c-frei: #a3acb9;
-    --c-sonstiges: #facc15;
+    --glass: rgb(36 36 38 / 0.8);
+    --glass-solid: #242426;
+    --glass-border: rgb(255 255 255 / 0.12);
+    --glass-active: rgb(255 255 255 / 0.12);
+    --switch-off: #39393d;
+    --knob: #ffffff;
+    --c-urlaub: #30d158;
+    --c-krank: #ff6961;
+    --c-ueberstunden: #da8fff;
+    --c-kurzarbeit: #ff9f0a;
+    --c-feiertag: #70d7ff;
+    --c-frei: #98989f;
+    --c-sonstiges: #b59469;
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --bg: #0b0e13;
-  --card: #161a21;
-  --raised: #1f242d;
-  --text: #eef1f5;
-  --muted: #a3acb9;
-  --border: #363d4a;
-  --off: #0f1218;
-  --primary: #3b82f6;
+  --bg: #000000;
+  --card: #1c1c1e;
+  --raised: #2c2c2e;
+  --text: #ffffff;
+  --muted: #98989f;
+  --border: #38383a;
+  --off: #2c2c2e;
+  --primary: #0068d9;
   --on-primary: #ffffff;
-  --link: #7ab4ff;
-  --primary-soft: #1b2b47;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --warning-bg: #f59e0b;
-  --on-warning: #1f1300;
-  --danger: #f87171;
-  --danger-bg: #dc2626;
+  --link: #409cff;
+  --primary-soft: #0f2a46;
+  --success: #30d158;
+  --warning: #ff9f0a;
+  --warning-bg: #ff9f0a;
+  --on-warning: #000000;
+  --danger: #ff6961;
+  --danger-bg: #d70015;
   --on-danger: #ffffff;
-  --danger-soft: #3a1619;
-  --holiday: #22d3ee;
-  --chip-on: #0b0e13;
-  --backdrop: rgb(0 0 0 / 0.7);
+  --danger-soft: #3a1513;
+  --holiday: #70d7ff;
+  --chip-on: #000000;
+  --backdrop: rgb(0 0 0 / 0.6);
   --shadow: rgb(0 0 0 / 0.5);
-  --c-urlaub: #4ade80;
-  --c-krank: #f87171;
-  --c-ueberstunden: #c084fc;
-  --c-kurzarbeit: #fb923c;
-  --c-feiertag: #22d3ee;
-  --c-frei: #a3acb9;
-  --c-sonstiges: #facc15;
+  --glass: rgb(36 36 38 / 0.8);
+  --glass-solid: #242426;
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-active: rgb(255 255 255 / 0.12);
+  --switch-off: #39393d;
+  --knob: #ffffff;
+  --c-urlaub: #30d158;
+  --c-krank: #ff6961;
+  --c-ueberstunden: #da8fff;
+  --c-kurzarbeit: #ff9f0a;
+  --c-feiertag: #70d7ff;
+  --c-frei: #98989f;
+  --c-sonstiges: #b59469;
   color-scheme: dark;
 }
 
@@ -124,8 +142,10 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: 1rem;
+  /* Systemschrift (auf dem iPhone SF Pro), Grundgröße 17 pt wie „Body“ */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.3;
   -webkit-tap-highlight-color: transparent;
 }
 body.no-scroll {
@@ -169,11 +189,14 @@ h2,
 h3 {
   margin: 0 0 0.6rem;
 }
+/* Textstile nach iOS: Title 3 (20 pt, halbfett), Headline (17 pt, halbfett) */
 h2 {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 h3 {
-  font-size: 0.95rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
   margin-top: 1rem;
 }
 
@@ -181,15 +204,19 @@ h3 {
   max-width: 40rem;
   margin: 0 auto;
   min-height: 100vh;
-  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  /* Platz für die schwebende Leiste unten */
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
 }
 .app-header {
   /* Android-App reicht bis unter die Statusleiste (randlos): oben den Abstand der Leiste freihalten */
   padding: calc(1rem + env(safe-area-inset-top)) 1rem 0.25rem;
 }
+/* Großer Titel (Large Title, 34 pt fett) */
 .app-header h1 {
-  font-size: 1.35rem;
-  color: var(--link);
+  font-size: 2.125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0.35rem 0 0.2rem;
 }
 
 .page {
@@ -201,7 +228,6 @@ h3 {
 
 .card {
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem;
 }
@@ -232,12 +258,15 @@ h3 {
 }
 
 /* Buttons */
+/* Knöpfe als Kapseln, mindestens 44 pt hoch; gedrückt etwas kleiner und heller */
 .btn {
   border: none;
-  border-radius: 12px;
-  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  min-height: 2.75rem;
+  padding: 0.7rem 1.1rem;
   font-weight: 600;
-  background: var(--border);
+  background: var(--off);
+  transition: transform 0.12s ease, opacity 0.12s ease;
 }
 .btn.full {
   width: 100%;
@@ -262,21 +291,35 @@ h3 {
 .btn.big {
   font-size: 1.15rem;
   padding: 1rem;
-  border-radius: 16px;
 }
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  opacity: 0.85;
 }
+/* Symbolknöpfe: Trefferfläche 44 × 44 pt */
 .icon-btn {
   border: none;
   background: transparent;
-  font-size: 1.2rem;
-  padding: 0.35rem 0.55rem;
-  border-radius: 8px;
-  color: var(--muted);
+  font-size: 1.25rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--link);
 }
-.icon-btn:hover {
-  background: var(--border);
+.icon-btn:active {
+  background: var(--glass-active);
+}
+/* Schließen: runder grauer Knopf wie in iOS-Sheets */
+.close-btn {
+  color: var(--muted);
+  background: var(--off);
+  min-width: 2rem;
+  min-height: 2rem;
+  font-size: 1rem;
+  margin: 0.375rem;
 }
 .link {
   border: none;
@@ -309,11 +352,12 @@ h3 {
 .project-picker select {
   appearance: none;
   width: 100%;
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   padding: 0.75rem 2.2rem 0.75rem 2.2rem;
-  border-radius: 12px;
-  border: 2px solid var(--accent);
+  border-radius: 14px;
+  border: none;
+  background: var(--off);
 }
 .project-picker select:disabled {
   opacity: 1;
@@ -337,14 +381,7 @@ h3 {
   font-size: 1.35rem;
   padding: 1.4rem;
 }
-.timer.running {
-  border-color: var(--success);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
-}
-.timer.paused {
-  border-color: var(--warning);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 25%, transparent);
-}
+
 .timer-status {
   text-align: center;
   font-weight: 600;
@@ -357,10 +394,10 @@ h3 {
 }
 .clock {
   text-align: center;
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: 3.5rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
 }
 .timer-actions {
   display: grid;
@@ -383,8 +420,7 @@ h3 {
 }
 .stat {
   background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
@@ -597,30 +633,44 @@ h3 {
   z-index: 50;
 }
 .modal {
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-bottom: none;
+  position: relative;
+  background: var(--card);
   width: 100%;
   max-width: 40rem;
   max-height: 92vh;
   max-height: 92dvh;
-  border-radius: 18px 18px 0 0;
+  border-radius: 28px 28px 0 0;
   display: flex;
   flex-direction: column;
+}
+/* Griff oben am Sheet */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0.4rem;
+  left: 50%;
+  width: 2.25rem;
+  height: 0.3125rem;
+  margin-left: -1.125rem;
+  border-radius: 999px;
+  background: var(--border);
 }
 @media (min-width: 700px) {
   .modal-backdrop {
     align-items: center;
   }
   .modal {
-    border-radius: 18px;
+    border-radius: 28px;
+  }
+  .modal::before {
+    display: none;
   }
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1rem 0.5rem;
+  padding: 1.1rem 0.6rem 0.5rem 1rem;
 }
 .modal-header h2 {
   margin: 0;
@@ -634,8 +684,8 @@ h3 {
   margin-bottom: 1rem;
 }
 .session-edit {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--off);
+  border-radius: 14px;
   padding: 0.75rem;
   margin-bottom: 0.6rem;
   display: flex;
@@ -734,14 +784,10 @@ h3 {
   color: var(--muted);
 }
 .settings-group-body > label.checkbox {
-  flex-direction: row;
-  align-items: flex-start;
-  font-size: 0.95rem;
+  flex-direction: row-reverse;
+  align-items: center;
+  font-size: 1rem;
   color: var(--text);
-}
-.settings-group-body > label.checkbox input {
-  flex-shrink: 0;
-  margin-top: 0.1rem;
 }
 /* Abstand regelt die Gruppe */
 .settings-group-body > .btn.full {
@@ -791,8 +837,8 @@ h3 {
   color: var(--on-primary);
 }
 .surcharge-edit {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--card);
+  border-radius: 14px;
 }
 .surcharge-edit > summary {
   display: flex;
@@ -812,10 +858,50 @@ h3 {
 .surcharge-edit.disabled {
   opacity: 0.6;
 }
-.checkbox input {
-  width: 1.2rem;
-  height: 1.2rem;
-  margin-right: 0.4rem;
+/*
+ * Ein/Aus als Schalter wie in iOS (dort gibt es keine Kästchen). Der Knopf ist ein Hintergrundbild, deshalb klappt
+ * das in jedem Browser; der Zustand zeigt sich an Farbe UND Lage des Knopfs.
+ */
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 3.1875rem;
+  height: 1.9375rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--switch-off);
+  background-image: radial-gradient(circle closest-side, var(--knob) 82%, var(--glass-border) 86%, transparent 93%);
+  background-size: 1.9375rem 1.9375rem;
+  background-repeat: no-repeat;
+  background-position: left center;
+  transition: background-position 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+input[type='checkbox']:checked {
+  background-color: var(--primary);
+  background-position: right center;
+}
+input[type='checkbox']:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+input[type='checkbox']:focus {
+  outline: none;
+}
+input[type='checkbox']:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+/* Beschriftung links, Schalter rechts */
+label.checkbox {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
 }
 .danger-zone {
   justify-content: flex-end;
@@ -826,8 +912,8 @@ h3 {
   margin-top: 0.25rem;
 }
 .settings-group {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--off);
+  border-radius: 14px;
 }
 .settings-group > summary {
   display: grid;
@@ -893,6 +979,7 @@ h3 {
 }
 
 /* Tabbar */
+/* Tab-Leiste: schwebt als Glas über dem Inhalt (funktionale Ebene), Inhalt scheint durch */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -900,30 +987,64 @@ h3 {
   right: 0;
   display: flex;
   justify-content: center;
-  background: var(--card);
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 0 max(1rem, env(safe-area-inset-right)) calc(0.5rem + env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  pointer-events: none;
   z-index: 10;
 }
+.tabbar-inner {
+  pointer-events: auto;
+  display: flex;
+  width: 100%;
+  max-width: 30rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 24px var(--shadow);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+}
+/* Breite nach Beschriftung verteilt: „Einstellungen“ bekommt mehr Platz als „Jahr“ */
 .tabbar button {
-  flex: 1;
-  max-width: 13.3rem;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
   border: none;
   background: none;
-  padding: 0.55rem 0;
-  font-size: 0.78rem;
-  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.5rem;
+  min-height: 2.75rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text);
 }
 .tabbar button.active {
   color: var(--link);
   font-weight: 600;
+  background: var(--glass-active);
 }
 .tab-icon {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+/* Weniger Transparenz bzw. mehr Kontrast gewünscht: feste Fläche statt Glas */
+@media (prefers-reduced-transparency: reduce) {
+  .tabbar-inner {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--glass-solid);
+  }
+}
+@media (prefers-contrast: more) {
+  .tabbar-inner {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--card);
+    border-color: var(--text);
+  }
 }
 .grid-2 input,
 .grid-2 select {
@@ -1025,15 +1146,19 @@ a.btn {
   z-index: 60;
   box-shadow: 0 6px 24px var(--shadow);
 }
+/* Ein/Aus als Listenzeile: Text links, Schalter rechts (wie iOS) */
 .toggle-row {
   display: flex;
-  align-items: flex-start;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
 }
 .toggle-row input {
   flex-shrink: 0;
-  margin-top: 0.15rem;
 }
 
 /* Jahresübersicht */
@@ -1106,11 +1231,12 @@ a.btn {
   white-space: nowrap;
 }
 /* Einstellungen als Liste: Beschriftung links, gleich breite Felder rechts */
+/* Gruppierte Liste (inset grouped): Fläche statt Rahmen, Trennlinien zwischen den Zeilen */
 .field-list {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--off);
+  border-radius: 14px;
   overflow: hidden;
 }
 .field-list label {
@@ -1215,7 +1341,6 @@ a.btn {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.72rem;
 }
 /* Sehr schmale Handys (z. B. 320 px): nichts darf die Seite verbreitern */
 @media (max-width: 350px) {
@@ -1227,8 +1352,12 @@ a.btn {
   .pause-row {
     padding-left: 0.5rem;
   }
+  .tabbar {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
   .tabbar button {
-    font-size: 0.66rem;
+    font-size: 0.64rem;
   }
   .stat {
     padding: 0.5rem;
@@ -1292,8 +1421,8 @@ a.btn {
   gap: 0.15rem;
   text-align: left;
   background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: 14px;
   padding: 0.55rem 0.75rem;
 }
 .terms-entry.active {
@@ -1377,11 +1506,7 @@ a.btn {
   align-items: center;
   gap: 0.5rem;
 }
-.wizard-rule-name input {
-  width: 1.2rem;
-  height: 1.2rem;
-  flex-shrink: 0;
-}
+
 .wizard-section {
   display: flex;
   flex-direction: column;
@@ -1462,17 +1587,19 @@ a.btn {
   padding: 16px;
   z-index: 70;
 }
+/* Hinweisfenster wie iOS: mittig, Text zentriert, runde Ecken */
 .confirm-dialog {
   background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  width: min(22.5rem, 100%);
+  border-radius: 28px;
+  width: min(20rem, 100%);
   padding: 1.25rem 1rem 1rem;
   box-shadow: 0 10px 40px var(--shadow);
+  text-align: center;
 }
 .confirm-dialog p {
   margin: 0 0 1.25rem;
-  font-size: 1.05rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 .confirm-dialog p:has(+ .confirm-detail) {
@@ -1504,4 +1631,23 @@ a.btn {
 .startup-error h2,
 .startup-error p {
   margin: 0;
+}
+
+/* Tastatur: sichtbarer Fokus; Bewegung nur, wenn nicht „Bewegung reduzieren“ gewählt ist */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .btn:active {
+    transform: none;
+  }
 }

@@ -5,6 +5,7 @@ import { MONTHS, dateKey } from '../lib/time';
 import { yearOverview } from '../lib/year';
 import { NoProject } from './NoProject';
 import { ProjectPicker } from './ProjectPicker';
+import { Icon } from './Icon';
 
 const fmtDays = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 1 });
 
@@ -42,11 +43,11 @@ export function YearView() {
         />
         <div className="month-nav">
           <button className="icon-btn" onClick={() => setYear(year - 1)} aria-label="Vorheriges Jahr">
-            ‹
+            <Icon name="back" />
           </button>
           <h2>{year}</h2>
           <button className="icon-btn" onClick={() => setYear(year + 1)} aria-label="Nächstes Jahr">
-            ›
+            <Icon name="forward" />
           </button>
         </div>
         {y.beforeStart && <p className="muted small">Die Erfassung beginnt erst am {project.startDate.split('-').reverse().join('.')}.</p>}

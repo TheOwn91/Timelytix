@@ -3,6 +3,7 @@
     "version": "1.2.0",
     "date": "16.10.2026",
     "changes": [
+      "Neu (Test): Gestaltung nach Apples Richtlinien – große Titel, schwebende Leiste unten, Schalter, neue Farben und Symbole",
       "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (einschaltbar unter Einstellungen → Anzeige)",
       "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)",
       "Neu: „Zeit läuft“ auch auf der Uhr – mit Pause und Beenden (einschaltbar unter Benachrichtigungen)",
