@@ -22,7 +22,7 @@ import { consumeForcedReleaseNotes, consumeNotesShownBeforeUpdate, getUpdateStat
 
 type Tab = 'home' | 'month' | 'year' | 'projects';
 
-// Reiter mit gefüllten Symbolen in einer Bildsprache (statt Emojis, die jedes Handy anders zeichnet)
+// Reiter mit Material-Symbolen (statt Emojis, die jedes Handy anders zeichnet)
 const TABS: { id: Tab; label: string; icon: IconName }[] = [
   { id: 'home', label: 'Start', icon: 'clock' },
   { id: 'month', label: 'Monat', icon: 'calendar' },
@@ -170,7 +170,7 @@ export function App() {
   return (
     <div className="app">
       <header className="app-header">
-        {/* Großer Titel des Reiters (wie iOS); der App-Name steht ohnehin auf dem Startbildschirm */}
+        {/* Große obere App-Leiste mit dem Titel des Reiters; der App-Name steht ohnehin auf dem Startbildschirm */}
         <h1>{TABS.find((t) => t.id === tab)?.label}</h1>
         {state.settings?.showClock && <HeaderClock />}
         {DEMO && (
@@ -229,7 +229,7 @@ export function App() {
           {notice}
         </div>
       )}
-      {/* Schwebende Leiste über dem Inhalt (Glas), Inhalt scheint durch */}
+      {/* Navigationsleiste nach Material 3: aktiver Reiter mit Pille hinter dem Symbol */}
       <nav className="tabbar">
         <div className="tabbar-inner">
           {TABS.map((t) => (

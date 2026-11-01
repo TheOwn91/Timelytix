@@ -1,23 +1,28 @@
 /**
- * Symbole als Grafik in einer einheitlichen, gefüllten Bildsprache (wie SF Symbols) – Zeichen wie ⏸ oder 📅 zeigen
- * manche Handys (z. B. Samsung) als buntes Emoji. Farbe und Größe kommen vom umgebenden Text.
+ * Symbole als Grafik aus Googles Material Icons (Apache 2.0), 24 × 24 dp – Zeichen wie ⏸ oder 📅 zeigen manche
+ * Handys (z. B. Samsung) als buntes Emoji. Farbe und Größe kommen vom umgebenden Text.
  */
 const PATHS = {
   play: 'M8 5v14l11-7z',
   pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z',
   stop: 'M6 6h12v12H6z',
-  // Reiter: Uhr, Kalender, Balken, Zahnrad (Ausschnitte über evenodd)
-  clock: 'M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20zM11 6.5h2v5.1l3.4 3.4-1.4 1.4-4-4z',
+  // Reiter: schedule, calendar_today, bar_chart, settings
+  clock:
+    'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
   calendar:
-    'M7 2h2v2h6V2h2v2h1.5A2.5 2.5 0 0 1 21 6.5v12a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-12A2.5 2.5 0 0 1 5.5 4H7zM5 9v9.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V9zm2 2h3v3H7z',
-  chart: 'M3.5 13h4.5v8H3.5zM9.75 8h4.5v13h-4.5zM16 3h4.5v18H16z',
+    'M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13zM6 10h5v5H6z',
+  chart: 'M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z',
   gear:
-    'M19.90 9.81L22.46 10.29L22.46 13.71L19.90 14.19L19.13 16.04L20.61 18.19L18.19 20.61L16.04 19.13L14.19 19.90L13.71 22.46L10.29 22.46L9.81 19.90L7.96 19.13L5.81 20.61L3.39 18.19L4.87 16.04L4.10 14.19L1.54 13.71L1.54 10.29L4.10 9.81L4.87 7.96L3.39 5.81L5.81 3.39L7.96 4.87L9.81 4.10L10.29 1.54L13.71 1.54L14.19 4.10L16.04 4.87L18.19 3.39L20.61 5.81L19.13 7.96Z M8.6 12a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0-6.8 0Z',
-  // Bedienelemente
-  close: 'M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z',
-  back: 'M15.4 4.6 16.8 6l-6 6 6 6-1.4 1.4L8 12z',
-  forward: 'M8.6 4.6 7.2 6l6 6-6 6 1.4 1.4L16 12z',
-  share: 'M11 3.8 7.7 7.1 6.3 5.7 12 0l5.7 5.7-1.4 1.4L13 3.8V15h-2zM5 9h3v2H6v10h12V11h-2V9h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1z',
+    'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
+  // Bedienelemente: close, chevron_left, chevron_right, expand_more, expand_less, arrow_drop_down, share
+  close: 'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+  back: 'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+  forward: 'M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
+  expand: 'M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z',
+  collapse: 'M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z',
+  dropdown: 'M7 10l5 5 5-5z',
+  share:
+    'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z',
 };
 
 export type IconName = keyof typeof PATHS;
@@ -25,7 +30,7 @@ export type IconName = keyof typeof PATHS;
 export function Icon({ name }: { name: IconName }) {
   return (
     <svg className="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d={PATHS[name]} fillRule="evenodd" />
+      <path d={PATHS[name]} />
     </svg>
   );
 }

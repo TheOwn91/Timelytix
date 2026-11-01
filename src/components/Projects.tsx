@@ -381,8 +381,8 @@ export function Projects({
               <span className="dot" style={{ background: p.color }} />
               <strong className="grow">{p.name || 'Ohne Namen'}</strong>
               {p.archived && <span className="muted small">archiviert</span>}
-              <span className="muted" aria-hidden>
-                {openId === p.id ? '▴' : '▾'}
+              <span className="muted project-chevron" aria-hidden>
+                <Icon name={openId === p.id ? 'collapse' : 'expand'} />
               </span>
             </button>
             {openId === p.id && <ProjectForm project={p} />}

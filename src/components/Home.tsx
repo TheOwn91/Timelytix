@@ -264,7 +264,9 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
               <li key={m.date}>
                 <button className="missing-date" onClick={() => setEditDate(m.date)}>
                   {fmtDate(m.date)}
-                  <span className="muted small">Zeit nachtragen ›</span>
+                  <span className="muted small missing-action">
+                    Zeit nachtragen <Icon name="forward" />
+                  </span>
                 </button>
                 <div className="chips">
                   {visibleAbsences(project, QUICK_ABSENCES).map((t) => (

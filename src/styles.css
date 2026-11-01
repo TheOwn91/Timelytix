@@ -1,125 +1,144 @@
+/*
+ * Farben nach Material 3 (Android): Schema „Vibrant“ aus dem Timelytix-Blau #2563eb, erzeugt mit Googles
+ * material-color-utilities; Zusatzfarben (Urlaub, Pause, Feiertag …) daran angeglichen (harmonisiert).
+ * Namen der Material-Rollen: bg = surface-container-low, card = surface-container-lowest, off = surface-container,
+ * raised = surface-container-high, text = on-surface, muted = on-surface-variant, border = outline-variant,
+ * tonal = secondary-container (Anzeige des aktiven Reiters, Tonal-Knöpfe).
+ */
 :root {
-  --bg: #f2f2f7;
+  --bg: #f2f3ff;
   --card: #ffffff;
-  --raised: #ffffff;
-  --text: #000000;
-  --muted: #6c6c70;
-  --border: #c6c6c8;
-  --off: #f2f2f7;
-  --primary: #0064d2;
+  --raised: #e6e7f5;
+  --text: #191b25;
+  --muted: #434654;
+  --border: #c3c6d6;
+  --outline: #737685;
+  --off: #ecedfb;
+  --primary: #0053db;
   --on-primary: #ffffff;
-  --link: #0064d2;
-  --primary-soft: #e5f0ff;
-  --success: #1d7a34;
-  --warning: #c93400;
-  --warning-bg: #ff9500;
-  --on-warning: #000000;
-  --danger: #d70015;
-  --danger-bg: #d70015;
+  --link: #0053db;
+  --primary-soft: #dbe1ff;
+  --on-primary-soft: #003ea8;
+  --tonal: #e2dfff;
+  --on-tonal: #444364;
+  --secondary: #5c5b7d;
+  --success: #006c4c;
+  --warning: #a14002;
+  --warning-bg: #ffdbcc;
+  --on-warning: #351000;
+  --danger: #ba1a1a;
+  --danger-bg: #ba1a1a;
   --on-danger: #ffffff;
-  --danger-soft: #ffe8e8;
-  --holiday: #0071a4;
+  --danger-soft: #ffdad6;
+  --on-danger-soft: #93000a;
+  --holiday: #17648d;
   --chip-on: #ffffff;
-  --backdrop: rgb(0 0 0 / 0.35);
-  --shadow: rgb(0 0 0 / 0.16);
-  --glass: rgb(250 250 252 / 0.8);
-  --glass-solid: #f9f9fb;
-  --glass-border: rgb(0 0 0 / 0.08);
-  --glass-active: rgb(0 0 0 / 0.07);
-  --switch-off: #e3e3e8;
-  --knob: #ffffff;
-  --c-urlaub: #1d7a34;
-  --c-krank: #d70015;
-  --c-ueberstunden: #8944ab;
-  --c-kurzarbeit: #c93400;
-  --c-feiertag: #0071a4;
-  --c-frei: #6c6c70;
-  --c-sonstiges: #7f6545;
-  --radius: 20px;
+  --backdrop: rgb(0 0 0 / 0.32);
+  --shadow: rgb(0 0 0 / 0.18);
+  --nav-bg: #ecedfb;
+  --switch-off: #e1e2ef;
+  --inverse-surface: #2d303a;
+  --inverse-on-surface: #eff0fe;
+  --c-urlaub: #006c4c;
+  --c-krank: #ba1a1a;
+  --c-ueberstunden: #7046b6;
+  --c-kurzarbeit: #a14002;
+  --c-feiertag: #17648d;
+  --c-frei: #434654;
+  --c-sonstiges: #89511f;
+  --radius: 1.5rem;
   color-scheme: light;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: Roboto, 'Roboto Flex', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #000000;
-    --card: #1c1c1e;
-    --raised: #2c2c2e;
-    --text: #ffffff;
-    --muted: #98989f;
-    --border: #38383a;
-    --off: #2c2c2e;
-    --primary: #0068d9;
-    --on-primary: #ffffff;
-    --link: #409cff;
-    --primary-soft: #0f2a46;
-    --success: #30d158;
-    --warning: #ff9f0a;
-    --warning-bg: #ff9f0a;
-    --on-warning: #000000;
-    --danger: #ff6961;
-    --danger-bg: #d70015;
-    --on-danger: #ffffff;
-    --danger-soft: #3a1513;
-    --holiday: #70d7ff;
-    --chip-on: #000000;
-    --backdrop: rgb(0 0 0 / 0.6);
+    --bg: #10131c;
+    --card: #1d1f29;
+    --raised: #272a34;
+    --text: #e1e2ef;
+    --muted: #c3c6d6;
+    --border: #434654;
+    --outline: #8d909f;
+    --off: #272a34;
+    --primary: #b4c5ff;
+    --on-primary: #002a78;
+    --link: #b4c5ff;
+    --primary-soft: #003ea8;
+    --on-primary-soft: #dbe1ff;
+    --tonal: #444364;
+    --on-tonal: #e2dfff;
+    --secondary: #c5c3ea;
+    --success: #76d9ae;
+    --warning: #ffb694;
+    --warning-bg: #7b2f00;
+    --on-warning: #ffdbcc;
+    --danger: #ffb4ab;
+    --danger-bg: #ffb4ab;
+    --on-danger: #690005;
+    --danger-soft: #4a1d1b;
+    --on-danger-soft: #ffdad6;
+    --holiday: #8ecefb;
+    --chip-on: #10131c;
+    --backdrop: rgb(0 0 0 / 0.5);
     --shadow: rgb(0 0 0 / 0.5);
-    --glass: rgb(36 36 38 / 0.8);
-    --glass-solid: #242426;
-    --glass-border: rgb(255 255 255 / 0.12);
-    --glass-active: rgb(255 255 255 / 0.12);
-    --switch-off: #39393d;
-    --knob: #ffffff;
-    --c-urlaub: #30d158;
-    --c-krank: #ff6961;
-    --c-ueberstunden: #da8fff;
-    --c-kurzarbeit: #ff9f0a;
-    --c-feiertag: #70d7ff;
-    --c-frei: #98989f;
-    --c-sonstiges: #b59469;
+    --nav-bg: #1d1f29;
+    --switch-off: #32343f;
+    --inverse-surface: #e1e2ef;
+    --inverse-on-surface: #2d303a;
+    --c-urlaub: #76d9ae;
+    --c-krank: #ffb4ab;
+    --c-ueberstunden: #d5bbff;
+    --c-kurzarbeit: #ffb694;
+    --c-feiertag: #8ecefb;
+    --c-frei: #c3c6d6;
+    --c-sonstiges: #ffb77f;
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --bg: #000000;
-  --card: #1c1c1e;
-  --raised: #2c2c2e;
-  --text: #ffffff;
-  --muted: #98989f;
-  --border: #38383a;
-  --off: #2c2c2e;
-  --primary: #0068d9;
-  --on-primary: #ffffff;
-  --link: #409cff;
-  --primary-soft: #0f2a46;
-  --success: #30d158;
-  --warning: #ff9f0a;
-  --warning-bg: #ff9f0a;
-  --on-warning: #000000;
-  --danger: #ff6961;
-  --danger-bg: #d70015;
-  --on-danger: #ffffff;
-  --danger-soft: #3a1513;
-  --holiday: #70d7ff;
-  --chip-on: #000000;
-  --backdrop: rgb(0 0 0 / 0.6);
+  --bg: #10131c;
+  --card: #1d1f29;
+  --raised: #272a34;
+  --text: #e1e2ef;
+  --muted: #c3c6d6;
+  --border: #434654;
+  --outline: #8d909f;
+  --off: #272a34;
+  --primary: #b4c5ff;
+  --on-primary: #002a78;
+  --link: #b4c5ff;
+  --primary-soft: #003ea8;
+  --on-primary-soft: #dbe1ff;
+  --tonal: #444364;
+  --on-tonal: #e2dfff;
+  --secondary: #c5c3ea;
+  --success: #76d9ae;
+  --warning: #ffb694;
+  --warning-bg: #7b2f00;
+  --on-warning: #ffdbcc;
+  --danger: #ffb4ab;
+  --danger-bg: #ffb4ab;
+  --on-danger: #690005;
+  --danger-soft: #4a1d1b;
+  --on-danger-soft: #ffdad6;
+  --holiday: #8ecefb;
+  --chip-on: #10131c;
+  --backdrop: rgb(0 0 0 / 0.5);
   --shadow: rgb(0 0 0 / 0.5);
-  --glass: rgb(36 36 38 / 0.8);
-  --glass-solid: #242426;
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-active: rgb(255 255 255 / 0.12);
-  --switch-off: #39393d;
-  --knob: #ffffff;
-  --c-urlaub: #30d158;
-  --c-krank: #ff6961;
-  --c-ueberstunden: #da8fff;
-  --c-kurzarbeit: #ff9f0a;
-  --c-feiertag: #70d7ff;
-  --c-frei: #98989f;
-  --c-sonstiges: #b59469;
+  --nav-bg: #1d1f29;
+  --switch-off: #32343f;
+  --inverse-surface: #e1e2ef;
+  --inverse-on-surface: #2d303a;
+  --c-urlaub: #76d9ae;
+  --c-krank: #ffb4ab;
+  --c-ueberstunden: #d5bbff;
+  --c-kurzarbeit: #ffb694;
+  --c-feiertag: #8ecefb;
+  --c-frei: #c3c6d6;
+  --c-sonstiges: #ffb77f;
   color-scheme: dark;
 }
 
@@ -142,11 +161,24 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  /* Systemschrift (auf dem iPhone SF Pro), Grundgröße 17 pt wie „Body“ */
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
-  font-size: 1.0625rem;
-  line-height: 1.3;
+  /* Roboto wie in Android; Grundgröße 16 sp (Material „Body Large“) */
+  font-family: Roboto, 'Roboto Flex', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
   -webkit-tap-highlight-color: transparent;
+}
+/* Randlos (edge-to-edge): Der Inhalt läuft unter der Statusleiste durch – dort eine Fläche in Hintergrundfarbe,
+   damit Uhrzeit und Akku lesbar bleiben (nur in der Android-App, im Browser ist der Abstand 0) */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 40;
 }
 body.no-scroll {
   overflow: hidden;
@@ -173,15 +205,17 @@ select {
   font-size: max(16px, 1em);
   color: var(--text);
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
+  /* Umrandetes Textfeld (Material „outlined“): Rahmen in Outline-Farbe, kleine Ecken, beim Fokus 2 dp Primärfarbe */
+  border: 1px solid var(--outline);
+  border-radius: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  min-height: 3rem;
   min-width: 0;
 }
 input:focus,
 select:focus {
   outline: 2px solid var(--primary);
-  outline-offset: -1px;
+  outline-offset: -2px;
 }
 
 h1,
@@ -189,14 +223,17 @@ h2,
 h3 {
   margin: 0 0 0.6rem;
 }
-/* Textstile nach iOS: Title 3 (20 pt, halbfett), Headline (17 pt, halbfett) */
+/* Textstile nach Material 3: Title Large (22 sp) und Title Medium (16 sp, mittel) */
 h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 h3 {
-  font-size: 1.0625rem;
-  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
   margin-top: 1rem;
 }
 
@@ -204,26 +241,28 @@ h3 {
   max-width: 40rem;
   margin: 0 auto;
   min-height: 100vh;
-  /* Platz für die schwebende Leiste unten */
-  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  /* Platz für die Navigationsleiste unten */
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
 }
 .app-header {
   /* Android-App reicht bis unter die Statusleiste (randlos): oben den Abstand der Leiste freihalten */
-  padding: calc(1rem + env(safe-area-inset-top)) 1rem 0.25rem;
+  padding: calc(1.25rem + env(safe-area-inset-top)) 1rem 0.5rem;
 }
-/* Großer Titel (Large Title, 34 pt fett) */
+/* Große obere App-Leiste: Titel des Reiters in „Headline Large“ (32 sp) */
 .app-header h1 {
-  font-size: 2.125rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  margin: 0.35rem 0 0.2rem;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin: 0.75rem 0 0.25rem;
 }
 
 .page {
   padding: 0.5rem 1rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  /* Raster aus 4/8 dp: 12 dp zwischen den Karten */
+  gap: 0.75rem;
 }
 
 .card {
@@ -245,88 +284,110 @@ h3 {
   color: var(--muted);
 }
 .small {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 .center {
   text-align: center;
 }
 .info {
   background: var(--primary-soft);
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  color: var(--on-primary-soft);
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
   margin-top: 0;
 }
 
 /* Buttons */
-/* Knöpfe als Kapseln, mindestens 44 pt hoch; gedrückt etwas kleiner und heller */
+/*
+ * Knöpfe nach Material 3 Expressive: rund (Kapsel), beim Drücken werden die Ecken eckiger (Formwechsel) und eine
+ * Zustandsebene (12 % der Textfarbe) legt sich darüber. Sichtbar 40 dp hoch, Trefferfläche 48 dp (::before).
+ * Ohne Zusatz: umrandeter Knopf; primary = gefüllt, secondary = tonal, danger = Fehlerfarbe.
+ */
 .btn {
-  border: none;
-  border-radius: 999px;
-  min-height: 2.75rem;
-  padding: 0.7rem 1.1rem;
-  font-weight: 600;
-  background: var(--off);
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: transparent;
+  color: var(--muted);
+  transition: border-radius 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.15s ease;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -0.25rem 0;
 }
 .btn.full {
   width: 100%;
   margin-top: 0.75rem;
 }
 .btn.primary {
+  border-color: transparent;
   background: var(--primary);
   color: var(--on-primary);
 }
 .btn.secondary {
-  background: var(--primary-soft);
-  color: var(--link);
+  border-color: transparent;
+  background: var(--tonal);
+  color: var(--on-tonal);
 }
 .btn.warning {
+  border-color: transparent;
   background: var(--warning-bg);
   color: var(--on-warning);
 }
 .btn.danger {
+  border-color: transparent;
   background: var(--danger-bg);
   color: var(--on-danger);
 }
+/* Mittlere Größe: 56 dp hoch, Text 16 sp */
 .btn.big {
-  font-size: 1.15rem;
-  padding: 1rem;
+  min-height: 3.5rem;
+  border-radius: 1.75rem;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
 }
 .btn:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 0 100vmax color-mix(in srgb, currentColor 12%, transparent);
 }
-/* Symbolknöpfe: Trefferfläche 44 × 44 pt */
+.btn.big:active {
+  border-radius: 1rem;
+}
+/* Symbolknöpfe: Symbol 24 dp, Trefferfläche 48 × 48 dp */
 .icon-btn {
   border: none;
   background: transparent;
-  font-size: 1.25rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+  font-size: 1.5rem;
+  min-width: 3rem;
+  min-height: 3rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  color: var(--link);
+  color: var(--muted);
 }
 .icon-btn:active {
-  background: var(--glass-active);
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
-/* Schließen: runder grauer Knopf wie in iOS-Sheets */
+/* Schließen: normaler Symbolknopf (Material hat dafür keine eigene Form) */
 .close-btn {
   color: var(--muted);
-  background: var(--off);
-  min-width: 2rem;
-  min-height: 2rem;
-  font-size: 1rem;
-  margin: 0.375rem;
 }
 .link {
   border: none;
   background: none;
   color: var(--link);
   padding: 0.25rem 0;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 .link.danger {
   color: var(--danger);
@@ -352,10 +413,11 @@ h3 {
 .project-picker select {
   appearance: none;
   width: 100%;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  padding: 0.75rem 2.2rem 0.75rem 2.2rem;
-  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 500;
+  min-height: 3.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.25rem;
+  border-radius: 1rem;
   border: none;
   background: var(--off);
 }
@@ -376,15 +438,23 @@ h3 {
   flex-direction: column;
   gap: 0.6rem;
 }
+/* Großer Knopf (Material 3 Expressive „Large“): 96 dp hoch, Text 24 sp, gedrückt Ecken 16 dp */
 .timer .start {
   width: 100%;
-  font-size: 1.35rem;
-  padding: 1.4rem;
+  min-height: 6rem;
+  border-radius: 3rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 400;
+  padding: 1rem;
+}
+.timer .start:active {
+  border-radius: 1.75rem;
 }
 
 .timer-status {
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
 }
 .timer.running .timer-status {
   color: var(--success);
@@ -392,12 +462,14 @@ h3 {
 .timer.paused .timer-status {
   color: var(--warning);
 }
+/* Laufende Zeit in „Display Large“ (57 sp) */
 .clock {
   text-align: center;
-  font-size: 3.5rem;
-  font-weight: 600;
+  font-size: 3.5625rem;
+  line-height: 4rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 .timer-actions {
   display: grid;
@@ -409,7 +481,7 @@ h3 {
 .timer-actions .btn {
   padding-inline: 0.5rem;
   white-space: nowrap;
-  font-size: clamp(1rem, 4.8vw, 1.15rem);
+  font-size: clamp(1rem, 4.8vw, 1.125rem);
 }
 
 /* Statistiken */
@@ -420,20 +492,24 @@ h3 {
 }
 .stat {
   background: var(--off);
-  border-radius: 14px;
-  padding: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
 }
 .stat span {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--muted);
   /* Lange Wörter wie „Erfassungsbeginn“ trennen statt abschneiden */
   hyphens: auto;
   overflow-wrap: anywhere;
 }
 .stat strong {
-  font-size: clamp(0.8rem, 4vw, 1.15rem);
+  font-size: clamp(0.8rem, 4vw, 1.125rem);
+  font-weight: 500;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
@@ -463,16 +539,21 @@ h3 {
 }
 .surcharge-list li.total {
   border-bottom: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 
+/* Material-Badge: Fehlerfarbe, 16 dp hoch, „Label Small“ */
 .badge {
   display: inline-block;
   background: var(--danger-bg);
   color: var(--on-danger);
   border-radius: 999px;
-  font-size: 0.75rem;
-  padding: 0.05rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1rem;
+  min-width: 1rem;
+  text-align: center;
+  padding: 0 0.3rem;
   vertical-align: middle;
 }
 
@@ -497,38 +578,45 @@ h3 {
   border: none;
   background: none;
   padding: 0 0 0.4rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: left;
 }
 
-/* Chips */
+/* Chips nach Material 3: 32 dp hoch, Ecken 8 dp, dünner Rahmen; Farbe je Art (Urlaub, Krank …) */
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .chip {
   --chip: var(--link);
-  border: 1.5px solid var(--chip);
+  border: 1px solid var(--border);
   color: var(--chip);
   background: transparent;
-  border-radius: 999px;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.88rem;
+  border-radius: 0.5rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
 }
 .chip.small {
-  padding: 0.25rem 0.65rem;
-  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8125rem;
 }
 .chip.active {
+  border-color: var(--chip);
   background: var(--chip);
   color: var(--chip-on);
 }
+.chip:active:not(.static) {
+  box-shadow: inset 0 0 0 100vmax color-mix(in srgb, currentColor 12%, transparent);
+}
 .chip.static {
   cursor: default;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.6rem;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
 }
 .summary-chips {
   margin: 0.75rem 0 0.25rem;
@@ -545,7 +633,7 @@ h3 {
   margin: 0;
 }
 .month-nav .icon-btn {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
 }
 .day-list {
   padding: 0.25rem 0;
@@ -571,7 +659,7 @@ h3 {
   color: var(--muted);
 }
 .day-row.today {
-  box-shadow: inset 3px 0 0 var(--primary);
+  box-shadow: inset 4px 0 0 var(--primary);
 }
 .day-row.untracked {
   background: var(--danger-soft);
@@ -605,8 +693,9 @@ h3 {
 .tag {
   --chip: var(--muted);
   color: var(--chip);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
 }
 .tag.holiday {
   color: var(--holiday);
@@ -643,17 +732,18 @@ h3 {
   display: flex;
   flex-direction: column;
 }
-/* Griff oben am Sheet */
+/* Ziehgriff oben am Bottom Sheet (Material: 32 × 4 dp) */
 .modal::before {
   content: '';
   position: absolute;
-  top: 0.4rem;
+  top: 1.375rem;
   left: 50%;
-  width: 2.25rem;
-  height: 0.3125rem;
-  margin-left: -1.125rem;
+  width: 2rem;
+  height: 0.25rem;
+  margin-left: -1rem;
   border-radius: 999px;
-  background: var(--border);
+  background: var(--outline);
+  opacity: 0.6;
 }
 @media (min-width: 700px) {
   .modal-backdrop {
@@ -670,22 +760,30 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.1rem 0.6rem 0.5rem 1rem;
+  padding: 2.25rem 0.25rem 0.5rem 1rem;
 }
+/* Titel in „Headline Small“ (24 sp) */
 .modal-header h2 {
   margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+@media (min-width: 700px) {
+  .modal-header {
+    padding-top: 1rem;
+  }
 }
 .modal-body {
   overflow-y: auto;
   min-height: 0;
-  padding: 0 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  padding: 0 1rem calc(1.5rem + env(safe-area-inset-bottom));
 }
 .editor-section {
   margin-bottom: 1rem;
 }
 .session-edit {
   background: var(--off);
-  border-radius: 14px;
+  border-radius: 1rem;
   padding: 0.75rem;
   margin-bottom: 0.6rem;
   display: flex;
@@ -696,7 +794,7 @@ h3 {
   justify-content: space-between;
 }
 .session-edit .label {
-  font-weight: 600;
+  font-weight: 500;
 }
 .times label {
   display: flex;
@@ -728,7 +826,7 @@ h3 {
 .running-badge {
   padding: 0.55rem 0;
   color: var(--success);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1rem;
 }
 .note {
@@ -737,8 +835,8 @@ h3 {
 }
 .day-totals {
   background: var(--off);
-  border-radius: 12px;
-  padding: 0.75rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
 }
 .day-totals > div {
   display: flex;
@@ -818,27 +916,38 @@ h3 {
 .color.active {
   border-color: var(--text);
 }
+/* Verbundene Knopfgruppe (Material 3 Expressive): 2 dp Abstand, innen kleine Ecken, außen rund;
+   gewählte Tage in Primärfarbe und ganz rund */
 .weekday-toggle {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.125rem;
   flex-wrap: wrap;
 }
 .weekday-toggle button {
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: 8px;
+  border: none;
+  background: var(--off);
+  border-radius: 0.5rem;
+  min-height: 2.5rem;
   padding: 0.35rem 0.55rem;
-  font-size: 0.85rem;
-  min-width: 2.4rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 2.5rem;
+  transition: border-radius 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.weekday-toggle button:first-child {
+  border-radius: 1.25rem 0.5rem 0.5rem 1.25rem;
+}
+.weekday-toggle button:last-child {
+  border-radius: 0.5rem 1.25rem 1.25rem 0.5rem;
 }
 .weekday-toggle button.active {
   background: var(--primary);
-  border-color: var(--primary);
   color: var(--on-primary);
+  border-radius: 1.25rem;
 }
 .surcharge-edit {
   background: var(--card);
-  border-radius: 14px;
+  border-radius: 1rem;
 }
 .surcharge-edit > summary {
   display: flex;
@@ -859,30 +968,42 @@ h3 {
   opacity: 0.6;
 }
 /*
- * Ein/Aus als Schalter wie in iOS (dort gibt es keine Kästchen). Der Knopf ist ein Hintergrundbild, deshalb klappt
- * das in jedem Browser; der Zustand zeigt sich an Farbe UND Lage des Knopfs.
+ * Ein/Aus als Material-3-Schalter (52 × 32 dp): aus = helle Spur mit Rahmen und kleinem Griff (16 dp),
+ * an = Spur in Primärfarbe mit großem Griff (24 dp). Der Griff ist ein Hintergrundbild, deshalb klappt das in
+ * jedem Browser; der Zustand zeigt sich an Farbe, Größe UND Lage des Griffs.
  */
 input[type='checkbox'] {
   appearance: none;
   -webkit-appearance: none;
   flex-shrink: 0;
-  width: 3.1875rem;
-  height: 1.9375rem;
+  width: 3.25rem;
+  height: 2rem;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  border: none;
+  border: 2px solid var(--outline);
   border-radius: 999px;
   background-color: var(--switch-off);
-  background-image: radial-gradient(circle closest-side, var(--knob) 82%, var(--glass-border) 86%, transparent 93%);
-  background-size: 1.9375rem 1.9375rem;
+  background-image: radial-gradient(circle, var(--outline) 0 0.5rem, transparent calc(0.5rem + 0.5px));
+  background-size: 2rem 2rem;
+  background-origin: border-box;
   background-repeat: no-repeat;
   background-position: left center;
-  transition: background-position 0.2s ease, background-color 0.2s ease;
+  transition: background-position 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
 }
 input[type='checkbox']:checked {
+  border-color: var(--primary);
   background-color: var(--primary);
+  background-image: radial-gradient(circle, var(--on-primary) 0 0.75rem, transparent calc(0.75rem + 0.5px));
   background-position: right center;
+}
+/* Gedrückt: Griff wird größer (28 dp) */
+input[type='checkbox']:active {
+  background-image: radial-gradient(circle, var(--outline) 0 0.875rem, transparent calc(0.875rem + 0.5px));
+}
+input[type='checkbox']:checked:active {
+  background-image: radial-gradient(circle, var(--on-primary) 0 0.875rem, transparent calc(0.875rem + 0.5px));
 }
 input[type='checkbox']:disabled {
   opacity: 0.45;
@@ -911,16 +1032,29 @@ label.checkbox {
 .project-list > .btn.full {
   margin-top: 0.25rem;
 }
+/* Aufklappbare Gruppen als Liste (Material 3 Expressive „segmented“): 2 dp Abstand, außen große, innen kleine Ecken */
 .settings-group {
   background: var(--off);
-  border-radius: 14px;
+  border-radius: 0.25rem;
+}
+.settings-group:not(.settings-group + .settings-group) {
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
+.settings-group:not(:has(+ .settings-group)) {
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+}
+.settings-group + .settings-group {
+  margin-top: calc(0.125rem - 0.5rem);
 }
 .settings-group > summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 0.75rem;
-  padding: 0.7rem 0.8rem;
+  min-height: 3.5rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   list-style: none;
 }
@@ -928,42 +1062,42 @@ label.checkbox {
 .surcharge-edit > summary::-webkit-details-marker {
   display: none;
 }
+/* Pfeil „expand_more“ als Maske (Farbe = Textfarbe), dreht sich beim Aufklappen */
+.settings-group > summary::after,
+.surcharge-edit > summary::after {
+  content: '';
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s ease;
+}
 .settings-group > summary::after {
-  content: '▾';
-  content: '▾' / '';
   grid-row: 1 / span 2;
   grid-column: 2;
-  color: var(--muted);
 }
-.settings-group[open] > summary::after {
-  content: '▴';
-  content: '▴' / '';
+.settings-group[open] > summary::after,
+.surcharge-edit[open] > summary::after {
+  transform: rotate(180deg);
 }
 .surcharge-edit > summary > span {
   margin-left: auto;
 }
-.surcharge-edit > summary::after {
-  content: '▾';
-  content: '▾' / '';
-  color: var(--muted);
-}
-.surcharge-edit[open] > summary::after {
-  content: '▴';
-  content: '▴' / '';
-}
 .settings-group-title {
-  font-weight: 600;
+  font-weight: 400;
 }
 .settings-group-summary {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   overflow-wrap: anywhere;
 }
 .settings-group-body {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  padding: 0 0.8rem 0.9rem;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
 }
 .settings-group-body > p,
 .settings-group-body .choice-field {
@@ -979,7 +1113,10 @@ label.checkbox {
 }
 
 /* Tabbar */
-/* Tab-Leiste: schwebt als Glas über dem Inhalt (funktionale Ebene), Inhalt scheint durch */
+/*
+ * Navigationsleiste nach Material 3 Expressive: 64 dp hoch, Fläche surface-container, reicht randlos bis unter die
+ * Gestenleiste. Aktiver Reiter: Pille (56 × 32 dp, secondary-container) hinter dem Symbol, Beschriftung darunter.
+ */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -987,63 +1124,61 @@ label.checkbox {
   right: 0;
   display: flex;
   justify-content: center;
-  padding: 0 max(1rem, env(safe-area-inset-right)) calc(0.5rem + env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
-  pointer-events: none;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: var(--nav-bg);
   z-index: 10;
 }
 .tabbar-inner {
-  pointer-events: auto;
   display: flex;
   width: 100%;
-  max-width: 30rem;
-  padding: 0.25rem;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 24px var(--shadow);
-  -webkit-backdrop-filter: blur(30px) saturate(1.6);
-  backdrop-filter: blur(30px) saturate(1.6);
+  max-width: 40rem;
+  min-height: 4rem;
 }
-/* Breite nach Beschriftung verteilt: „Einstellungen“ bekommt mehr Platz als „Jahr“ */
 .tabbar button {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
+  justify-content: center;
+  gap: 0.25rem;
   border: none;
   background: none;
-  border-radius: 999px;
-  padding: 0.4rem 0.5rem;
-  min-height: 2.75rem;
-  font-size: 0.72rem;
+  padding: 0.375rem 0.125rem;
+  min-height: 4rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 500;
-  color: var(--text);
+  letter-spacing: 0.03em;
+  color: var(--muted);
 }
 .tabbar button.active {
-  color: var(--link);
-  font-weight: 600;
-  background: var(--glass-active);
+  color: var(--secondary);
 }
 .tab-icon {
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.5rem;
   line-height: 1;
+  transition: background-color 0.2s ease;
 }
-/* Weniger Transparenz bzw. mehr Kontrast gewünscht: feste Fläche statt Glas */
-@media (prefers-reduced-transparency: reduce) {
-  .tabbar-inner {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: var(--glass-solid);
-  }
+.tabbar button.active .tab-icon {
+  background: var(--tonal);
+  color: var(--on-tonal);
 }
+.tabbar button:active .tab-icon {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.tabbar button.active:active .tab-icon {
+  background: color-mix(in srgb, var(--on-tonal) 12%, var(--tonal));
+}
+/* Mehr Kontrast gewünscht: Trennlinie über der Leiste */
 @media (prefers-contrast: more) {
-  .tabbar-inner {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: var(--card);
-    border-color: var(--text);
+  .tabbar {
+    border-top: 1px solid var(--outline);
   }
 }
 .grid-2 input,
@@ -1092,17 +1227,21 @@ a.btn {
   align-items: center;
   gap: 0.25rem;
   background: var(--primary-soft);
-  border-radius: 12px;
-  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  color: var(--on-primary-soft);
+  border-radius: 1rem;
+  padding: 0.25rem 0.25rem 0.25rem 1rem;
 }
 .install-hint button.grow {
   border: none;
   background: none;
   text-align: left;
-  color: var(--link);
-  font-size: 0.88rem;
-  font-weight: 600;
+  color: var(--on-primary-soft);
+  font-size: 0.875rem;
+  font-weight: 500;
   padding: 0.4rem 0;
+}
+.install-hint .icon-btn {
+  color: var(--on-primary-soft);
 }
 
 .surcharge-list li .muted {
@@ -1121,6 +1260,7 @@ a.btn {
   font-weight: 500;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 /* Demo: Hinweis unter Titel und Uhr */
 .demo-bar {
@@ -1132,30 +1272,32 @@ a.btn {
   font-size: 0.82rem;
   color: var(--muted);
 }
+/* Snackbar nach Material 3: inverse Fläche, kleine Ecken, über der Navigationsleiste */
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(5rem + env(safe-area-inset-bottom));
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(35rem, calc(100% - 32px));
-  background: var(--text);
-  color: var(--card);
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  min-height: 3rem;
+  background: var(--inverse-surface);
+  color: var(--inverse-on-surface);
+  padding: 0.875rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   z-index: 60;
-  box-shadow: 0 6px 24px var(--shadow);
+  box-shadow: 0 3px 8px var(--shadow);
 }
-/* Ein/Aus als Listenzeile: Text links, Schalter rechts (wie iOS) */
+/* Ein/Aus als Listeneintrag: Text links, Schalter rechts, mindestens 56 dp hoch (Material-Liste, ohne Trennlinien) */
 .toggle-row {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  min-height: 2.75rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0;
 }
 .toggle-row input {
   flex-shrink: 0;
@@ -1165,13 +1307,13 @@ a.btn {
 .neg {
   color: var(--danger);
 }
+/* Fortschritt wie Material-Linearanzeige: Spur in secondary-container, ohne Rahmen */
 .meter {
   display: flex;
-  height: 10px;
+  height: 0.5rem;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--off);
-  border: 1px solid var(--border);
+  background: var(--tonal);
   margin-top: 0.8rem;
 }
 .meter-taken {
@@ -1208,9 +1350,9 @@ a.btn {
   text-align: right;
 }
 .year-row.head {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 .year-row.inactive {
   color: var(--muted);
@@ -1231,26 +1373,33 @@ a.btn {
   white-space: nowrap;
 }
 /* Einstellungen als Liste: Beschriftung links, gleich breite Felder rechts */
-/* Gruppierte Liste (inset grouped): Fläche statt Rahmen, Trennlinien zwischen den Zeilen */
+/* Liste nach Material 3 Expressive („segmented“): einzelne Flächen mit 2 dp Abstand, außen große, innen kleine Ecken */
 .field-list {
   display: flex;
   flex-direction: column;
-  background: var(--off);
-  border-radius: 14px;
+  gap: 0.125rem;
+  border-radius: 1.25rem;
   overflow: hidden;
+}
+.field-list > label,
+.field-list > .field-row {
+  background: var(--off);
+  border-radius: 0.25rem;
 }
 .field-list label {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 5.5rem 2.2rem;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.55rem 0.75rem;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.25rem 1rem;
   color: var(--text);
-  font-size: 0.95rem;
-  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
 }
-.field-list label:last-child {
-  border-bottom: none;
+.field-list input,
+.field-list select {
+  min-height: 2.5rem;
+  padding-block: 0.4rem;
 }
 .field-list input {
   width: 100%;
@@ -1258,7 +1407,7 @@ a.btn {
 }
 .field-list .unit {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 /* Liste direkt in einer Karte: Luft zu Häkchen, Text und Knöpfen davor und danach */
 .card > .field-list {
@@ -1288,7 +1437,7 @@ a.btn {
 }
 .release-list ul {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 1.25rem;
   line-height: 1.5;
 }
 /* Updates */
@@ -1314,7 +1463,7 @@ a.btn {
 }
 .update-status.highlight {
   color: var(--link);
-  font-weight: 600;
+  font-weight: 500;
 }
 .update-bar {
   display: flex;
@@ -1322,16 +1471,15 @@ a.btn {
   justify-content: space-between;
   gap: 0.75rem;
   margin: 0.25rem 1rem 0;
-  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
-  border-radius: 12px;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-radius: 1rem;
   background: var(--primary-soft);
-  color: var(--link);
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: var(--on-primary-soft);
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 .update-bar .btn {
-  padding: 0.45rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
 }
 .update-bar .btn {
   white-space: nowrap;
@@ -1352,12 +1500,9 @@ a.btn {
   .pause-row {
     padding-left: 0.5rem;
   }
-  .tabbar {
-    padding-left: max(0.5rem, env(safe-area-inset-left));
-    padding-right: max(0.5rem, env(safe-area-inset-right));
-  }
   .tabbar button {
-    font-size: 0.64rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0;
   }
   .stat {
     padding: 0.5rem;
@@ -1369,7 +1514,7 @@ a.btn {
   .field-list label {
     grid-template-columns: minmax(0, 1fr) 4.6rem 1.9rem;
     gap: 0.45rem;
-    padding: 0.5rem 0.6rem;
+    padding: 0.25rem 0.75rem;
   }
   .field-list label.select-row select {
     min-width: 0;
@@ -1378,10 +1523,10 @@ a.btn {
     width: 7rem;
   }
   .settings-group > summary {
-    padding: 0.65rem 0.6rem;
+    padding: 0.6rem 0.75rem;
   }
   .settings-group-body {
-    padding: 0 0.6rem 0.8rem;
+    padding: 0 0.75rem 0.875rem;
   }
 }
 .surcharge-list li > :first-child {
@@ -1392,14 +1537,11 @@ a.btn {
 .field-list .field-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.95rem;
-  border-bottom: 1px solid var(--border);
-}
-.field-list .field-row:last-child {
-  border-bottom: none;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
 }
 .field-list .field-row strong {
   text-align: right;
@@ -1421,9 +1563,9 @@ a.btn {
   gap: 0.15rem;
   text-align: left;
   background: var(--off);
-  border: 1px solid transparent;
-  border-radius: 14px;
-  padding: 0.55rem 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  padding: 0.6rem 1rem;
 }
 .terms-entry.active {
   border-color: var(--primary);
@@ -1433,7 +1575,7 @@ a.btn {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.5rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .terms-date .tag {
   color: var(--link);
@@ -1444,7 +1586,7 @@ a.btn {
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .terms-workdays {
   display: flex;
@@ -1455,7 +1597,8 @@ a.btn {
   font-size: 0.85rem;
 }
 .btn.danger-text {
-  color: var(--danger);
+  border-color: transparent;
+  color: var(--on-danger-soft);
   background: var(--danger-soft);
 }
 
@@ -1467,9 +1610,9 @@ a.btn {
 }
 .wizard-progress span {
   flex: 1;
-  height: 4px;
+  height: 0.25rem;
   border-radius: 999px;
-  background: var(--border);
+  background: var(--tonal);
 }
 .wizard-progress span.done {
   background: var(--primary);
@@ -1499,21 +1642,31 @@ a.btn {
 }
 .wizard-subhead {
   margin: 0.25rem 0 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 .wizard-rule-name {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+/* Zulagen im Assistenten: Schalter + Name brauchen Platz, das Zahlenfeld weniger */
+.field-list label.wizard-rule {
+  grid-template-columns: minmax(0, 1fr) 4rem 1rem;
   gap: 0.5rem;
+}
+/* Schalter behalten ihre Größe, auch wo Eingabefelder die ganze Breite füllen */
+:is(.field-list, .grid-2, .wizard-field, .times) input[type='checkbox'] {
+  width: 3.25rem;
+  flex: none;
 }
 
 .wizard-section {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.75rem;
+  gap: 0.5rem;
+  padding: 1rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 1rem;
 }
 .wizard-section .btn.full {
   margin-top: 0.25rem;
@@ -1544,11 +1697,11 @@ a.btn {
 }
 .choice-group {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.65rem 0.75rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
 }
 .choice {
   display: flex;
@@ -1557,9 +1710,11 @@ a.btn {
   cursor: pointer;
 }
 .choice input {
-  width: 1.15rem;
-  height: 1.15rem;
-  margin-top: 0.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-height: 0;
+  margin-top: 0.1rem;
+  padding: 0;
   flex-shrink: 0;
   accent-color: var(--primary);
 }
@@ -1587,31 +1742,43 @@ a.btn {
   padding: 16px;
   z-index: 70;
 }
-/* Hinweisfenster wie iOS: mittig, Text zentriert, runde Ecken */
+/* Dialog nach Material 3: Ecken 28 dp, Text linksbündig, Aktionen als Textknöpfe rechts unten */
 .confirm-dialog {
   background: var(--raised);
-  border-radius: 28px;
-  width: min(20rem, 100%);
-  padding: 1.25rem 1rem 1rem;
-  box-shadow: 0 10px 40px var(--shadow);
-  text-align: center;
+  border-radius: 1.75rem;
+  width: min(22.5rem, 100%);
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 6px 24px var(--shadow);
+  text-align: left;
 }
 .confirm-dialog p {
-  margin: 0 0 1.25rem;
-  font-size: 1.0625rem;
-  font-weight: 600;
+  margin: 0 0 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 .confirm-dialog p:has(+ .confirm-detail) {
   margin-bottom: 0.5rem;
 }
 .confirm-dialog .confirm-detail {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 .confirm-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
+}
+.confirm-actions .btn {
+  border-color: transparent;
+  background: transparent;
+  color: var(--link);
+  padding-inline: 0.75rem;
+}
+.confirm-actions .btn.danger {
+  color: var(--danger);
 }
 
 
@@ -1633,11 +1800,11 @@ a.btn {
   margin: 0;
 }
 
-/* Tastatur: sichtbarer Fokus; Bewegung nur, wenn nicht „Bewegung reduzieren“ gewählt ist */
+/* Tastatur: sichtbarer Fokus (Material: 3 dp, Abstand 2 dp); Bewegung nur ohne „Bewegung reduzieren“ */
 button:focus-visible,
 a:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--link);
+  outline: 3px solid var(--secondary);
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1647,7 +1814,25 @@ summary:focus-visible {
     transition: none !important;
     animation: none !important;
   }
-  .btn:active {
-    transform: none;
-  }
+}
+
+/* In aufgeklappten Gruppen (Fläche surface-container) heben sich Listen und Einträge mit der Kartenfarbe ab */
+.settings-group .field-list > label,
+.settings-group .field-list > .field-row,
+.settings-group .terms-entry,
+.settings-group .weekday-toggle button:not(.active) {
+  background: var(--card);
+}
+.project-picker .chevron,
+.project-chevron {
+  display: inline-flex;
+  font-size: 1.5rem;
+}
+.missing-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+.missing-action .icon {
+  font-size: 1.25rem;
 }
