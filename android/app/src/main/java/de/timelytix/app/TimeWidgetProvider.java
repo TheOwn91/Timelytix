@@ -99,6 +99,10 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setTextViewText(R.id.widget_pause_label, paused ? "Weiter" : "Pause");
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
+        // Text und Symbol in der passenden „on“-Farbe des Knopfs (Weiter = primary, Pause = Container)
+        int onColor = context.getColor(paused ? R.color.widget_on_primary : R.color.widget_on_warning);
+        v.setTextColor(R.id.widget_pause_label, onColor);
+        v.setInt(R.id.widget_pause_icon, "setColorFilter", onColor);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE));
         v.setViewVisibility(R.id.widget_stop, running ? View.VISIBLE : View.GONE);
         v.setOnClickPendingIntent(R.id.widget_stop, WidgetActionReceiver.pending(context, WidgetActions.STOP));

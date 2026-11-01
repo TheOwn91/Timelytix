@@ -63,6 +63,8 @@ UI-Sprache und Code-Kommentare: Deutsch.
   material-color-utilities), Roboto, Schrift 16 sp, große obere App-Leiste, Navigationsleiste mit Pille am aktiven Reiter,
   Knöpfe als Kapseln mit Formwechsel beim Drücken, Material-Schalter (52 × 32 dp), Listen „segmented“, Trefferflächen
   ≥ 48 dp, randlos unter Status- und Gestenleiste. Symbole nur aus `Icon.tsx` (Material Icons, keine Emojis).
+  Widget ebenso: Farben in `res/values*/widget_colors.xml` (ab Android 12 `values-v31`: Systemfarben), Eckenradius
+  des Systems (`drawable-v31/widget_bg.xml`, `@android:id/background`), Knöpfe 48 dp.
 - **Größen in rem, nicht px:** Die Anzeigegröße (`lib/uiScale.ts`, Einstellungen → Anzeige) skaliert die Grundschrift
   (`--ui-scale` am `html`), alles in rem wächst mit. In der Android-App ist der Text-Zoom der WebView abgeschaltet
   (MainActivity.java) – „Wie Handy“ übernimmt stattdessen die Schriftgröße von Android. Prüfen auch mit „Groß“.
