@@ -438,18 +438,10 @@ h3 {
   flex-direction: column;
   gap: 0.6rem;
 }
-/* Großer Knopf (Material 3 Expressive „Large“): 96 dp hoch, Text 24 sp, gedrückt Ecken 16 dp */
+/* Start-Knopf in Material-Größe „Medium“ (56 dp, wie Pause/Beenden), über die ganze Breite */
 .timer .start {
   width: 100%;
-  min-height: 6rem;
-  border-radius: 3rem;
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 400;
-  padding: 1rem;
-}
-.timer .start:active {
-  border-radius: 1.75rem;
+  font-size: 1.125rem;
 }
 
 .timer-status {

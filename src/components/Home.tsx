@@ -254,7 +254,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
 
       <section className="card">
         <h2>
-          Ohne Zeiterfassung <span className="badge">{missing.length}</span>
+          Ohne Zeiterfassung {missing.length > 0 && <span className="badge">{missing.length}</span>}
         </h2>
         {missing.length === 0 ? (
           <p className="muted">✔ Alle vergangenen Arbeitstage sind erfasst.</p>
