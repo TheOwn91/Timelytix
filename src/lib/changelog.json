@@ -5,6 +5,7 @@
     "changes": [
       "Neu (Test): Gestaltung nach Android-Richtlinien (Material 3) – Navigationsleiste, Schalter und Symbole, Farben wie bisher",
       "Widget im Material-Design: Systemecken, Knöpfe als Kapseln",
+      "Einstellungen verständlicher: einfachere Texte und Erklärungen hinter dem „?“",
       "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (einschaltbar unter Einstellungen → Anzeige)",
       "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)",
       "Neu: „Zeit läuft“ auch auf der Uhr – mit Pause und Beenden (einschaltbar unter Benachrichtigungen)",

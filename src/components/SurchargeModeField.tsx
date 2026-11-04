@@ -8,7 +8,7 @@ export function SurchargeModeField({ value, onChange }: { value: SurchargeMode; 
   return (
     <div className="choice-field">
       <p id={id} className="choice-label">
-        Gelten mehrere Zulagen gleichzeitig (z. B. Sonntag und Nacht)?
+        Wenn mehrere Zulagen gleichzeitig gelten (z. B. Sonntag und Nacht):
       </p>
       <div className="choice-group" role="radiogroup" aria-labelledby={id}>
         <label className="choice">

@@ -21,6 +21,7 @@ import { TermsSection } from './TermsSection';
 import { VersionCard } from './VersionCard';
 import { WeekdayToggle } from './WeekdayToggle';
 import { Icon } from './Icon';
+import { CardTitle } from './Help';
 
 /** Kurzbeschreibung einer Zulage, z. B. „18:00–22:00 · 10 %“ (`percent`: heute gültiger Satz). */
 function ruleSummary(rule: SurchargeRule, percent: number): string {
@@ -91,9 +92,9 @@ function SurchargeEditor({
             });
           }}
         >
-          <option value="time">Uhrzeit</option>
-          <option value="weekday">Wochentag</option>
-          <option value="holiday">Feiertag</option>
+          <option value="time">Zu bestimmten Uhrzeiten</option>
+          <option value="weekday">An bestimmten Wochentagen</option>
+          <option value="holiday">An Feiertagen</option>
         </select>
         {rule.kind === 'time' && (
           <div className="row times">
@@ -128,7 +129,22 @@ function ProjectForm({ project }: { project: Project }) {
 
   return (
     <div className="project-form">
-      <SettingsGroup title="Allgemein" summary={`${STATES[project.state] ?? '–'} · ab ${fmtDate(project.startDate, false)}`}>
+      <SettingsGroup
+        title="Allgemein"
+        summary={`${STATES[project.state] ?? '–'} · ab ${fmtDate(project.startDate, false)}`}
+        help={
+          <>
+            <p>
+              <strong>Bundesland:</strong> bestimmt, welche Tage gesetzliche Feiertage sind. An Feiertagen musst du nicht
+              arbeiten, sie zählen trotzdem als Arbeitstag.
+            </p>
+            <p>
+              <strong>Zeiterfassung ab:</strong> der erste Tag, den Timelytix berechnet. Ab hier zählen Soll-Stunden und Urlaub,
+              und die App erinnert an Tage ohne Eintrag. Tage davor werden nicht gerechnet.
+            </p>
+          </>
+        }
+      >
         <label>
           Name
           <input value={project.name} onChange={(e) => set((p) => (p.name = e.target.value))} />
@@ -147,7 +163,7 @@ function ProjectForm({ project }: { project: Project }) {
         </div>
         <div className="grid-2">
           <label>
-            Feiertage
+            Bundesland (Feiertage)
             <select value={project.state} onChange={(e) => set((p) => (p.state = e.target.value))}>
               {Object.entries(STATES).map(([k, v]) => (
                 <option key={k} value={k}>
@@ -157,7 +173,7 @@ function ProjectForm({ project }: { project: Project }) {
             </select>
           </label>
           <label>
-            Erfassung ab
+            Zeiterfassung ab
             <input
               type="date"
               value={project.startDate}
@@ -170,6 +186,23 @@ function ProjectForm({ project }: { project: Project }) {
       <SettingsGroup
         title="Lohn & Arbeitszeit"
         summary={`${terms.hourlyRate > 0 ? `${fmtMoney(terms.hourlyRate)} · ` : ''}${fmtDuration(terms.dailyTargetHours * 60)} h · ${fmtWorkdays(terms.workdays)}`}
+        help={
+          <>
+            <p>
+              <strong>Soll-Arbeitszeit:</strong> so viele Stunden musst du an jedem Arbeitstag arbeiten. Mehr ergibt Überstunden,
+              weniger Minusstunden.
+            </p>
+            <p>
+              <strong>Überstundenzuschlag:</strong> Aufschlag in Prozent auf die Überstunden, die am Monatsende übrig sind (0 % =
+              kein Aufschlag).
+            </p>
+            <p>
+              <strong>Ab einem Datum ändern:</strong> Bekommst du mehr Lohn oder änderst deine Arbeitszeit, lege neue Werte mit
+              dem Datum an, ab dem sie gelten. Ältere Tage rechnet die App weiter mit den alten Werten – vergangene Monate und
+              PDF-Berichte bleiben richtig.
+            </p>
+          </>
+        }
       >
         <TermsSection project={project} />
       </SettingsGroup>
@@ -177,6 +210,19 @@ function ProjectForm({ project }: { project: Project }) {
       <SettingsGroup
         title="Pausen & Nachtschicht"
         summary={`${project.autoBreak ? `Pause ${breakMin} min nach 6 h` : 'keine automatische Pause'}${project.shiftToNextDay ? ' · Nachtschicht → Folgetag' : ''}`}
+        help={
+          <>
+            <p>
+              <strong>Gesetzliche Pause:</strong> Wer mehr als 6 Stunden arbeitet, muss 30 Minuten Pause machen, ab 9 Stunden
+              45 Minuten. Hast du weniger Pause eingetragen, zieht Timelytix den Rest automatisch ab. Deine eigenen Pausen zählen
+              dabei mit.
+            </p>
+            <p>
+              <strong>Nachtschicht:</strong> Eine Schicht über Mitternacht zählt dann ganz zu dem Tag, an dem sie endet
+              (So 22:00 – Mo 6:00 → Montag). Sonst zählt sie zum Tag, an dem sie beginnt.
+            </p>
+          </>
+        }
       >
         <label className="checkbox toggle-row">
           <input
@@ -185,13 +231,13 @@ function ProjectForm({ project }: { project: Project }) {
             checked={project.autoBreak}
             onChange={(e) => set((p) => (p.autoBreak = e.target.checked))}
           />
-          Gesetzliche Pause nach 6 h automatisch
+          Gesetzliche Pause automatisch abziehen
         </label>
         {project.autoBreak && (
           <>
             <div className="field-list">
               <label>
-                <span>Länge</span>
+                <span>Pausenlänge</span>
                 <NumberField
                   id="auto-break-minutes"
                   value={breakMin}
@@ -202,7 +248,6 @@ function ProjectForm({ project }: { project: Project }) {
                 <span className="unit">min</span>
               </label>
             </div>
-            <p className="muted small">Nach 9 h folgt bei Bedarf der Rest bis 45 min. Eigene Pausen zählen mit.</p>
           </>
         )}
         <label className="checkbox toggle-row">
@@ -212,19 +257,31 @@ function ProjectForm({ project }: { project: Project }) {
             checked={!!project.shiftToNextDay}
             onChange={(e) => set((p) => setShiftToNextDay(p, e.target.checked))}
           />
-          Nachtschicht dem Folgetag zuordnen
+          Nachtschicht zählt zum nächsten Tag
         </label>
-        <p className="muted small">
-          Schichten über Mitternacht zählen zum Folgetag (So 22:00 – Mo 6:00 → Montag)
-          {project.shiftToNextDay
-            ? '.'
-            : `; die Arbeitstage wandern mit (${fmtWorkdays(project.workdays)} → ${fmtWorkdays(shiftWeekdays(project.workdays, 1))}).`}
-        </p>
+        {!project.shiftToNextDay && (
+          <p className="muted small">
+            Beim Einschalten verschieben sich die Arbeitstage mit: {fmtWorkdays(project.workdays)} →{' '}
+            {fmtWorkdays(shiftWeekdays(project.workdays, 1))}.
+          </p>
+        )}
       </SettingsGroup>
 
       <SettingsGroup
         title="Urlaub & Überstunden"
         summary={`${vacationPerYear(project).toLocaleString('de-DE')} Urlaubstage pro Jahr`}
+        help={
+          <>
+            <p>
+              <strong>Urlaubstage pro Jahr:</strong> dein Jahresanspruch laut Vertrag.
+            </p>
+            <p>
+              <strong>Resturlaub und Überstunden am Start:</strong> dein Stand am Tag „Zeiterfassung ab“, z. B. aus der letzten
+              Lohnabrechnung. Minusstunden mit „-“ davor eingeben.
+            </p>
+            <p>Nicht genommener Urlaub und Überstunden wandern zum Jahreswechsel automatisch ins neue Jahr.</p>
+          </>
+        }
       >
         <div className="field-list">
           <label>
@@ -238,7 +295,7 @@ function ProjectForm({ project }: { project: Project }) {
             <span className="unit">Tage</span>
           </label>
           <label>
-            <span>Resturlaub zu Beginn</span>
+            <span>Resturlaub am Start</span>
             <NumberField
               value={project.vacationAtStart ?? vacationPerYear(project)}
               decimals={1}
@@ -248,7 +305,7 @@ function ProjectForm({ project }: { project: Project }) {
             <span className="unit">Tage</span>
           </label>
           <label>
-            <span>Überstunden zu Beginn</span>
+            <span>Überstunden am Start</span>
             <NumberField
               value={project.overtimeAtStartHours ?? 0}
               decimals={2}
@@ -258,10 +315,23 @@ function ProjectForm({ project }: { project: Project }) {
             <span className="unit">h</span>
           </label>
         </div>
-        <p className="muted small">„Zu Beginn“ = Stand am Tag „Erfassung ab“; Minusstunden mit „-“.</p>
       </SettingsGroup>
 
-      <SettingsGroup title="Zulagen" summary={activeRules ? `${activeRules} aktiv` : 'keine'}>
+      <SettingsGroup
+        title="Zulagen"
+        summary={activeRules ? `${activeRules} aktiv` : 'keine'}
+        help={
+          <>
+            <p>
+              Zulagen sind Zuschläge für bestimmte Zeiten, z. B. Nachtarbeit, Sonntage oder Feiertage. Timelytix zählt, wie viele
+              Stunden in diese Zeiten fallen, und rechnet mit deinem Stundenlohn den Betrag aus.
+            </p>
+            <p>
+              Die Prozentsätze stellst du unter „Lohn &amp; Arbeitszeit“ ein – so können auch sie sich ab einem Datum ändern.
+            </p>
+          </>
+        }
+      >
         <SurchargeModeField value={project.surchargeMode ?? 'max'} onChange={(m) => set((p) => (p.surchargeMode = m))} />
         {project.surcharges.map((r) => (
           <SurchargeEditor
@@ -294,12 +364,17 @@ function ProjectForm({ project }: { project: Project }) {
         >
           + Zulage hinzufügen
         </button>
-        <p className="muted small">Prozentsätze ändern unter „Lohn &amp; Arbeitszeit → Werte ändern“.</p>
       </SettingsGroup>
 
       <SettingsGroup
-        title="Schlüssel"
+        title="Abwesenheiten"
         summary={hidden ? `${ABSENCE_ORDER.length - hidden} von ${ABSENCE_ORDER.length} sichtbar` : 'alle sichtbar'}
+        help={
+          <p>
+            Diese Abwesenheiten (Schlüssel) kannst du für einen Tag eintragen, z. B. Urlaub oder Krank. Brauchst du eine nicht,
+            blende sie hier aus – sie verschwindet dann aus der Auswahl. Schon eingetragene Tage bleiben erhalten.
+          </p>
+        }
       >
         <div className="chips absence-keys">
           {ABSENCE_ORDER.map((t) => {
@@ -325,7 +400,7 @@ function ProjectForm({ project }: { project: Project }) {
             );
           })}
         </div>
-        <p className="muted small">Antippen blendet einen Schlüssel aus oder ein; eingetragene Tage bleiben.</p>
+        <p className="muted small">Antippen blendet aus oder ein.</p>
       </SettingsGroup>
 
       <div className="row danger-zone">
@@ -370,7 +445,21 @@ export function Projects({
   return (
     <div className="page">
       <section className="card project-list">
-        <h2>Arbeitgeber</h2>
+        <CardTitle
+          title="Arbeitgeber"
+          help={
+            <>
+              <p>
+                Für jeden Arbeitgeber (oder jedes Projekt) stellst du hier Arbeitszeit, Lohn, Urlaub und Zulagen ein. Antippen
+                öffnet die Einstellungen.
+              </p>
+              <p>
+                <strong>Archivieren:</strong> Der Arbeitgeber verschwindet aus der Auswahl, seine Zeiten bleiben gespeichert.{' '}
+                <strong>Löschen</strong> entfernt ihn mit allen Zeiten.
+              </p>
+            </>
+          }
+        />
         {state.projects.map((p) => (
           <div key={p.id} className={`project-card ${p.archived ? 'archived' : ''}`}>
             <button

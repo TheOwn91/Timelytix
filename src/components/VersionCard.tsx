@@ -3,6 +3,7 @@ import { betaUpdatesEnabled, setBetaUpdatesEnabled } from '../lib/apk-update';
 import { BUILD_VERSION, IN_DEVELOPMENT, IS_BETA } from '../lib/changelog';
 import { NATIVE } from '../lib/native';
 import { checkForUpdates, getUpdateStatus, onUpdateStatus, openUpdatePreview, updateSupported, type UpdateStatus } from '../lib/update';
+import { CardTitle } from './Help';
 
 function statusText(s: UpdateStatus): string | null {
   switch (s.state) {
@@ -43,7 +44,22 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
 
   return (
     <section className="card">
-      <h2>App-Version</h2>
+      <CardTitle
+        title="App-Version"
+        help={
+          <>
+            <p>
+              Updates installierst du selbst: „Auf Updates prüfen“ sucht nach einer neuen Version. Vor dem Installieren siehst du,
+              was neu ist.
+            </p>
+            {NATIVE && (
+              <p>
+                <strong>Beta-Versionen:</strong> neue Funktionen schon vorab testen. Sie können noch Fehler enthalten.
+              </p>
+            )}
+          </>
+        }
+      />
       <p className="muted small">
         Timelytix {BUILD_VERSION}
         {IS_BETA ? ' · Beta' : IN_DEVELOPMENT && ' · in Entwicklung'}

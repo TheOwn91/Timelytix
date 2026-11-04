@@ -21,6 +21,7 @@ import {
 } from '../lib/status';
 import { useStore } from '../lib/store';
 import { exactAlarmAllowed, openExactAlarmSettings } from '../lib/widget';
+import { CardTitle } from './Help';
 
 /** Hinweis nur, wenn etwas fehlt (bei „erlaubt“ keiner). */
 const HINTS = {
@@ -90,10 +91,33 @@ export function NotifyCard() {
 
   return (
     <section className="card">
-      <h2>Benachrichtigungen</h2>
+      <CardTitle
+        title="Benachrichtigungen"
+        help={
+          <>
+            <p>
+              <strong>„Zeit läuft“:</strong> Solange die Zeit läuft, steht oben in der Statusleiste eine Benachrichtigung mit der
+              Arbeitszeit{NATIVE && ' und den Knöpfen Pause und Beenden – auf Wunsch auch auf deiner Smartwatch'}.
+            </p>
+            <p>
+              <strong>Samstags erinnern:</strong> einmal pro Woche, wenn in der Woche Arbeitstage ohne Eintrag fehlen.
+            </p>
+            <p>
+              <strong>Beenden vergessen:</strong> meldet sich, wenn die Zeit länger als die gewählte Dauer läuft – falls du
+              vergessen hast, sie zu beenden.
+            </p>
+            {NATIVE && (
+              <p>
+                <strong>Genaue Wecker:</strong> Ohne diese Erlaubnis von Android können Erinnerungen und die Widget-Uhr einige
+                Minuten zu spät kommen.
+              </p>
+            )}
+          </>
+        }
+      />
       <label className="checkbox toggle-row">
         <input id="notify-running" type="checkbox" checked={enabled} disabled={off} onChange={(e) => void toggle(e.target.checked)} />
-        „Zeit läuft“ in der Statusleiste
+        Anzeige „Zeit läuft“
       </label>
       {NATIVE && (
         <label className="checkbox toggle-row">
@@ -107,7 +131,7 @@ export function NotifyCard() {
               void setNotifyOnWatch(e.target.checked);
             }}
           />
-          „Zeit läuft“ auch auf der Uhr
+          Auch auf der Smartwatch
         </label>
       )}
       <label className="checkbox toggle-row">
@@ -134,7 +158,7 @@ export function NotifyCard() {
           </label>
         )}
         <label className="select-row">
-          <span>Abstempeln vergessen?</span>
+          <span>Erinnern, wenn Beenden vergessen</span>
           <select
             id="notify-forgot"
             value={forgot}
@@ -154,7 +178,7 @@ export function NotifyCard() {
       )}
       {exact === false && support === 'ok' && (
         <>
-          <p className="muted small exact-hint">Widget-Uhr und Erinnerungen minutengenau:</p>
+          <p className="muted small exact-hint">Erinnerungen und Widget-Uhr können einige Minuten zu spät kommen.</p>
           <button className="btn secondary full" onClick={() => void openExactAlarmSettings()}>
             Genaue Wecker erlauben
           </button>

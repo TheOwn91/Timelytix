@@ -237,7 +237,7 @@ export function DayEditor({ project, date, onClose }: Props) {
 
       {absenceChoices.length > 0 && (
         <section className="editor-section">
-          <h3>Abwesenheit / Schlüssel</h3>
+          <h3>Abwesenheit</h3>
           <div className="chips">
             {absenceChoices.map((t) => (
               <button
@@ -256,8 +256,8 @@ export function DayEditor({ project, date, onClose }: Props) {
           </div>
           {day.absence?.auto && (
             <p className="muted small">
-              Automatisch eingetragen (gesetzlicher Feiertag, zählt mit dem Tagessoll). Ein anderer Schlüssel ersetzt ihn;
-              ganz abschalten unter Einstellungen → Schlüssel.
+              Automatisch eingetragen (gesetzlicher Feiertag, zählt mit dem Tagessoll). Eine andere Abwesenheit ersetzt ihn;
+              ganz abschalten unter Einstellungen → Arbeitgeber → Abwesenheiten.
             </p>
           )}
           {day.absence && !day.absence.auto && (

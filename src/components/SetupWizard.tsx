@@ -101,14 +101,14 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
             </select>
           </label>
           <label className="wizard-field">
-            <span>Erfassung ab</span>
+            <span>Zeiterfassung ab</span>
             <input
               id="wizard-start"
               type="date"
               value={p.startDate}
               onChange={(e) => e.target.value && set({ startDate: e.target.value })}
             />
-            <span className="muted small">Ab diesem Tag zeigt die App fehlende Einträge an.</span>
+            <span className="muted small">Ab diesem Tag rechnet die App und erinnert an fehlende Einträge.</span>
           </label>
         </div>
       )}
@@ -145,7 +145,7 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
               <span className="unit">€</span>
             </label>
             <label>
-              <span>Zuschlag auf Überstunden</span>
+              <span>Überstundenzuschlag</span>
               <NumberField
                 value={p.overtimeSurchargePercent ?? 0}
                 decimals={1}
@@ -280,7 +280,7 @@ export function SetupWizard({ firstRun, initialName = '', onClose }: Props) {
               <strong>{STATES[p.state]}</strong>
             </div>
             <div className="field-row">
-              <span>Erfassung ab</span>
+              <span>Zeiterfassung ab</span>
               <strong>{fmtDate(p.startDate, false)}</strong>
             </div>
             <div className="field-row">
