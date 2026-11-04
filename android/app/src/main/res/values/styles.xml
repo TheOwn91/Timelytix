@@ -25,29 +25,31 @@
         <item name="colorAccent">@color/widget_primary</item>
     </style>
 
-    <!-- Knöpfe im Widget: Symbol und Text mittig, gleich breit -->
+    <!-- Knöpfe im Widget (Material 3): Kapsel, 48 dp hoch (Mindestgröße zum Tippen), Symbol und Text mittig, gleich breit -->
     <style name="WidgetButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 
     <style name="WidgetButtonIcon">
         <item name="android:layout_width">20dp</item>
         <item name="android:layout_height">20dp</item>
-        <item name="android:layout_marginEnd">6dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
         <item name="android:importantForAccessibility">no</item>
     </style>
 
+    <!-- Beschriftung „Label Large“, etwas größer für den Startbildschirm -->
     <style name="WidgetButtonLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/widget_on_button</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">

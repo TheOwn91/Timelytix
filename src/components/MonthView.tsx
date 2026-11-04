@@ -11,6 +11,7 @@ import { MonthExtras } from './MonthExtras';
 import { NoProject } from './NoProject';
 import { ProjectPicker } from './ProjectPicker';
 import { SurchargeList } from './SurchargeList';
+import { Icon } from './Icon';
 
 export function MonthView() {
   const { state, update } = useStore();
@@ -64,13 +65,13 @@ export function MonthView() {
         />
         <div className="month-nav">
           <button className="icon-btn" onClick={() => shift(-1)} aria-label="Vorheriger Monat">
-            ‹
+            <Icon name="back" />
           </button>
           <h2>
             {MONTHS[ym.m]} {ym.y}
           </h2>
           <button className="icon-btn" onClick={() => shift(1)} aria-label="Nächster Monat">
-            ›
+            <Icon name="forward" />
           </button>
         </div>
         <div className="stats">
@@ -120,7 +121,7 @@ export function MonthView() {
               await m.exportMonthPdf(state, project, ym.y, ym.m);
             }
           }}>
-          ⬇ PDF-Monatsbericht exportieren
+          <Icon name="share" /> PDF-Monatsbericht exportieren
         </button>
       </section>
 

@@ -2,6 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 import { DEFAULT_AUTO_BREAK_MINUTES, buildIndex, workIntervals } from './calc';
 import { NATIVE } from './native';
 import { sessionDay } from './shift';
+import { forgotStopHours } from './reminders';
 import { notifyEnabled } from './status';
 import { addDays, combine, dateKey, uid } from './time';
 import type { AppState } from './types';
@@ -27,6 +28,10 @@ type Span = [number, number];
 
 export interface WidgetSnapshot {
   notify: boolean;
+  /** Uhrzeit im Widget: groß, solange keine Zeit läuft, sonst klein über der Arbeitszeit. */
+  clock: boolean;
+  /** Erinnerung „Abstempeln vergessen?“ nach so vielen Stunden (0 = aus) – für eine im Widget gestartete Zeit. */
+  forgotHours: number;
   selected: string | null;
   /**
    * `autoBreak`: Länge der gesetzlichen Pause nach 6 h (0 = aus). `today`: übrige Arbeit des heutigen Tages
@@ -81,6 +86,8 @@ export function widgetSnapshot(state: AppState, now: number, notify = true): Wid
   }
   return {
     notify,
+    clock: !!state.settings?.showWidgetClock,
+    forgotHours: forgotStopHours(state),
     selected,
     projects: projects.map((p) => ({
       id: p.id,
@@ -162,6 +169,8 @@ interface WidgetPlugin {
   sync(o: { snapshot: string }): Promise<{ changed: boolean }>;
   actions(): Promise<{ actions: string }>;
   ack(o: { upTo: number }): Promise<void>;
+  exactAlarm(): Promise<{ allowed: boolean; settings: boolean }>;
+  openExactAlarmSettings(): Promise<void>;
   addListener(event: 'actions', fn: () => void): Promise<{ remove: () => Promise<void> }>;
 }
 
@@ -188,9 +197,23 @@ export async function ackWidgetActions(upTo: number) {
   await Widget?.ack({ upTo }).catch(() => undefined);
 }
 
+/**
+ * Genaue Wecker (Android 12+: „Wecker und Erinnerungen“): Widget-Uhr zur gesetzlichen Pause und Erinnerungen auf die
+ * Minute. `true`, wenn erlaubt; `false`, wenn der Nutzer es in den Einstellungen erlauben kann; `null` in der Web-App.
+ */
+export async function exactAlarmAllowed(): Promise<boolean | null> {
+  if (!Widget) return null;
+  const res = await Widget.exactAlarm().catch(() => null);
+  return res && (res.allowed || !res.settings);
+}
+
+export async function openExactAlarmSettings() {
+  await Widget?.openExactAlarmSettings().catch(() => undefined);
+}
+
 /** Aktion aus Widget oder Benachrichtigung, während die App geöffnet ist. */
 export function onWidgetActions(fn: () => void): () => void {
   if (!Widget) return () => undefined;
   const handle = Widget.addListener('actions', fn).catch(() => undefined);
-  return () => void handle.then((h) => h?.remove());
+  return () => void handle.then((h) => h?.remove()).catch(() => undefined);
 }

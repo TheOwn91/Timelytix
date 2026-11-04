@@ -1,5 +1,19 @@
 [
   {
+    "version": "1.2.0",
+    "date": "04.11.2026",
+    "changes": [
+      "Neues Aussehen nach den Android-Richtlinien (Material 3): Navigationsleiste, große Überschriften, Schalter und neue Symbole – die Farben bleiben wie gewohnt",
+      "Widget im neuen Design: Ecken passend zum Handy, größere Knöpfe",
+      "Einstellungen verständlicher: einfachere Texte und hinter jedem „?“ eine kurze Erklärung",
+      "Neu: Uhrzeit mit Sekunden oben rechts (einschaltbar unter Einstellungen → Anzeige)",
+      "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)",
+      "Neu: „Zeit läuft“ auch auf der Smartwatch – mit Pause und Beenden (einschaltbar unter Benachrichtigungen)",
+      "Die Erinnerung „Beenden vergessen“ stimmt jetzt auch, wenn du im Widget oder in der Benachrichtigung startest oder beendest",
+      "Die Widget-Uhr hält zur gesetzlichen Pause minutengenau an, wenn „Genaue Wecker“ erlaubt ist (Einstellungen → Benachrichtigungen)"
+    ]
+  },
+  {
     "version": "1.1.0",
     "date": "15.10.2026",
     "changes": [

@@ -1,5 +1,10 @@
 package de.timelytix.app;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -39,6 +44,30 @@ public class WidgetPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("changed", changed);
         call.resolve(ret);
+    }
+
+    /** Genaue Wecker erlaubt? `settings`: Es gibt dafür eine Einstellung (ab Android 12). */
+    @PluginMethod
+    public void exactAlarm(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("allowed", Alarms.exactAllowed(getContext()));
+        ret.put("settings", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
+        call.resolve(ret);
+    }
+
+    /** Einstellung „Wecker und Erinnerungen“ für Timelytix öffnen (sonst die App-Einstellungen). */
+    @PluginMethod
+    public void openExactAlarmSettings(PluginCall call) {
+        Uri app = Uri.parse("package:" + getContext().getPackageName());
+        Intent i = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+            ? new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, app)
+            : new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, app);
+        try {
+            getActivity().startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            getActivity().startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, app));
+        }
+        call.resolve();
     }
 
     @PluginMethod

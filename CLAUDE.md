@@ -1,6 +1,43 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Timelytix – Hinweise für Claude
 
-Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Sprache: Deutsch.
+Offline-fähige PWA zur Arbeitszeiterfassung (React 19 + TypeScript + Vite), zugleich Android-App (Capacitor).
+UI-Sprache und Code-Kommentare: Deutsch.
+
+## Befehle
+
+- `npm run dev` – Entwicklungsserver; `npm run build` – Typprüfung (`tsc -b`) und Web-App nach `dist/`
+- `TZ=Europe/Berlin npm test` – alle Tests (vitest, reine Logik in `src/**/*.test.ts`, kein DOM). Die App rechnet
+  in Ortszeit (Sommer-/Winterzeit, Mitternacht); mit `TZ=Europe/Berlin` laufen die Tests wie bei den Nutzern.
+- Einzelner Test: `TZ=Europe/Berlin npx vitest run src/lib/calc.test.ts` bzw. zusätzlich `-t "Teil des Testnamens"`
+- `npm run build:demo -- <ziel.html>` – Demo als einzelne HTML-Datei (siehe „Demo“)
+- Kein Linter/Formatter im Repo. Stil: einfache Anführungszeichen, Zeilen bis ca. 130 Zeichen. Nie
+  `npx prettier --write` mit Standardeinstellungen laufen lassen (formatiert ganze Dateien um).
+
+## Aufbau
+
+- **Zustand:** Alle Daten stecken in einem `AppState` (`lib/types.ts`: Arbeitgeber `projects`, Buchungen `sessions`
+  mit Pausen, Abwesenheiten `absences`, `settings`), gespeichert als JSON in localStorage (`lib/store.tsx`,
+  Schlüssel `timetrack.v1`). Eine laufende Zeit ist eine Buchung ohne `end`, eine laufende Pause eine Pause ohne
+  `end`. Einstellungen, die nur das Gerät betreffen (Anzeigegröße, Benachrichtigungen, Beta-Updates …), liegen
+  als eigene `timetrack.*`-Schlüssel außerhalb des Zustands und nicht in der Datensicherung.
+- **Rechnen** (`lib/calc.ts` → `lib/year.ts`): `buildIndex` ordnet Buchungen den Tagen zu → `daySummary`
+  (Ist, Soll, Pausen, gesetzliche Pause `placeAutoBreaks`, Zulagen `surchargeMinutes`) → `monthSummary` →
+  `yearOverview` (Urlaub und Überstundenkonto mit Übertrag ins Folgejahr). Werte mit „gültig ab“ (Lohn, Soll,
+  Arbeitstage, Zuschläge) kommen aus `lib/terms.ts` (`termsAt`/`projectAt`); Nachtschichten, die zum Folgetag
+  zählen, aus `lib/shift.ts` (`sessionDay`). Für beendete Tage trägt `materializeAutoBreaks` (`lib/autobreak.ts`)
+  die gesetzlichen Pausen als echte Pausen ein (passiert in `update()`/`replace()`).
+- **Oberfläche:** `App.tsx` mit vier Reitern ohne Router (Start `Home`, `MonthView`, `YearView`, Einstellungen
+  `Projects` mit den Karten `*Card.tsx`), Fenster über `Modal`, Rückfragen über `ask()` (`lib/confirm.ts`).
+- **Web und Android:** `NATIVE` (`lib/native.ts`) trennt die Wege; `lib/native.ts` kapselt Capacitor-Plugins und
+  die eigenen Java-Erweiterungen in `android/app/src/main/java/de/timelytix/app/` (`RunningNotice*`, `Widget*`,
+  `TimeWidgetProvider`, `DisplayPlugin`). Updates: Web über `sw.js`/`version.json` (`lib/update.ts`), Android über
+  APKs aus den GitHub-Releases (`lib/apk-update.ts`).
+- **`src/lib/changelog.json`** ist die einzige Quelle für Versionstexte: „Was ist neu?“ in der App, `version.json`,
+  GitHub-Releases (`scripts/create-releases.mjs`) und Beta-Texte (`.github/workflows/android.yml`).
 
 ## Prüfen vor jedem Push / jeder Veröffentlichung
 
@@ -22,6 +59,11 @@ Offline-fähige PWA zur Arbeitszeiterfassung (React + TypeScript + Vite). UI-Spr
   `:root:not([data-theme='light'])` und `:root[data-theme='dark']`. Neue Tokens in allen drei Blöcken setzen.
 - Textfarben (`--link`, `--danger`, `--success`, `--c-*`) sind im Dark Mode hellere Varianten;
   Button-Hintergründe haben eigene Tokens (`--primary`, `--danger-bg`, `--warning-bg`).
+- **Gestaltung nach Material 3 (Android)** auf diesem Branch, Farben wie in Version 1 (Blau #2563eb), Roboto, Schrift 16 sp, große obere App-Leiste, Navigationsleiste mit Pille am aktiven Reiter,
+  Knöpfe als Kapseln mit Formwechsel beim Drücken, Material-Schalter (52 × 32 dp), Listen „segmented“, Trefferflächen
+  ≥ 48 dp, randlos unter Status- und Gestenleiste. Symbole nur aus `Icon.tsx` (Material Icons, keine Emojis).
+  Widget ebenso: Farben (wie Version 1) in `res/values*/widget_colors.xml`, Eckenradius
+  des Systems (`drawable-v31/widget_bg.xml`, `@android:id/background`), Knöpfe 48 dp.
 - **Größen in rem, nicht px:** Die Anzeigegröße (`lib/uiScale.ts`, Einstellungen → Anzeige) skaliert die Grundschrift
   (`--ui-scale` am `html`), alles in rem wächst mit. In der Android-App ist der Text-Zoom der WebView abgeschaltet
   (MainActivity.java) – „Wie Handy“ übernimmt stattdessen die Schriftgröße von Android. Prüfen auch mit „Groß“.
@@ -65,12 +107,17 @@ Repository und nicht in den Changelog.
   überspringen. Danach legt die App einen Auszug fürs Widget ab. Alle Knöpfe wirken sofort (keine Rückfrage).
   Die gesetzlichen Pausen rechnet das Widget selbst (`WidgetState.placeBreaks` = `placeAutoBreaks` in calc.ts –
   bei Änderungen beide anpassen). Alle Zugriffe auf Auszug und Aktionen nur unter der Sperre `WidgetState.class`.
+  Die Erinnerung „Abstempeln vergessen?“ (Kennung 4) planen Start/Beenden im Widget selbst (`ForgotReminder.java`),
+  bis die App übernimmt (`reminders.ts` hebt die des Widgets dann auf). Wecker immer über `Alarms.java`: genau, wenn
+  „Wecker und Erinnerungen“ erlaubt ist (`SCHEDULE_EXACT_ALARM`, ab Android 14 vom Nutzer einzuschalten), sonst ungenau.
 - App-Symbole: Quellen in `assets/`, erzeugen mit `npx @capacitor/assets generate --android --assetPath assets`.
 
 ## Berechnung / Daten
 
 - Den Zustand (`AppState`) nie direkt verändern, nur über `update()`/`replace()` im Store (legt eine Kopie an).
-  `buildIndex` (calc.ts) und `yearOverview` (year.ts) speichern Ergebnisse je Zustand zwischen.
+  `buildIndex`, `monthSummary` (calc.ts) und `yearOverview` (year.ts) speichern Ergebnisse je Zustand zwischen –
+  zurückgegebene Ergebnisse deshalb nie verändern, und `now` beim Aufruf auf die Minute runden (sonst greift der
+  Zwischenspeicher nicht).
 - Gespeicherte Daten und Datensicherungen laufen durch `validateState` (validate.ts); neue Felder dort ergänzen.
 - Zulagen werden abschnittsweise berechnet (`surchargeMinutes`); `surcharge.test.ts` vergleicht mit der
   Minute-für-Minute-Rechnung.

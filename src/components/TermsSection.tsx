@@ -33,7 +33,7 @@ export function TermsSection({ project }: { project: Project }) {
           <strong>{current.hourlyRate > 0 ? fmtMoney(current.hourlyRate) : '–'}</strong>
         </div>
         <div className="field-row">
-          <span>Soll pro Tag</span>
+          <span>Soll-Arbeitszeit pro Tag</span>
           <strong>{fmtDuration(current.dailyTargetHours * 60)} h</strong>
         </div>
         <div className="field-row">
@@ -41,7 +41,7 @@ export function TermsSection({ project }: { project: Project }) {
           <strong>{fmtWorkdays(current.workdays)}</strong>
         </div>
         <div className="field-row">
-          <span>Zuschlag auf Überstunden</span>
+          <span>Überstundenzuschlag</span>
           <strong>{pct(current.overtimeSurchargePercent)}</strong>
         </div>
         {enabledRules.map((r) => (
@@ -52,11 +52,11 @@ export function TermsSection({ project }: { project: Project }) {
         ))}
       </div>
       <button className="btn secondary full" onClick={() => setEditing({ terms: { ...current, from: today } })}>
-        Werte ändern …
+        Ab einem Datum ändern …
       </button>
 
       <div className="terms-history">
-        <span className="muted small">Verlauf</span>
+        <span className="muted small">Bisherige Werte – antippen zum Bearbeiten</span>
         {[...list].reverse().map((t, i, arr) => {
           const prev = arr[i + 1];
           const active = t.from === current.from;
@@ -125,11 +125,11 @@ function TermsEditor({ project, initial, isFirst, isNew, onClose, onSave, onDele
   const set = (patch: Partial<Terms>) => setT((x) => ({ ...x, ...patch }));
 
   return (
-    <Modal title={isNew ? 'Neue Werte' : isFirst ? 'Werte ab Erfassungsbeginn' : 'Änderung bearbeiten'} onClose={onClose}>
+    <Modal title={isNew ? 'Neue Werte ab einem Datum' : isFirst ? 'Werte ab Start' : 'Änderung bearbeiten'} onClose={onClose}>
       {isFirst ? (
         <p className="muted small">
-          Diese Werte gelten ab Erfassungsbeginn bis zur nächsten Änderung. Wenn sich etwas ab einem bestimmten Tag ändert, lege
-          stattdessen über „Werte ändern …“ neue Werte an.
+          Diese Werte gelten ab dem Start der Zeiterfassung bis zur nächsten Änderung. Ändert sich etwas ab einem bestimmten
+          Tag, lege lieber über „Ab einem Datum ändern …“ neue Werte an.
         </p>
       ) : (
         <label className="terms-from">
@@ -150,12 +150,12 @@ function TermsEditor({ project, initial, isFirst, isNew, onClose, onSave, onDele
           <span className="unit">€</span>
         </label>
         <label>
-          <span>Soll pro Tag</span>
+          <span>Soll-Arbeitszeit pro Tag</span>
           <NumberField value={t.dailyTargetHours} decimals={2} max={24} onChange={(v) => set({ dailyTargetHours: v })} />
           <span className="unit">h</span>
         </label>
         <label>
-          <span>Zuschlag auf Überstunden</span>
+          <span>Überstundenzuschlag</span>
           <NumberField
             value={t.overtimeSurchargePercent}
             decimals={1}
@@ -185,8 +185,8 @@ function TermsEditor({ project, initial, isFirst, isNew, onClose, onSave, onDele
         <WeekdayToggle value={t.workdays} onChange={(v) => set({ workdays: v })} label="Arbeitstage" />
       </div>
       <p className="muted small">
-        Tage vor dem „gültig ab“ werden weiter mit den bisherigen Werten berechnet – vergangene Monate, Überstunden und
-        PDF-Berichte bleiben unverändert.
+        Tage vor „Gültig ab“ rechnet die App weiter mit den bisherigen Werten – vergangene Monate und PDF-Berichte bleiben
+        unverändert.
       </p>
       <button className="btn primary full" onClick={() => onSave(t)}>
         Speichern

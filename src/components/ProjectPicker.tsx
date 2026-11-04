@@ -1,4 +1,5 @@
 import type { Project } from '../lib/types';
+import { Icon } from './Icon';
 
 interface Props {
   projects: Project[];
@@ -20,7 +21,7 @@ export function ProjectPicker({ projects, value, onChange, disabled }: Props) {
         ))}
       </select>
       <span className="chevron" aria-hidden>
-        ▾
+        <Icon name="dropdown" />
       </span>
     </label>
   );

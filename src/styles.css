@@ -1,3 +1,8 @@
+/*
+ * Farben wie in Version 1 (Blau #2563eb, Schiefergrau), Aufbau und Bauteile nach Material 3 (Android).
+ * Rollen: bg = Seite, card = Karten, off = Flächen in Karten (Listen, Felder), raised = Dialoge, text/muted = Text,
+ * border = Trennlinien, outline = Rahmen von Eingabefeldern und Schaltern, tonal = Tonal-Knöpfe und aktiver Reiter.
+ */
 :root {
   --bg: #f3f4f7;
   --card: #ffffff;
@@ -5,11 +10,16 @@
   --text: #111827;
   --muted: #5b6472;
   --border: #dde1e7;
+  --outline: #7c8594;
   --off: #eef1f5;
   --primary: #2563eb;
   --on-primary: #ffffff;
   --link: #1d4ed8;
   --primary-soft: #dbeafe;
+  --on-primary-soft: #1d4ed8;
+  --tonal: #dbeafe;
+  --on-tonal: #1d4ed8;
+  --secondary: #1d4ed8;
   --success: #15803d;
   --warning: #b45309;
   --warning-bg: #f59e0b;
@@ -18,10 +28,15 @@
   --danger-bg: #dc2626;
   --on-danger: #ffffff;
   --danger-soft: #fdecec;
+  --on-danger-soft: #b91c1c;
   --holiday: #0e7490;
   --chip-on: #ffffff;
   --backdrop: rgb(15 23 42 / 0.45);
   --shadow: rgb(0 0 0 / 0.25);
+  --nav-bg: #ffffff;
+  --switch-off: #dde1e7;
+  --inverse-surface: #111827;
+  --inverse-on-surface: #ffffff;
   --c-urlaub: #15803d;
   --c-krank: #dc2626;
   --c-ueberstunden: #7e22ce;
@@ -29,9 +44,9 @@
   --c-feiertag: #0e7490;
   --c-frei: #475569;
   --c-sonstiges: #a16207;
-  --radius: 14px;
+  --radius: 1.5rem;
   color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: Roboto, 'Roboto Flex', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg);
 }
@@ -44,11 +59,16 @@
     --text: #eef1f5;
     --muted: #a3acb9;
     --border: #363d4a;
+    --outline: #6f7887;
     --off: #0f1218;
     --primary: #3b82f6;
     --on-primary: #ffffff;
     --link: #7ab4ff;
     --primary-soft: #1b2b47;
+    --on-primary-soft: #7ab4ff;
+    --tonal: #1b2b47;
+    --on-tonal: #7ab4ff;
+    --secondary: #7ab4ff;
     --success: #4ade80;
     --warning: #fbbf24;
     --warning-bg: #f59e0b;
@@ -57,10 +77,15 @@
     --danger-bg: #dc2626;
     --on-danger: #ffffff;
     --danger-soft: #3a1619;
+    --on-danger-soft: #f87171;
     --holiday: #22d3ee;
     --chip-on: #0b0e13;
     --backdrop: rgb(0 0 0 / 0.7);
     --shadow: rgb(0 0 0 / 0.5);
+    --nav-bg: #161a21;
+    --switch-off: #363d4a;
+    --inverse-surface: #eef1f5;
+    --inverse-on-surface: #161a21;
     --c-urlaub: #4ade80;
     --c-krank: #f87171;
     --c-ueberstunden: #c084fc;
@@ -78,11 +103,16 @@
   --text: #eef1f5;
   --muted: #a3acb9;
   --border: #363d4a;
+  --outline: #6f7887;
   --off: #0f1218;
   --primary: #3b82f6;
   --on-primary: #ffffff;
   --link: #7ab4ff;
   --primary-soft: #1b2b47;
+  --on-primary-soft: #7ab4ff;
+  --tonal: #1b2b47;
+  --on-tonal: #7ab4ff;
+  --secondary: #7ab4ff;
   --success: #4ade80;
   --warning: #fbbf24;
   --warning-bg: #f59e0b;
@@ -91,10 +121,15 @@
   --danger-bg: #dc2626;
   --on-danger: #ffffff;
   --danger-soft: #3a1619;
+  --on-danger-soft: #f87171;
   --holiday: #22d3ee;
   --chip-on: #0b0e13;
   --backdrop: rgb(0 0 0 / 0.7);
   --shadow: rgb(0 0 0 / 0.5);
+  --nav-bg: #161a21;
+  --switch-off: #363d4a;
+  --inverse-surface: #eef1f5;
+  --inverse-on-surface: #161a21;
   --c-urlaub: #4ade80;
   --c-krank: #f87171;
   --c-ueberstunden: #c084fc;
@@ -124,9 +159,24 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Roboto wie in Android; Grundgröße 16 sp (Material „Body Large“) */
+  font-family: Roboto, 'Roboto Flex', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 1rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
   -webkit-tap-highlight-color: transparent;
+}
+/* Randlos (edge-to-edge): Der Inhalt läuft unter der Statusleiste durch – dort eine Fläche in Hintergrundfarbe,
+   damit Uhrzeit und Akku lesbar bleiben (nur in der Android-App, im Browser ist der Abstand 0) */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 40;
 }
 body.no-scroll {
   overflow: hidden;
@@ -153,15 +203,17 @@ select {
   font-size: max(16px, 1em);
   color: var(--text);
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
+  /* Umrandetes Textfeld (Material „outlined“): Rahmen in Outline-Farbe, kleine Ecken, beim Fokus 2 dp Primärfarbe */
+  border: 1px solid var(--outline);
+  border-radius: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  min-height: 3rem;
   min-width: 0;
 }
 input:focus,
 select:focus {
   outline: 2px solid var(--primary);
-  outline-offset: -1px;
+  outline-offset: -2px;
 }
 
 h1,
@@ -169,11 +221,17 @@ h2,
 h3 {
   margin: 0 0 0.6rem;
 }
+/* Textstile nach Material 3: Title Large (22 sp) und Title Medium (16 sp, mittel) */
 h2 {
-  font-size: 1.1rem;
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 h3 {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
   margin-top: 1rem;
 }
 
@@ -181,27 +239,32 @@ h3 {
   max-width: 40rem;
   margin: 0 auto;
   min-height: 100vh;
-  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  /* Platz für die Navigationsleiste unten */
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
 }
 .app-header {
   /* Android-App reicht bis unter die Statusleiste (randlos): oben den Abstand der Leiste freihalten */
-  padding: calc(1rem + env(safe-area-inset-top)) 1rem 0.25rem;
+  padding: calc(1.25rem + env(safe-area-inset-top)) 1rem 0.5rem;
 }
+/* Große obere App-Leiste: Titel des Reiters in „Headline Large“ (32 sp) */
 .app-header h1 {
-  font-size: 1.35rem;
-  color: var(--link);
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin: 0.75rem 0 0.25rem;
 }
 
 .page {
   padding: 0.5rem 1rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  /* Raster aus 4/8 dp: 12 dp zwischen den Karten */
+  gap: 0.75rem;
 }
 
 .card {
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem;
 }
@@ -219,71 +282,110 @@ h3 {
   color: var(--muted);
 }
 .small {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 .center {
   text-align: center;
 }
 .info {
   background: var(--primary-soft);
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  color: var(--on-primary-soft);
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
   margin-top: 0;
 }
 
 /* Buttons */
+/*
+ * Knöpfe nach Material 3 Expressive: rund (Kapsel), beim Drücken werden die Ecken eckiger (Formwechsel) und eine
+ * Zustandsebene (12 % der Textfarbe) legt sich darüber. Sichtbar 40 dp hoch, Trefferfläche 48 dp (::before).
+ * Ohne Zusatz: umrandeter Knopf; primary = gefüllt, secondary = tonal, danger = Fehlerfarbe.
+ */
 .btn {
-  border: none;
-  border-radius: 12px;
-  padding: 0.65rem 1rem;
-  font-weight: 600;
-  background: var(--border);
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: transparent;
+  color: var(--muted);
+  transition: border-radius 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.15s ease;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -0.25rem 0;
 }
 .btn.full {
   width: 100%;
   margin-top: 0.75rem;
 }
 .btn.primary {
+  border-color: transparent;
   background: var(--primary);
   color: var(--on-primary);
 }
 .btn.secondary {
-  background: var(--primary-soft);
-  color: var(--link);
+  border-color: transparent;
+  background: var(--tonal);
+  color: var(--on-tonal);
 }
 .btn.warning {
+  border-color: transparent;
   background: var(--warning-bg);
   color: var(--on-warning);
 }
 .btn.danger {
+  border-color: transparent;
   background: var(--danger-bg);
   color: var(--on-danger);
 }
+/* Mittlere Größe: 56 dp hoch, Text 16 sp */
 .btn.big {
-  font-size: 1.15rem;
-  padding: 1rem;
-  border-radius: 16px;
+  min-height: 3.5rem;
+  border-radius: 1.75rem;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
 }
 .btn:active {
-  transform: scale(0.98);
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 0 100vmax color-mix(in srgb, currentColor 12%, transparent);
 }
+.btn.big:active {
+  border-radius: 1rem;
+}
+/* Symbolknöpfe: Symbol 24 dp, Trefferfläche 48 × 48 dp */
 .icon-btn {
   border: none;
   background: transparent;
-  font-size: 1.2rem;
-  padding: 0.35rem 0.55rem;
-  border-radius: 8px;
+  font-size: 1.5rem;
+  min-width: 3rem;
+  min-height: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
   color: var(--muted);
 }
-.icon-btn:hover {
-  background: var(--border);
+.icon-btn:active {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+/* Schließen: normaler Symbolknopf (Material hat dafür keine eigene Form) */
+.close-btn {
+  color: var(--muted);
 }
 .link {
   border: none;
   background: none;
   color: var(--link);
   padding: 0.25rem 0;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 .link.danger {
   color: var(--danger);
@@ -309,11 +411,13 @@ h3 {
 .project-picker select {
   appearance: none;
   width: 100%;
-  font-size: 1.1rem;
-  font-weight: 600;
-  padding: 0.75rem 2.2rem 0.75rem 2.2rem;
-  border-radius: 12px;
-  border: 2px solid var(--accent);
+  font-size: 1rem;
+  font-weight: 500;
+  min-height: 3.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.25rem;
+  border-radius: 1rem;
+  border: none;
+  background: var(--off);
 }
 .project-picker select:disabled {
   opacity: 1;
@@ -332,22 +436,15 @@ h3 {
   flex-direction: column;
   gap: 0.6rem;
 }
+/* Start-Knopf in Material-Größe „Medium“ (56 dp, wie Pause/Beenden), über die ganze Breite */
 .timer .start {
   width: 100%;
-  font-size: 1.35rem;
-  padding: 1.4rem;
+  font-size: 1.125rem;
 }
-.timer.running {
-  border-color: var(--success);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
-}
-.timer.paused {
-  border-color: var(--warning);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 25%, transparent);
-}
+
 .timer-status {
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
 }
 .timer.running .timer-status {
   color: var(--success);
@@ -355,12 +452,14 @@ h3 {
 .timer.paused .timer-status {
   color: var(--warning);
 }
+/* Laufende Zeit in „Display Large“ (57 sp) */
 .clock {
   text-align: center;
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: 3.5625rem;
+  line-height: 4rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.015em;
 }
 .timer-actions {
   display: grid;
@@ -372,7 +471,7 @@ h3 {
 .timer-actions .btn {
   padding-inline: 0.5rem;
   white-space: nowrap;
-  font-size: clamp(1rem, 4.8vw, 1.15rem);
+  font-size: clamp(1rem, 4.8vw, 1.125rem);
 }
 
 /* Statistiken */
@@ -383,21 +482,24 @@ h3 {
 }
 .stat {
   background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
 }
 .stat span {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--muted);
   /* Lange Wörter wie „Erfassungsbeginn“ trennen statt abschneiden */
   hyphens: auto;
   overflow-wrap: anywhere;
 }
 .stat strong {
-  font-size: clamp(0.8rem, 4vw, 1.15rem);
+  font-size: clamp(0.8rem, 4vw, 1.125rem);
+  font-weight: 500;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
@@ -427,16 +529,21 @@ h3 {
 }
 .surcharge-list li.total {
   border-bottom: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 
+/* Material-Badge: Fehlerfarbe, 16 dp hoch, „Label Small“ */
 .badge {
   display: inline-block;
   background: var(--danger-bg);
   color: var(--on-danger);
   border-radius: 999px;
-  font-size: 0.75rem;
-  padding: 0.05rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1rem;
+  min-width: 1rem;
+  text-align: center;
+  padding: 0 0.3rem;
   vertical-align: middle;
 }
 
@@ -461,38 +568,45 @@ h3 {
   border: none;
   background: none;
   padding: 0 0 0.4rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: left;
 }
 
-/* Chips */
+/* Chips nach Material 3: 32 dp hoch, Ecken 8 dp, dünner Rahmen; Farbe je Art (Urlaub, Krank …) */
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .chip {
   --chip: var(--link);
-  border: 1.5px solid var(--chip);
+  border: 1px solid var(--border);
   color: var(--chip);
   background: transparent;
-  border-radius: 999px;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.88rem;
+  border-radius: 0.5rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
 }
 .chip.small {
-  padding: 0.25rem 0.65rem;
-  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8125rem;
 }
 .chip.active {
+  border-color: var(--chip);
   background: var(--chip);
   color: var(--chip-on);
 }
+.chip:active:not(.static) {
+  box-shadow: inset 0 0 0 100vmax color-mix(in srgb, currentColor 12%, transparent);
+}
 .chip.static {
   cursor: default;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.6rem;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
 }
 .summary-chips {
   margin: 0.75rem 0 0.25rem;
@@ -509,7 +623,7 @@ h3 {
   margin: 0;
 }
 .month-nav .icon-btn {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
 }
 .day-list {
   padding: 0.25rem 0;
@@ -535,7 +649,7 @@ h3 {
   color: var(--muted);
 }
 .day-row.today {
-  box-shadow: inset 3px 0 0 var(--primary);
+  box-shadow: inset 4px 0 0 var(--primary);
 }
 .day-row.untracked {
   background: var(--danger-soft);
@@ -569,8 +683,9 @@ h3 {
 .tag {
   --chip: var(--muted);
   color: var(--chip);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
 }
 .tag.holiday {
   color: var(--holiday);
@@ -597,45 +712,68 @@ h3 {
   z-index: 50;
 }
 .modal {
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-bottom: none;
+  position: relative;
+  background: var(--card);
   width: 100%;
   max-width: 40rem;
   max-height: 92vh;
   max-height: 92dvh;
-  border-radius: 18px 18px 0 0;
+  border-radius: 28px 28px 0 0;
   display: flex;
   flex-direction: column;
+}
+/* Ziehgriff oben am Bottom Sheet (Material: 32 × 4 dp) */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 1.375rem;
+  left: 50%;
+  width: 2rem;
+  height: 0.25rem;
+  margin-left: -1rem;
+  border-radius: 999px;
+  background: var(--outline);
+  opacity: 0.6;
 }
 @media (min-width: 700px) {
   .modal-backdrop {
     align-items: center;
   }
   .modal {
-    border-radius: 18px;
+    border-radius: 28px;
+  }
+  .modal::before {
+    display: none;
   }
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1rem 0.5rem;
+  padding: 2.25rem 0.25rem 0.5rem 1rem;
 }
+/* Titel in „Headline Small“ (24 sp) */
 .modal-header h2 {
   margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+@media (min-width: 700px) {
+  .modal-header {
+    padding-top: 1rem;
+  }
 }
 .modal-body {
   overflow-y: auto;
   min-height: 0;
-  padding: 0 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  padding: 0 1rem calc(1.5rem + env(safe-area-inset-bottom));
 }
 .editor-section {
   margin-bottom: 1rem;
 }
 .session-edit {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--off);
+  border-radius: 1rem;
   padding: 0.75rem;
   margin-bottom: 0.6rem;
   display: flex;
@@ -646,7 +784,7 @@ h3 {
   justify-content: space-between;
 }
 .session-edit .label {
-  font-weight: 600;
+  font-weight: 500;
 }
 .times label {
   display: flex;
@@ -678,7 +816,7 @@ h3 {
 .running-badge {
   padding: 0.55rem 0;
   color: var(--success);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1rem;
 }
 .note {
@@ -687,8 +825,8 @@ h3 {
 }
 .day-totals {
   background: var(--off);
-  border-radius: 12px;
-  padding: 0.75rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
 }
 .day-totals > div {
   display: flex;
@@ -734,14 +872,10 @@ h3 {
   color: var(--muted);
 }
 .settings-group-body > label.checkbox {
-  flex-direction: row;
-  align-items: flex-start;
-  font-size: 0.95rem;
+  flex-direction: row-reverse;
+  align-items: center;
+  font-size: 1rem;
   color: var(--text);
-}
-.settings-group-body > label.checkbox input {
-  flex-shrink: 0;
-  margin-top: 0.1rem;
 }
 /* Abstand regelt die Gruppe */
 .settings-group-body > .btn.full {
@@ -772,27 +906,38 @@ h3 {
 .color.active {
   border-color: var(--text);
 }
+/* Verbundene Knopfgruppe (Material 3 Expressive): 2 dp Abstand, innen kleine Ecken, außen rund;
+   gewählte Tage in Primärfarbe und ganz rund */
 .weekday-toggle {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.125rem;
   flex-wrap: wrap;
 }
 .weekday-toggle button {
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: 8px;
+  border: none;
+  background: var(--off);
+  border-radius: 0.5rem;
+  min-height: 2.5rem;
   padding: 0.35rem 0.55rem;
-  font-size: 0.85rem;
-  min-width: 2.4rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 2.5rem;
+  transition: border-radius 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.weekday-toggle button:first-child {
+  border-radius: 1.25rem 0.5rem 0.5rem 1.25rem;
+}
+.weekday-toggle button:last-child {
+  border-radius: 0.5rem 1.25rem 1.25rem 0.5rem;
 }
 .weekday-toggle button.active {
   background: var(--primary);
-  border-color: var(--primary);
   color: var(--on-primary);
+  border-radius: 1.25rem;
 }
 .surcharge-edit {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--card);
+  border-radius: 1rem;
 }
 .surcharge-edit > summary {
   display: flex;
@@ -812,10 +957,62 @@ h3 {
 .surcharge-edit.disabled {
   opacity: 0.6;
 }
-.checkbox input {
-  width: 1.2rem;
-  height: 1.2rem;
-  margin-right: 0.4rem;
+/*
+ * Ein/Aus als Material-3-Schalter (52 × 32 dp): aus = helle Spur mit Rahmen und kleinem Griff (16 dp),
+ * an = Spur in Primärfarbe mit großem Griff (24 dp). Der Griff ist ein Hintergrundbild, deshalb klappt das in
+ * jedem Browser; der Zustand zeigt sich an Farbe, Größe UND Lage des Griffs.
+ */
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 2rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--outline);
+  border-radius: 999px;
+  background-color: var(--switch-off);
+  background-image: radial-gradient(circle, var(--outline) 0 0.5rem, transparent calc(0.5rem + 0.5px));
+  background-size: 2rem 2rem;
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  background-position: left center;
+  transition: background-position 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+input[type='checkbox']:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  background-image: radial-gradient(circle, var(--on-primary) 0 0.75rem, transparent calc(0.75rem + 0.5px));
+  background-position: right center;
+}
+/* Gedrückt: Griff wird größer (28 dp) */
+input[type='checkbox']:active {
+  background-image: radial-gradient(circle, var(--outline) 0 0.875rem, transparent calc(0.875rem + 0.5px));
+}
+input[type='checkbox']:checked:active {
+  background-image: radial-gradient(circle, var(--on-primary) 0 0.875rem, transparent calc(0.875rem + 0.5px));
+}
+input[type='checkbox']:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+input[type='checkbox']:focus {
+  outline: none;
+}
+input[type='checkbox']:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+/* Beschriftung links, Schalter rechts */
+label.checkbox {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
 }
 .danger-zone {
   justify-content: flex-end;
@@ -825,16 +1022,29 @@ h3 {
 .project-list > .btn.full {
   margin-top: 0.25rem;
 }
+/* Aufklappbare Gruppen als Liste (Material 3 Expressive „segmented“): 2 dp Abstand, außen große, innen kleine Ecken */
 .settings-group {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--off);
+  border-radius: 0.25rem;
+}
+.settings-group:not(.settings-group + .settings-group) {
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
+.settings-group:not(:has(+ .settings-group)) {
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+}
+.settings-group + .settings-group {
+  margin-top: calc(0.125rem - 0.5rem);
 }
 .settings-group > summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 0.75rem;
-  padding: 0.7rem 0.8rem;
+  min-height: 3.5rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   list-style: none;
 }
@@ -842,42 +1052,42 @@ h3 {
 .surcharge-edit > summary::-webkit-details-marker {
   display: none;
 }
+/* Pfeil „expand_more“ als Maske (Farbe = Textfarbe), dreht sich beim Aufklappen */
+.settings-group > summary::after,
+.surcharge-edit > summary::after {
+  content: '';
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s ease;
+}
 .settings-group > summary::after {
-  content: '▾';
-  content: '▾' / '';
   grid-row: 1 / span 2;
   grid-column: 2;
-  color: var(--muted);
 }
-.settings-group[open] > summary::after {
-  content: '▴';
-  content: '▴' / '';
+.settings-group[open] > summary::after,
+.surcharge-edit[open] > summary::after {
+  transform: rotate(180deg);
 }
 .surcharge-edit > summary > span {
   margin-left: auto;
 }
-.surcharge-edit > summary::after {
-  content: '▾';
-  content: '▾' / '';
-  color: var(--muted);
-}
-.surcharge-edit[open] > summary::after {
-  content: '▴';
-  content: '▴' / '';
-}
 .settings-group-title {
-  font-weight: 600;
+  font-weight: 400;
 }
 .settings-group-summary {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   overflow-wrap: anywhere;
 }
 .settings-group-body {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  padding: 0 0.8rem 0.9rem;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
 }
 .settings-group-body > p,
 .settings-group-body .choice-field {
@@ -893,6 +1103,10 @@ h3 {
 }
 
 /* Tabbar */
+/*
+ * Navigationsleiste nach Material 3 Expressive: 64 dp hoch, Fläche surface-container, reicht randlos bis unter die
+ * Gestenleiste. Aktiver Reiter: Pille (56 × 32 dp, secondary-container) hinter dem Symbol, Beschriftung darunter.
+ */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -900,30 +1114,62 @@ h3 {
   right: 0;
   display: flex;
   justify-content: center;
-  background: var(--card);
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: var(--nav-bg);
   z-index: 10;
 }
+.tabbar-inner {
+  display: flex;
+  width: 100%;
+  max-width: 40rem;
+  min-height: 4rem;
+}
 .tabbar button {
-  flex: 1;
-  max-width: 13.3rem;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
+  justify-content: center;
+  gap: 0.25rem;
   border: none;
   background: none;
-  padding: 0.55rem 0;
-  font-size: 0.78rem;
+  padding: 0.375rem 0.125rem;
+  min-height: 4rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
   color: var(--muted);
 }
 .tabbar button.active {
-  color: var(--link);
-  font-weight: 600;
+  color: var(--secondary);
 }
 .tab-icon {
-  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: background-color 0.2s ease;
+}
+.tabbar button.active .tab-icon {
+  background: var(--tonal);
+  color: var(--on-tonal);
+}
+.tabbar button:active .tab-icon {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.tabbar button.active:active .tab-icon {
+  background: color-mix(in srgb, var(--on-tonal) 12%, var(--tonal));
+}
+/* Mehr Kontrast gewünscht: Trennlinie über der Leiste */
+@media (prefers-contrast: more) {
+  .tabbar {
+    border-top: 1px solid var(--outline);
+  }
 }
 .grid-2 input,
 .grid-2 select {
@@ -953,6 +1199,9 @@ a.btn {
   text-align: center;
   text-decoration: none;
 }
+.exact-hint {
+  margin-bottom: 0;
+}
 .feedback-address {
   margin-bottom: 0;
   text-align: center;
@@ -968,17 +1217,21 @@ a.btn {
   align-items: center;
   gap: 0.25rem;
   background: var(--primary-soft);
-  border-radius: 12px;
-  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  color: var(--on-primary-soft);
+  border-radius: 1rem;
+  padding: 0.25rem 0.25rem 0.25rem 1rem;
 }
 .install-hint button.grow {
   border: none;
   background: none;
   text-align: left;
-  color: var(--link);
-  font-size: 0.88rem;
-  font-weight: 600;
+  color: var(--on-primary-soft);
+  font-size: 0.875rem;
+  font-weight: 500;
   padding: 0.4rem 0;
+}
+.install-hint .icon-btn {
+  color: var(--on-primary-soft);
 }
 
 .surcharge-list li .muted {
@@ -992,49 +1245,65 @@ a.btn {
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+.header-clock {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+/* Demo: Hinweis unter Titel und Uhr */
 .demo-bar {
+  order: 3;
+  flex-basis: 100%;
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
   font-size: 0.82rem;
   color: var(--muted);
 }
+/* Snackbar nach Material 3: inverse Fläche, kleine Ecken, über der Navigationsleiste */
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(5rem + env(safe-area-inset-bottom));
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(35rem, calc(100% - 32px));
-  background: var(--text);
-  color: var(--card);
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  min-height: 3rem;
+  background: var(--inverse-surface);
+  color: var(--inverse-on-surface);
+  padding: 0.875rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   z-index: 60;
-  box-shadow: 0 6px 24px var(--shadow);
+  box-shadow: 0 3px 8px var(--shadow);
 }
+/* Ein/Aus als Listeneintrag: Text links, Schalter rechts, mindestens 56 dp hoch (Material-Liste, ohne Trennlinien) */
 .toggle-row {
   display: flex;
-  align-items: flex-start;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0;
 }
 .toggle-row input {
   flex-shrink: 0;
-  margin-top: 0.15rem;
 }
 
 /* Jahresübersicht */
 .neg {
   color: var(--danger);
 }
+/* Fortschritt wie Material-Linearanzeige: Spur in secondary-container, ohne Rahmen */
 .meter {
   display: flex;
-  height: 10px;
+  height: 0.5rem;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--off);
-  border: 1px solid var(--border);
+  background: var(--tonal);
   margin-top: 0.8rem;
 }
 .meter-taken {
@@ -1071,9 +1340,9 @@ a.btn {
   text-align: right;
 }
 .year-row.head {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 .year-row.inactive {
   color: var(--muted);
@@ -1094,25 +1363,33 @@ a.btn {
   white-space: nowrap;
 }
 /* Einstellungen als Liste: Beschriftung links, gleich breite Felder rechts */
+/* Liste nach Material 3 Expressive („segmented“): einzelne Flächen mit 2 dp Abstand, außen große, innen kleine Ecken */
 .field-list {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  gap: 0.125rem;
+  border-radius: 1.25rem;
   overflow: hidden;
+}
+.field-list > label,
+.field-list > .field-row {
+  background: var(--off);
+  border-radius: 0.25rem;
 }
 .field-list label {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 5.5rem 2.2rem;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.55rem 0.75rem;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.25rem 1rem;
   color: var(--text);
-  font-size: 0.95rem;
-  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
 }
-.field-list label:last-child {
-  border-bottom: none;
+.field-list input,
+.field-list select {
+  min-height: 2.5rem;
+  padding-block: 0.4rem;
 }
 .field-list input {
   width: 100%;
@@ -1120,7 +1397,7 @@ a.btn {
 }
 .field-list .unit {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 /* Liste direkt in einer Karte: Luft zu Häkchen, Text und Knöpfen davor und danach */
 .card > .field-list {
@@ -1150,7 +1427,7 @@ a.btn {
 }
 .release-list ul {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 1.25rem;
   line-height: 1.5;
 }
 /* Updates */
@@ -1176,7 +1453,7 @@ a.btn {
 }
 .update-status.highlight {
   color: var(--link);
-  font-weight: 600;
+  font-weight: 500;
 }
 .update-bar {
   display: flex;
@@ -1184,16 +1461,15 @@ a.btn {
   justify-content: space-between;
   gap: 0.75rem;
   margin: 0.25rem 1rem 0;
-  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
-  border-radius: 12px;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-radius: 1rem;
   background: var(--primary-soft);
-  color: var(--link);
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: var(--on-primary-soft);
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 .update-bar .btn {
-  padding: 0.45rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
 }
 .update-bar .btn {
   white-space: nowrap;
@@ -1203,7 +1479,6 @@ a.btn {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.72rem;
 }
 /* Sehr schmale Handys (z. B. 320 px): nichts darf die Seite verbreitern */
 @media (max-width: 350px) {
@@ -1216,7 +1491,8 @@ a.btn {
     padding-left: 0.5rem;
   }
   .tabbar button {
-    font-size: 0.66rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0;
   }
   .stat {
     padding: 0.5rem;
@@ -1228,7 +1504,7 @@ a.btn {
   .field-list label {
     grid-template-columns: minmax(0, 1fr) 4.6rem 1.9rem;
     gap: 0.45rem;
-    padding: 0.5rem 0.6rem;
+    padding: 0.25rem 0.75rem;
   }
   .field-list label.select-row select {
     min-width: 0;
@@ -1237,10 +1513,10 @@ a.btn {
     width: 7rem;
   }
   .settings-group > summary {
-    padding: 0.65rem 0.6rem;
+    padding: 0.6rem 0.75rem;
   }
   .settings-group-body {
-    padding: 0 0.6rem 0.8rem;
+    padding: 0 0.75rem 0.875rem;
   }
 }
 .surcharge-list li > :first-child {
@@ -1251,14 +1527,11 @@ a.btn {
 .field-list .field-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.95rem;
-  border-bottom: 1px solid var(--border);
-}
-.field-list .field-row:last-child {
-  border-bottom: none;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
 }
 .field-list .field-row strong {
   text-align: right;
@@ -1280,9 +1553,9 @@ a.btn {
   gap: 0.15rem;
   text-align: left;
   background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.55rem 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  padding: 0.6rem 1rem;
 }
 .terms-entry.active {
   border-color: var(--primary);
@@ -1292,7 +1565,7 @@ a.btn {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.5rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .terms-date .tag {
   color: var(--link);
@@ -1303,7 +1576,7 @@ a.btn {
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .terms-workdays {
   display: flex;
@@ -1314,7 +1587,8 @@ a.btn {
   font-size: 0.85rem;
 }
 .btn.danger-text {
-  color: var(--danger);
+  border-color: transparent;
+  color: var(--on-danger-soft);
   background: var(--danger-soft);
 }
 
@@ -1326,9 +1600,9 @@ a.btn {
 }
 .wizard-progress span {
   flex: 1;
-  height: 4px;
+  height: 0.25rem;
   border-radius: 999px;
-  background: var(--border);
+  background: var(--tonal);
 }
 .wizard-progress span.done {
   background: var(--primary);
@@ -1358,25 +1632,31 @@ a.btn {
 }
 .wizard-subhead {
   margin: 0.25rem 0 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 .wizard-rule-name {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+/* Zulagen im Assistenten: Schalter + Name brauchen Platz, das Zahlenfeld weniger */
+.field-list label.wizard-rule {
+  grid-template-columns: minmax(0, 1fr) 4rem 1rem;
   gap: 0.5rem;
 }
-.wizard-rule-name input {
-  width: 1.2rem;
-  height: 1.2rem;
-  flex-shrink: 0;
+/* Schalter behalten ihre Größe, auch wo Eingabefelder die ganze Breite füllen */
+:is(.field-list, .grid-2, .wizard-field, .times) input[type='checkbox'] {
+  width: 3.25rem;
+  flex: none;
 }
+
 .wizard-section {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.75rem;
+  gap: 0.5rem;
+  padding: 1rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 1rem;
 }
 .wizard-section .btn.full {
   margin-top: 0.25rem;
@@ -1407,11 +1687,11 @@ a.btn {
 }
 .choice-group {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.65rem 0.75rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
 }
 .choice {
   display: flex;
@@ -1420,9 +1700,11 @@ a.btn {
   cursor: pointer;
 }
 .choice input {
-  width: 1.15rem;
-  height: 1.15rem;
-  margin-top: 0.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-height: 0;
+  margin-top: 0.1rem;
+  padding: 0;
   flex-shrink: 0;
   accent-color: var(--primary);
 }
@@ -1450,29 +1732,43 @@ a.btn {
   padding: 16px;
   z-index: 70;
 }
+/* Dialog nach Material 3: Ecken 28 dp, Text linksbündig, Aktionen als Textknöpfe rechts unten */
 .confirm-dialog {
   background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 1.75rem;
   width: min(22.5rem, 100%);
-  padding: 1.25rem 1rem 1rem;
-  box-shadow: 0 10px 40px var(--shadow);
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 6px 24px var(--shadow);
+  text-align: left;
 }
 .confirm-dialog p {
-  margin: 0 0 1.25rem;
-  font-size: 1.05rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 .confirm-dialog p:has(+ .confirm-detail) {
   margin-bottom: 0.5rem;
 }
 .confirm-dialog .confirm-detail {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 .confirm-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
+}
+.confirm-actions .btn {
+  border-color: transparent;
+  background: transparent;
+  color: var(--link);
+  padding-inline: 0.75rem;
+}
+.confirm-actions .btn.danger {
+  color: var(--danger);
 }
 
 
@@ -1492,4 +1788,98 @@ a.btn {
 .startup-error h2,
 .startup-error p {
   margin: 0;
+}
+
+/* Tastatur: sichtbarer Fokus (Material: 3 dp, Abstand 2 dp); Bewegung nur ohne „Bewegung reduzieren“ */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--secondary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* In aufgeklappten Gruppen (Fläche surface-container) heben sich Listen und Einträge mit der Kartenfarbe ab */
+.settings-group .field-list > label,
+.settings-group .field-list > .field-row,
+.settings-group .terms-entry,
+.settings-group .weekday-toggle button:not(.active) {
+  background: var(--card);
+}
+.project-picker .chevron,
+.project-chevron {
+  display: inline-flex;
+  font-size: 1.5rem;
+}
+.missing-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+.missing-action .icon {
+  font-size: 1.25rem;
+}
+
+/* Hilfe „?“ hinter Überschriften (components/Help.tsx) */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: -0.5rem -0.5rem 0.5rem 0;
+}
+.card-head h2 {
+  margin: 0;
+  min-width: 0;
+}
+.help-btn {
+  flex-shrink: 0;
+  font-size: 1.375rem;
+  color: var(--muted);
+}
+.help-btn.open {
+  color: var(--link);
+}
+.settings-group > summary .help-btn {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  margin: -0.5rem 0;
+}
+.settings-group > summary:has(.help-btn) {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+.settings-group > summary:has(.help-btn)::after {
+  grid-column: 3;
+}
+.help-text {
+  background: var(--primary-soft);
+  color: var(--text);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.help-text p {
+  margin: 0;
+}
+.settings-group-body > .help-text {
+  margin-bottom: 0;
+}
+/* Beschriftung eines Schalters mit Zusatzzeile darunter */
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
 }

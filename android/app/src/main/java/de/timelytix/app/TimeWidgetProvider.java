@@ -85,6 +85,12 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         long net = s.netMs(now);
         boolean ticking = running && !paused && !auto;
         v.setChronometer(R.id.widget_clock, SystemClock.elapsedRealtime() - net, ticking ? null : fixed(net), ticking);
+        // Uhrzeit: groß statt „00:00“, solange keine Zeit läuft – sonst klein über der Arbeitszeit
+        v.setViewVisibility(R.id.widget_now_big, s.clock && !running ? View.VISIBLE : View.GONE);
+        v.setViewVisibility(R.id.widget_clock, s.clock && !running ? View.GONE : View.VISIBLE);
+        v.setViewVisibility(R.id.widget_now_small, s.clock && running ? View.VISIBLE : View.GONE);
+        v.setOnClickPendingIntent(R.id.widget_now_big, open);
+        v.setOnClickPendingIntent(R.id.widget_now_small, open);
 
         v.setViewVisibility(R.id.widget_start, running ? View.GONE : View.VISIBLE);
         v.setOnClickPendingIntent(R.id.widget_start, WidgetActionReceiver.pending(context, WidgetActions.START));
@@ -93,6 +99,10 @@ public class TimeWidgetProvider extends AppWidgetProvider {
         v.setTextViewText(R.id.widget_pause_label, paused ? "Weiter" : "Pause");
         v.setContentDescription(R.id.widget_pause, paused ? "Weiter" : "Pause");
         v.setInt(R.id.widget_pause, "setBackgroundResource", paused ? R.drawable.widget_btn_primary : R.drawable.widget_btn_warning);
+        // Text und Symbol in der passenden „on“-Farbe des Knopfs (Weiter = primary, Pause = Container)
+        int onColor = context.getColor(paused ? R.color.widget_on_primary : R.color.widget_on_warning);
+        v.setTextColor(R.id.widget_pause_label, onColor);
+        v.setInt(R.id.widget_pause_icon, "setColorFilter", onColor);
         v.setOnClickPendingIntent(R.id.widget_pause, WidgetActionReceiver.pending(context, paused ? WidgetActions.RESUME : WidgetActions.PAUSE));
         v.setViewVisibility(R.id.widget_stop, running ? View.VISIBLE : View.GONE);
         v.setOnClickPendingIntent(R.id.widget_stop, WidgetActionReceiver.pending(context, WidgetActions.STOP));
@@ -110,8 +120,9 @@ public class TimeWidgetProvider extends AppWidgetProvider {
             am.cancel(pi);
             return;
         }
-        // Ungenauer Wecker mit kurzem Zeitfenster (keine Berechtigung nötig); bei ausgeschaltetem Bildschirm wartet Android
-        am.setWindow(AlarmManager.RTC, next, 60_000, pi);
+        // Genau, wenn „Wecker und Erinnerungen“ erlaubt ist (sonst bis zu ~10 min später); bei ausgeschaltetem
+        // Bildschirm wartet Android, bis das Handy wieder wach ist
+        Alarms.redraw(context, next, pi);
     }
 
     /** Angehaltene Uhr als fester Text (Format wie die laufende Uhr). */

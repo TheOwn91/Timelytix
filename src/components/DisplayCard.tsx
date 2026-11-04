@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { NATIVE } from '../lib/native';
 import { useStore } from '../lib/store';
+import type { AppSettings } from '../lib/types';
 import { UI_SCALE_OPTIONS, setUiScaleChoice, uiScaleChoice, type UiScaleChoice } from '../lib/uiScale';
+import { CardTitle } from './Help';
 
 /** Anzeige-Einstellungen der App. */
 export function DisplayCard() {
@@ -12,9 +15,30 @@ export function DisplayCard() {
     setUiScaleChoice(c);
     setScale(c);
   };
+  const setSetting = (patch: Partial<AppSettings>) =>
+    update((d) => {
+      d.settings = { ...d.settings, ...patch };
+    });
   return (
     <section className="card">
-      <h2>Anzeige</h2>
+      <CardTitle
+        title="Anzeige"
+        help={
+          <>
+            <p>
+              <strong>Größe:</strong> macht Schrift und Knöpfe größer oder kleiner. „{NATIVE ? 'Wie Handy' : 'Automatisch'}“
+              übernimmt die Schriftgröße {NATIVE ? 'aus den Einstellungen des Handys' : 'des Geräts'}.
+            </p>
+            <p>
+              <strong>Stunden anzeigen:</strong> als Stunden und Minuten (7:30 h) oder als Dezimalzahl (7,50 h) – Dezimal ist
+              praktisch zum Vergleichen mit der Lohnabrechnung.
+            </p>
+            <p>
+              <strong>Uhrzeit:</strong> zeigt die aktuelle Uhrzeit mit Sekunden oben rechts{NATIVE && ' bzw. im Widget, solange keine Zeit läuft'}.
+            </p>
+          </>
+        }
+      />
       <div className="field-list">
         <label className="select-row">
           <span>Größe</span>
@@ -27,21 +51,45 @@ export function DisplayCard() {
           </select>
         </label>
         <label className="select-row">
-          <span>Summen</span>
+          <span>Stunden anzeigen</span>
           <select
             id="decimal-hours"
             value={decimal ? 'decimal' : 'hm'}
-            onChange={(e) =>
-              update((d) => {
-                d.settings = { ...d.settings, decimalHours: e.target.value === 'decimal' };
-              })
-            }
+            onChange={(e) => setSetting({ decimalHours: e.target.value === 'decimal' })}
           >
-            <option value="hm">156:44 h</option>
-            <option value="decimal">156,73 h</option>
+            <option value="hm">7:30 h</option>
+            <option value="decimal">7,50 h</option>
           </select>
         </label>
+        <OnOffRow
+          id="header-clock"
+          label="Uhrzeit oben"
+          on={!!state.settings?.showClock}
+          onChange={(on) => setSetting({ showClock: on || undefined })}
+        />
+        {/* Das Widget gibt es nur in der Android-App */}
+        {NATIVE && (
+          <OnOffRow
+            id="widget-clock"
+            label="Uhrzeit im Widget"
+            on={!!state.settings?.showWidgetClock}
+            onChange={(on) => setSetting({ showWidgetClock: on || undefined })}
+          />
+        )}
       </div>
     </section>
+  );
+}
+
+/** Zeile „anzeigen / ausblenden“ in der Liste. */
+function OnOffRow({ id, label, on, onChange }: { id: string; label: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <label className="select-row">
+      <span>{label}</span>
+      <select id={id} value={on ? 'on' : 'off'} onChange={(e) => onChange(e.target.value === 'on')}>
+        <option value="on">anzeigen</option>
+        <option value="off">ausblenden</option>
+      </select>
+    </label>
   );
 }

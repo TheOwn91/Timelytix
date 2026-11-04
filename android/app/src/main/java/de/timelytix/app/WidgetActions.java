@@ -58,6 +58,9 @@ final class WidgetActions {
             s.save(context);
         }
         updateNotice(context, s, type);
+        // Erinnerung „Abstempeln vergessen?“ – sonst plant bzw. löscht sie erst die App beim nächsten Öffnen
+        if (START.equals(type)) ForgotReminder.schedule(context, s);
+        if (STOP.equals(type)) ForgotReminder.cancelAll(context);
         TimeWidgetProvider.updateAll(context);
         WidgetPlugin.onNativeAction();
         return true;

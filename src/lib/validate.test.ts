@@ -10,6 +10,15 @@ describe('Daten prüfen (Speicher und Datensicherung)', () => {
     expect(json(validateState(json(state)))).toEqual(json(state));
   });
 
+  it('übernimmt die Uhrzeit-Einstellungen nur, wenn sie eingeschaltet sind', () => {
+    const base = { projects: [{ id: 'p', name: 'A' }], sessions: [], absences: [] };
+    const on = validateState({ ...base, settings: { showClock: true, showWidgetClock: true } });
+    expect(on.settings).toMatchObject({ showClock: true, showWidgetClock: true });
+    const odd = validateState({ ...base, settings: { showClock: 'ja', showWidgetClock: 1 } });
+    expect(odd.settings?.showClock).toBeUndefined();
+    expect(odd.settings?.showWidgetClock).toBeUndefined();
+  });
+
   it('lehnt Dateien ohne Arbeitgeber und Buchungen ab', () => {
     expect(() => validateState(null)).toThrow();
     expect(() => validateState({ projects: 'x', sessions: [] })).toThrow();

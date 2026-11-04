@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Widget 3×1 (TimeWidgetProvider.java): abgerundeter Kasten über die ganze Zeile.
+  Widget 3×1 (TimeWidgetProvider.java) nach Material 3: deckende Fläche mit dem Eckenradius des Systems
+  (@android:id/background + clipToOutline, ab Android 12), Knöpfe als Kapseln mit 48 dp Höhe.
   Oben Arbeitgeber und laufende Zeit (nimmt den freien Platz ein), darunter Start bzw. Pause/Weiter und Beenden.
   Die Grundwerte (Name, nur „Start“) zeigt die Vorschau in der Widget-Auswahl; sonst setzt sie TimeWidgetProvider.
 -->
@@ -9,14 +10,15 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/widget_root"
+        android:id="@android:id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/widget_bg"
+        android:clipToOutline="true"
         android:orientation="vertical"
         android:paddingStart="16dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="10dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
         android:paddingBottom="10dp">
 
         <LinearLayout
@@ -51,31 +53,69 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    android:fontFamily="sans-serif-medium"
                     android:textColor="@color/widget_muted"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textSize="14sp" />
 
-                <TextView
+                <ImageView
                     android:id="@+id/widget_chevron"
+                    android:visibility="gone"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="6dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_widget_expand"
+                    android:tint="@color/widget_muted" />
+            </LinearLayout>
+
+            <!-- Rechts: Uhrzeit (TextClock zählt von selbst) bzw. Arbeitszeit, beim Arbeiten die Uhrzeit klein davor
+                 (in einer Zeile – übereinander passt es bei einer Zeile Widget-Höhe nicht neben die 48-dp-Knöpfe) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:baselineAligned="true"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <TextClock
+                    android:id="@+id/widget_now_small"
                     android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="6dp"
-                    android:text="▾"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:format12Hour="HH:mm:ss"
+                    android:format24Hour="HH:mm:ss"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
                     android:textColor="@color/widget_muted"
-                    android:textSize="15sp" />
-            </LinearLayout>
+                    android:textSize="13sp" />
 
-            <Chronometer
-                android:id="@+id/widget_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:textColor="@color/widget_text"
-                android:textSize="26sp" />
+                <Chronometer
+                    android:id="@+id/widget_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_text"
+                    android:textSize="24sp" />
+
+                <TextClock
+                    android:id="@+id/widget_now_big"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:format12Hour="HH:mm:ss"
+                    android:format24Hour="HH:mm:ss"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_text"
+                    android:textSize="24sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -89,9 +129,15 @@
                 android:background="@drawable/widget_btn_primary"
                 android:contentDescription="Zeit starten">
 
-                <ImageView style="@style/WidgetButtonIcon" android:src="@drawable/ic_widget_play" />
+                <ImageView
+                    style="@style/WidgetButtonIcon"
+                    android:src="@drawable/ic_widget_play"
+                    android:tint="@color/widget_on_primary" />
 
-                <TextView style="@style/WidgetButtonLabel" android:text="Start" />
+                <TextView
+                    style="@style/WidgetButtonLabel"
+                    android:text="Start"
+                    android:textColor="@color/widget_on_primary" />
             </LinearLayout>
 
             <LinearLayout
@@ -105,12 +151,14 @@
                 <ImageView
                     android:id="@+id/widget_pause_icon"
                     style="@style/WidgetButtonIcon"
-                    android:src="@drawable/ic_widget_pause" />
+                    android:src="@drawable/ic_widget_pause"
+                    android:tint="@color/widget_on_warning" />
 
                 <TextView
                     android:id="@+id/widget_pause_label"
                     style="@style/WidgetButtonLabel"
-                    android:text="Pause" />
+                    android:text="Pause"
+                    android:textColor="@color/widget_on_warning" />
             </LinearLayout>
 
             <LinearLayout
@@ -120,9 +168,15 @@
                 android:background="@drawable/widget_btn_danger"
                 android:contentDescription="Zeit beenden">
 
-                <ImageView style="@style/WidgetButtonIcon" android:src="@drawable/ic_widget_stop" />
+                <ImageView
+                    style="@style/WidgetButtonIcon"
+                    android:src="@drawable/ic_widget_stop"
+                    android:tint="@color/widget_on_danger" />
 
-                <TextView style="@style/WidgetButtonLabel" android:text="Beenden" />
+                <TextView
+                    style="@style/WidgetButtonLabel"
+                    android:text="Beenden"
+                    android:textColor="@color/widget_on_danger" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

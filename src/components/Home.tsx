@@ -144,10 +144,10 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
       {!hideInstall && (
         <div className="install-hint">
           <button className="grow" onClick={onOpenProjects}>
-            📲 Timelytix als App auf dem Homescreen installieren – funktioniert dann offline
+            Timelytix als App auf dem Homescreen installieren – funktioniert dann offline
           </button>
           <button className="icon-btn" onClick={dismissInstall} aria-label="Hinweis ausblenden">
-            ✕
+            <Icon name="close" />
           </button>
         </div>
       )}
@@ -160,7 +160,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
             onChange={(id) => update((s) => void (s.selectedProjectId = id))}
           />
           <button className="icon-btn" onClick={onOpenProjects} aria-label="Einstellungen" title="Einstellungen">
-            ⚙
+            <Icon name="gear" />
           </button>
         </div>
         {active && <p className="muted small center">Während die Zeit läuft, kann die Arbeit nicht gewechselt werden.</p>}
@@ -254,7 +254,7 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
 
       <section className="card">
         <h2>
-          Ohne Zeiterfassung <span className="badge">{missing.length}</span>
+          Ohne Zeiterfassung {missing.length > 0 && <span className="badge">{missing.length}</span>}
         </h2>
         {missing.length === 0 ? (
           <p className="muted">✔ Alle vergangenen Arbeitstage sind erfasst.</p>
@@ -264,7 +264,9 @@ export function Home({ onOpenProjects, onStartSetup }: { onOpenProjects: () => v
               <li key={m.date}>
                 <button className="missing-date" onClick={() => setEditDate(m.date)}>
                   {fmtDate(m.date)}
-                  <span className="muted small">Zeit nachtragen ›</span>
+                  <span className="muted small missing-action">
+                    Zeit nachtragen <Icon name="forward" />
+                  </span>
                 </button>
                 <div className="chips">
                   {visibleAbsences(project, QUICK_ABSENCES).map((t) => (

@@ -36,7 +36,7 @@ final class RunningNotice {
     }
 
     static void hide(Context context) {
-        prefs(context).edit().clear().apply();
+        prefs(context).edit().remove("title").remove("body").remove("paused").apply();
         NotificationManagerCompat.from(context).cancel(ID);
     }
 
@@ -45,6 +45,25 @@ final class RunningNotice {
         SharedPreferences p = prefs(context);
         String title = p.getString("title", null);
         if (title != null) post(context, title, p.getString("body", ""), true, p.getBoolean("paused", false));
+    }
+
+    /**
+     * Auch auf der Uhr: Android leitet dauerhafte Benachrichtigungen nicht an Uhren weiter – dann ist „Zeit läuft“
+     * eine normale (still wiederkehrende) Benachrichtigung; die Knöpfe Pause/Beenden gehen auch auf der Uhr.
+     */
+    static void setWatch(Context context, boolean on) {
+        rememberWatch(context, on);
+        SharedPreferences p = prefs(context);
+        String title = p.getString("title", null);
+        if (title == null) return;
+        // Neu anlegen statt ändern, damit die Uhr sie bekommt bzw. wieder abgibt
+        NotificationManagerCompat.from(context).cancel(ID);
+        post(context, title, p.getString("body", ""), true, p.getBoolean("paused", false));
+    }
+
+    /** Einstellung der App merken (gilt auch für Widget, Wiederherstellen und Neustart des Handys). */
+    static void rememberWatch(Context context, boolean on) {
+        prefs(context).edit().putBoolean("watch", on).apply();
     }
 
     static boolean isShown(Context context) {
@@ -70,7 +89,7 @@ final class RunningNotice {
             .setSmallIcon(R.drawable.ic_stat_timelytix)
             .setContentTitle(title)
             .setContentText(body)
-            .setOngoing(true)
+            .setOngoing(!prefs(context).getBoolean("watch", false))
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false)

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Knopf als Kapsel (Material 3), 48 dp hoch -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <solid android:color="@color/widget_primary" />
-    <corners android:radius="22dp" />
+    <corners android:radius="24dp" />
 </shape>

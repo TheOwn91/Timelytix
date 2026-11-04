@@ -114,5 +114,5 @@ export function describeChanges(prev: Terms | undefined, t: Terms, p: Project): 
 }
 
 export function fmtFrom(from: DateKey): string {
-  return from === BEGINNING ? 'ab Erfassungsbeginn' : `ab ${fmtDate(from, false)}`;
+  return from === BEGINNING ? 'ab Start der Zeiterfassung' : `ab ${fmtDate(from, false)}`;
 }

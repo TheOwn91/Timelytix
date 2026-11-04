@@ -136,6 +136,16 @@ describe('Auszug fürs Widget', () => {
     expect(snap.dayEnd - snap.dayStart).toBe(24 * 3600_000);
   });
 
+  it('Uhrzeit im Widget folgt der Einstellung', () => {
+    expect(widgetSnapshot(state(), t('10:00')).clock).toBe(false);
+    expect(widgetSnapshot(state({ settings: { showWidgetClock: true } }), t('10:00')).clock).toBe(true);
+  });
+
+  it('gibt die Stunden für „Abstempeln vergessen?“ mit (Start im Widget)', () => {
+    expect(widgetSnapshot(state(), t('10:00')).forgotHours).toBe(10);
+    expect(widgetSnapshot(state({ settings: { forgotStopHours: 0 } }), t('10:00')).forgotHours).toBe(0);
+  });
+
   it('wandelt Farben für Android um', () => {
     expect(androidColor('#abc')).toBe('#aabbcc');
     expect(androidColor('#11223344')).toBe('#44112233');

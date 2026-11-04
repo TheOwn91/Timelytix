@@ -16,6 +16,7 @@ import { isIOS, requestPersistentStorage, shareOrDownload, storagePersisted } fr
 import { useStore, validateState } from '../lib/store';
 import { fmtDate } from '../lib/time';
 import { DeleteAllData } from './DeleteAllData';
+import { CardTitle } from './Help';
 
 /** Datensicherung: automatisch in den Download-Ordner, von Hand exportieren/importieren, dauerhafter Speicher. */
 export function BackupCard() {
@@ -67,9 +68,30 @@ export function BackupCard() {
     : [...BACKUP_INTERVALS, { days, label: `alle ${days} Tage` }].sort((a, b) => a.days - b.days);
   return (
     <section className="card">
-      <h2>Datensicherung</h2>
+      <CardTitle
+        title="Datensicherung"
+        help={
+          <>
+            <p>
+              Alle Daten liegen nur auf diesem Gerät, nicht in einer Cloud. Geht das Handy verloren oder wird die App gelöscht,
+              sind sie ohne Sicherung weg.
+            </p>
+            {autoPossible && (
+              <p>
+                <strong>Automatisch sichern:</strong> legt regelmäßig eine Sicherungsdatei im Ordner{' '}
+                {NATIVE ? `Dokumente/${NATIVE_BACKUP_FOLDER}` : 'Download'} ab. Kopiere sie ab und zu woanders hin (z. B. in die
+                Cloud oder auf den PC).
+              </p>
+            )}
+            <p>
+              <strong>Exportieren:</strong> erstellt jetzt eine Sicherung zum Speichern oder Teilen.{' '}
+              <strong>Importieren:</strong> ersetzt alle Daten in der App durch die Sicherung, z. B. auf einem neuen Handy.
+            </p>
+          </>
+        }
+      />
       <p className="muted small">
-        Alle Daten liegen nur auf diesem Gerät.{!autoPossible && ' Auf dem iPhone bitte regelmäßig von Hand exportieren.'}
+        Deine Daten liegen nur auf diesem Gerät.{!autoPossible && ' Auf dem iPhone bitte regelmäßig von Hand exportieren.'}
       </p>
 
       {autoPossible && (
@@ -81,7 +103,7 @@ export function BackupCard() {
       {auto && autoPossible && (
         <div className="field-list">
           <label className="select-row">
-            <span>Abstand</span>
+            <span>Wie oft</span>
             <select value={days} onChange={(e) => setSettings({ backupIntervalDays: Number(e.target.value) })}>
               {intervals.map((i) => (
                 <option key={i.days} value={i.days}>

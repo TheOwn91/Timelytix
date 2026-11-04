@@ -1,16 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NATIVE } from '../lib/native';
-import { FORGOT_OPTIONS, forgotStopHours, syncReminders, weekReminderEnabled, weekReminderTime } from '../lib/reminders';
+import {
+  FORGOT_OPTIONS,
+  forgotStopHours,
+  replanForgotReminder,
+  syncReminders,
+  weekReminderEnabled,
+  weekReminderTime,
+} from '../lib/reminders';
 import {
   notifyEnabled,
+  notifyOnWatch,
   notifySupport,
   refreshNotifySupport,
   requestNotifyPermission,
   setNotifyEnabled,
+  setNotifyOnWatch,
   showTestNotification,
   syncRunningStatus,
 } from '../lib/status';
 import { useStore } from '../lib/store';
+import { exactAlarmAllowed, openExactAlarmSettings } from '../lib/widget';
+import { CardTitle } from './Help';
 
 /** Hinweis nur, wenn etwas fehlt (bei „erlaubt“ keiner). */
 const HINTS = {
@@ -27,17 +38,33 @@ const HINTS = {
 export function NotifyCard() {
   const { state, update } = useStore();
   const [enabled, setEnabled] = useState(notifyEnabled);
+  const [watch, setWatch] = useState(notifyOnWatch);
   const [support, setSupport] = useState(notifySupport);
+  // Android: genaue Wecker erlaubt? (null = Web-App bzw. noch unbekannt)
+  const [exact, setExact] = useState<boolean | null>(null);
   const week = weekReminderEnabled(state);
   const weekTime = weekReminderTime(state);
   const forgot = forgotStopHours(state);
   const off = support === 'unsupported' || support === 'install';
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // Zurück aus den Handy-Einstellungen (dort erlaubt oder blockiert): Stand neu lesen
   useEffect(() => {
-    const refresh = () => void refreshNotifySupport().then(setSupport);
-    document.addEventListener('visibilitychange', refresh);
-    return () => document.removeEventListener('visibilitychange', refresh);
+    let wasExact: boolean | null = null;
+    const refresh = async () => {
+      const s = await refreshNotifySupport();
+      setSupport(s);
+      const now = await exactAlarmAllowed();
+      setExact(now);
+      // Gerade in den Einstellungen erlaubt: die laufende Erinnerung genau neu planen
+      if (wasExact === false && now === true) void replanForgotReminder(stateRef.current, s === 'ok');
+      wasExact = now;
+    };
+    const onVisible = () => void refresh();
+    onVisible();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
 
   const allow = async () => {
@@ -64,11 +91,49 @@ export function NotifyCard() {
 
   return (
     <section className="card">
-      <h2>Benachrichtigungen</h2>
+      <CardTitle
+        title="Benachrichtigungen"
+        help={
+          <>
+            <p>
+              <strong>„Zeit läuft“:</strong> Solange die Zeit läuft, steht oben in der Statusleiste eine Benachrichtigung mit der
+              Arbeitszeit{NATIVE && ' und den Knöpfen Pause und Beenden – auf Wunsch auch auf deiner Smartwatch'}.
+            </p>
+            <p>
+              <strong>Samstags erinnern:</strong> einmal pro Woche, wenn in der Woche Arbeitstage ohne Eintrag fehlen.
+            </p>
+            <p>
+              <strong>Beenden vergessen:</strong> meldet sich, wenn die Zeit länger als die gewählte Dauer läuft – falls du
+              vergessen hast, sie zu beenden.
+            </p>
+            {NATIVE && (
+              <p>
+                <strong>Genaue Wecker:</strong> Ohne diese Erlaubnis von Android können Erinnerungen und die Widget-Uhr einige
+                Minuten zu spät kommen.
+              </p>
+            )}
+          </>
+        }
+      />
       <label className="checkbox toggle-row">
         <input id="notify-running" type="checkbox" checked={enabled} disabled={off} onChange={(e) => void toggle(e.target.checked)} />
-        „Zeit läuft“ in der Statusleiste
+        Anzeige „Zeit läuft“
       </label>
+      {NATIVE && (
+        <label className="checkbox toggle-row">
+          <input
+            id="notify-watch"
+            type="checkbox"
+            checked={watch}
+            disabled={off || !enabled}
+            onChange={(e) => {
+              setWatch(e.target.checked);
+              void setNotifyOnWatch(e.target.checked);
+            }}
+          />
+          Auch auf der Smartwatch
+        </label>
+      )}
       <label className="checkbox toggle-row">
         <input
           id="notify-week"
@@ -93,7 +158,7 @@ export function NotifyCard() {
           </label>
         )}
         <label className="select-row">
-          <span>Abstempeln vergessen?</span>
+          <span>Erinnern, wenn Beenden vergessen</span>
           <select
             id="notify-forgot"
             value={forgot}
@@ -110,6 +175,14 @@ export function NotifyCard() {
       </div>
       {(HINTS[support] || (support === 'ok' && !NATIVE)) && (
         <p className="muted small">{HINTS[support] || 'Erinnerungen nur, solange Timelytix geöffnet ist.'}</p>
+      )}
+      {exact === false && support === 'ok' && (
+        <>
+          <p className="muted small exact-hint">Erinnerungen und Widget-Uhr können einige Minuten zu spät kommen.</p>
+          <button className="btn secondary full" onClick={() => void openExactAlarmSettings()}>
+            Genaue Wecker erlauben
+          </button>
+        </>
       )}
       {support === 'ask' && (
         <button

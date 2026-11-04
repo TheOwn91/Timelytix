@@ -91,11 +91,18 @@ function ensureChannels() {
 
 /** Eigene Android-Erweiterung (android/…/RunningNotice.java): Anzeige „Zeit läuft“, die nach Wegwischen wiederkommt. */
 interface RunningNoticePlugin {
-  show(o: { title: string; body: string; quiet?: boolean; paused?: boolean }): Promise<void>;
+  show(o: { title: string; body: string; quiet?: boolean; paused?: boolean; watch?: boolean }): Promise<void>;
   hide(): Promise<void>;
   isShown(): Promise<{ shown: boolean }>;
+  setWatch(o: { on: boolean }): Promise<void>;
+  cancelForgot(): Promise<void>;
 }
 const RunningNotice = registerPlugin<RunningNoticePlugin>('RunningNotice');
+
+/** „Zeit läuft“ auch auf der Uhr (Android leitet nur nicht dauerhafte Benachrichtigungen weiter). */
+export async function setRunningOnWatch(on: boolean) {
+  await RunningNotice.setWatch({ on }).catch(() => undefined);
+}
 
 /** Ist die Anzeige „Zeit läuft“ gerade in der Benachrichtigungsleiste? */
 export async function runningNativeDelivered(): Promise<boolean> {
@@ -107,7 +114,10 @@ export async function runningNativeDelivered(): Promise<boolean> {
  * sie sofort still wieder, bis die Zeit gestoppt ist.
  * `quiet`: still aktualisieren/wiederherstellen, ohne sich erneut zu melden.
  */
-export async function showRunningNative(notice: { title: string; body: string; paused?: boolean } | null, opts: { quiet?: boolean } = {}) {
+export async function showRunningNative(
+  notice: { title: string; body: string; paused?: boolean } | null,
+  opts: { quiet?: boolean; watch?: boolean } = {},
+) {
   if (!notice) {
     await RunningNotice.hide();
     // Frühere Versionen zeigten sie über das Benachrichtigungs-Plugin (gleiche ID) – Reste entfernen
@@ -115,7 +125,8 @@ export async function showRunningNative(notice: { title: string; body: string; p
     return;
   }
   // `paused`: Knopf „Weiter“ statt „Pause“ in der Benachrichtigung
-  await RunningNotice.show({ title: notice.title, body: notice.body, paused: !!notice.paused, quiet: !!opts.quiet });
+  // `watch`: auch auf der Uhr (Einstellung der App; Android merkt sie sich für Widget und Neustart)
+  await RunningNotice.show({ title: notice.title, body: notice.body, paused: !!notice.paused, quiet: !!opts.quiet, watch: !!opts.watch });
 }
 
 /** Probe-Benachrichtigung aus den Einstellungen (lässt sich wegwischen). */
@@ -134,6 +145,11 @@ export async function cancelNative(ids: number[]) {
   await LocalNotifications.removeDeliveredNotificationsById({ ids });
 }
 
+/** Die App plant bzw. löscht „Abstempeln vergessen?“ selbst – die vom Widget geplante Erinnerung entfällt. */
+export async function cancelWidgetForgotNative() {
+  await RunningNotice.cancelForgot().catch(() => undefined);
+}
+
 /** Erinnerung zum Zeitpunkt `at` planen (liegt er nicht in der Zukunft: sofort zeigen). */
 export async function scheduleReminderNative(r: { id: number; title: string; body: string; at: number }) {
   const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -146,8 +162,8 @@ export async function scheduleReminderNative(r: { id: number; title: string; bod
         body: r.body,
         channelId: REMINDER_CHANNEL,
         autoCancel: true,
-        // Ungenauer Wecker reicht (wenige Minuten Verzögerung) – keine Berechtigung „Wecker und Erinnerungen“ nötig
-        isExactNotification: false,
+        // Genau, wenn „Wecker und Erinnerungen“ erlaubt ist – sonst nimmt das Plugin einen ungenauen Wecker
+        isExactNotification: true,
         schedule: r.at > Date.now() ? { at: new Date(r.at), allowWhileIdle: true } : undefined,
       },
     ],

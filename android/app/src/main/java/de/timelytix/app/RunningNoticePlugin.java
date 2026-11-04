@@ -13,6 +13,7 @@ public class RunningNoticePlugin extends Plugin {
     public void show(PluginCall call) {
         String title = call.getString("title", "Timelytix");
         String body = call.getString("body", "");
+        RunningNotice.rememberWatch(getContext(), Boolean.TRUE.equals(call.getBoolean("watch", false)));
         RunningNotice.show(
             getContext(),
             title,
@@ -26,6 +27,19 @@ public class RunningNoticePlugin extends Plugin {
     @PluginMethod
     public void hide(PluginCall call) {
         RunningNotice.hide(getContext());
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setWatch(PluginCall call) {
+        RunningNotice.setWatch(getContext(), Boolean.TRUE.equals(call.getBoolean("on", false)));
+        call.resolve();
+    }
+
+    /** Die App hat ihre Erinnerung „Abstempeln vergessen?“ geplant bzw. gelöscht: die des Widgets aufheben. */
+    @PluginMethod
+    public void cancelForgot(PluginCall call) {
+        ForgotReminder.cancelOwn(getContext());
         call.resolve();
     }
 

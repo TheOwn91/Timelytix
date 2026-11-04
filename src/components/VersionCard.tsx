@@ -3,6 +3,7 @@ import { betaUpdatesEnabled, setBetaUpdatesEnabled } from '../lib/apk-update';
 import { BUILD_VERSION, IN_DEVELOPMENT, IS_BETA } from '../lib/changelog';
 import { NATIVE } from '../lib/native';
 import { checkForUpdates, getUpdateStatus, onUpdateStatus, openUpdatePreview, updateSupported, type UpdateStatus } from '../lib/update';
+import { CardTitle } from './Help';
 
 function statusText(s: UpdateStatus): string | null {
   switch (s.state) {
@@ -43,7 +44,22 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
 
   return (
     <section className="card">
-      <h2>App-Version</h2>
+      <CardTitle
+        title="App-Version"
+        help={
+          <>
+            <p>
+              Updates installierst du selbst: „Auf Updates prüfen“ sucht nach einer neuen Version. Vor dem Installieren siehst du,
+              was neu ist.
+            </p>
+            {NATIVE && (
+              <p>
+                <strong>Beta-Versionen:</strong> neue Funktionen schon vorab testen. Sie können noch Fehler enthalten.
+              </p>
+            )}
+          </>
+        }
+      />
       <p className="muted small">
         Timelytix {BUILD_VERSION}
         {IS_BETA ? ' · Beta' : IN_DEVELOPMENT && ' · in Entwicklung'}
@@ -69,7 +85,11 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
       {NATIVE && (
         <label className="checkbox toggle-row">
           <input id="beta-updates" type="checkbox" checked={beta} disabled={busy} onChange={(e) => toggleBeta(e.target.checked)} />
-          Beta-Versionen testen{beta && <span className="muted small"> – können noch Fehler enthalten</span>}
+          {/* Text und Zusatz in einem Block, sonst stehen sie im Schalter-Eintrag nebeneinander */}
+          <span className="toggle-text">
+            Beta-Versionen testen
+            {beta && <span className="muted small">Können noch Fehler enthalten</span>}
+          </span>
         </label>
       )}
     </section>
