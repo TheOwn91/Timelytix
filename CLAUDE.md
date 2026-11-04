@@ -59,11 +59,10 @@ UI-Sprache und Code-Kommentare: Deutsch.
   `:root:not([data-theme='light'])` und `:root[data-theme='dark']`. Neue Tokens in allen drei Blöcken setzen.
 - Textfarben (`--link`, `--danger`, `--success`, `--c-*`) sind im Dark Mode hellere Varianten;
   Button-Hintergründe haben eigene Tokens (`--primary`, `--danger-bg`, `--warning-bg`).
-- **Gestaltung nach Material 3 (Android)** auf diesem Branch: Farbschema „Vibrant“ aus #2563eb (Googles
-  material-color-utilities), Roboto, Schrift 16 sp, große obere App-Leiste, Navigationsleiste mit Pille am aktiven Reiter,
+- **Gestaltung nach Material 3 (Android)** auf diesem Branch, Farben wie in Version 1 (Blau #2563eb), Roboto, Schrift 16 sp, große obere App-Leiste, Navigationsleiste mit Pille am aktiven Reiter,
   Knöpfe als Kapseln mit Formwechsel beim Drücken, Material-Schalter (52 × 32 dp), Listen „segmented“, Trefferflächen
   ≥ 48 dp, randlos unter Status- und Gestenleiste. Symbole nur aus `Icon.tsx` (Material Icons, keine Emojis).
-  Widget ebenso: Farben in `res/values*/widget_colors.xml` (ab Android 12 `values-v31`: Systemfarben), Eckenradius
+  Widget ebenso: Farben (wie Version 1) in `res/values*/widget_colors.xml`, Eckenradius
   des Systems (`drawable-v31/widget_bg.xml`, `@android:id/background`), Knöpfe 48 dp.
 - **Größen in rem, nicht px:** Die Anzeigegröße (`lib/uiScale.ts`, Einstellungen → Anzeige) skaliert die Grundschrift
   (`--ui-scale` am `html`), alles in rem wächst mit. In der Android-App ist der Text-Zoom der WebView abgeschaltet

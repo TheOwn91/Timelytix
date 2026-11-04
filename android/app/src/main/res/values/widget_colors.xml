@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Farben des Widgets nach Material 3 (hell; dunkel in values-night). Bis Android 11 dieselben Farben wie die App
-  (Schema „Vibrant“ aus #2563EB, siehe src/styles.css); ab Android 12 Systemfarben (values-v31).
-  bg = surface, text = on-surface, muted = on-surface-variant, primary/on_primary = primary/on-primary,
-  warning = Pause (Container), danger = Beenden (error).
--->
+<!-- Farben des Widgets wie in Version 1 (hell; dunkel in values-night), angelehnt an die Tokens in src/styles.css -->
 <resources>
-    <color name="widget_bg">#FAF8FF</color>
-    <color name="widget_text">#191B25</color>
-    <color name="widget_muted">#434654</color>
-    <color name="widget_primary">#0053DB</color>
+    <color name="widget_bg">#F2FFFFFF</color>
+    <color name="widget_text">#0F172A</color>
+    <color name="widget_muted">#64748B</color>
+    <color name="widget_primary">#2563EB</color>
     <color name="widget_on_primary">#FFFFFF</color>
-    <color name="widget_warning">#FFDBCC</color>
-    <color name="widget_on_warning">#351000</color>
-    <color name="widget_danger">#BA1A1A</color>
+    <color name="widget_warning">#D97706</color>
+    <color name="widget_on_warning">#FFFFFF</color>
+    <color name="widget_danger">#DC2626</color>
     <color name="widget_on_danger">#FFFFFF</color>
 </resources>

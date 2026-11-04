@@ -3,8 +3,8 @@
     "version": "1.2.0",
     "date": "16.10.2026",
     "changes": [
-      "Neu (Test): Gestaltung nach Android-Richtlinien (Material 3) – neue Farben, Navigationsleiste, Schalter und Symbole",
-      "Widget im Material-Design: Systemecken, Knöpfe als Kapseln, ab Android 12 in den Farben des Handys",
+      "Neu (Test): Gestaltung nach Android-Richtlinien (Material 3) – Navigationsleiste, Schalter und Symbole, Farben wie bisher",
+      "Widget im Material-Design: Systemecken, Knöpfe als Kapseln",
       "Neu: Uhrzeit mit Sekunden oben rechts neben dem App-Namen (einschaltbar unter Einstellungen → Anzeige)",
       "Neu: Uhrzeit auch im Widget – groß, solange keine Zeit läuft (einschaltbar)",
       "Neu: „Zeit läuft“ auch auf der Uhr – mit Pause und Beenden (einschaltbar unter Benachrichtigungen)",

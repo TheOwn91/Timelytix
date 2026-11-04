@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Farben des Widgets im Dunkelmodus (Material 3, wie die App) -->
+<!-- Farben des Widgets im Dunkelmodus wie in Version 1 -->
 <resources>
-    <color name="widget_bg">#1D1F29</color>
-    <color name="widget_text">#E1E2EF</color>
-    <color name="widget_muted">#C3C6D6</color>
-    <color name="widget_primary">#B4C5FF</color>
-    <color name="widget_on_primary">#002A78</color>
-    <color name="widget_warning">#7B2F00</color>
-    <color name="widget_on_warning">#FFDBCC</color>
-    <color name="widget_danger">#FFB4AB</color>
-    <color name="widget_on_danger">#690005</color>
+    <color name="widget_bg">#F21E293B</color>
+    <color name="widget_text">#F1F5F9</color>
+    <color name="widget_muted">#94A3B8</color>
+    <color name="widget_primary">#2563EB</color>
+    <color name="widget_on_primary">#FFFFFF</color>
+    <color name="widget_warning">#B45309</color>
+    <color name="widget_on_warning">#FFFFFF</color>
+    <color name="widget_danger">#B91C1C</color>
+    <color name="widget_on_danger">#FFFFFF</color>
 </resources>
