@@ -85,7 +85,11 @@ export function VersionCard({ onShowWhatsNew }: { onShowWhatsNew: () => void }) 
       {NATIVE && (
         <label className="checkbox toggle-row">
           <input id="beta-updates" type="checkbox" checked={beta} disabled={busy} onChange={(e) => toggleBeta(e.target.checked)} />
-          Beta-Versionen testen{beta && <span className="muted small"> – können noch Fehler enthalten</span>}
+          {/* Text und Zusatz in einem Block, sonst stehen sie im Schalter-Eintrag nebeneinander */}
+          <span className="toggle-text">
+            Beta-Versionen testen
+            {beta && <span className="muted small">Können noch Fehler enthalten</span>}
+          </span>
         </label>
       )}
     </section>

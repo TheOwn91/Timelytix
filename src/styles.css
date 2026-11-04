@@ -1876,3 +1876,10 @@ summary:focus-visible {
 .settings-group-body > .help-text {
   margin-bottom: 0;
 }
+/* Beschriftung eines Schalters mit Zusatzzeile darunter */
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
